@@ -24,7 +24,7 @@ I started with a couple of fundamental types: `Variable`, `Function`, and `Funct
     <<<"goingToTheBeach"
 }
 
-let goingToTheBeach = makeBeachDecision(
+let goingToTheBeach = makeBeachDecision()
 print(goingToTheBeach) // prints false
 ```
 
