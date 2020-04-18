@@ -66,5 +66,5 @@ If `makeBeachDecision` is an instance of a custom type named `Function` how are 
 
 `let goingToTheBeach = makeBeachDecision()`
 
-If you haven't seen the Swift Dynamically Callalble Types Builders [draft proposal](https://github.com/apple/swift-evolution/blob/master/proposals/0216-dynamic-callable.md), here's a quick recap: A class that only has one primary method can delgate that method so that the instance of the class itself can be called like a function. All you need to do is define that single method with the name `callAsFunction` and you get this functionality for free!
+If you haven't seen the Swift Dynamically Callalble Types Builders [draft proposal](https://github.com/apple/swift-evolution/blob/master/proposals/0216-dynamic-callable.md), here's a quick recap: A class that only has one primary method can delegate that method so that the instance of the class itself can be called like a function. All you need to do is define that single method with the name `callAsFunction` and you get this functionality for free!
 
