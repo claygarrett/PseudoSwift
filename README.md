@@ -10,17 +10,18 @@ I thought it'd be an interesting project to be able to programatically define ne
 I started with a couple of fundamental types that all come together via the `Function` type. Let's start by seeing what it looks like to build a simple function with a few basic building blocks at compile time:
 
 ```
-let makeBeachDecision = Function<Bool> {
-  sharksInWaterFunction
-  ValueSettable("wavesAreHigh", false)
-  ValueSettable("beachIsClosed", false)
-  ValueSettable("goingToTheBeach", true)
-  "beachIsClosed" <~ ("sharksInWater" || "wavesAreHigh")
-  If("beachIsOpen",
-     Then: ["goingToTheBeach" <~ True()],
-     Else: ["goingToTheBeach" <~ False()]
-  )
-  <<<"goingToTheBeach"
+let goingToBeachFunc = Function<Bool> {
+    Var("sharksAreInWater", false)
+    Let("wavesAreHigh", false)
+    Var("beachIsOpen", true)
+    Var("goingToTheBeach", true)
+    "sharksAreInWater".toggle()
+    "beachIsOpen".set("sharksInWater".and("wavesAreHigh")
+    If("beachIsOpen",
+       Then: ["goingToTheBeach" <~ True()],
+       Else: ["goingToTheBeach" <~ False()]
+    )
+    Return("goingToTheBeach")
 }
 
 let goingToTheBeach = makeBeachDecision()
@@ -33,7 +34,7 @@ OK, so what we see here is that we're instantiating a Function which takes a sin
 
 ### First Question: How's this all glued together?
 
-First of all, the closure isn't returning anything and none of the lines are type-dependent on another one. How is this all glued together inside the `Function` class?
+The closure isn't returning anything, there's no assignment going on, and none of the lines inside of it are type-dependent on each other. How is this all glued together inside the `Function` class?
 
 #### Function Builders
 
