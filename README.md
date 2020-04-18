@@ -37,7 +37,7 @@ First of all, the closure isn't returning anything and none of the lines are typ
 
 #### Function Builders
 
-If you haven't seen the Swift Function Builders [draft proposal] (https://github.com/apple/swift-evolution/blob/9992cf3c11c2d5e0ea20bee98657d93902d5b174/proposals/XXXX-function-builders.md), here's a quick recap. It allows you to declare any input parameter to a function as a "Function Builder". A function builder takes each individual in a line of a closure, and adds it to a single array. OK, technically, it converts it to a variadic parameter, but that presents itself as an Array inside your method, so it's essentially one-and-the-same. 
+If you haven't seen the Swift Function Builders [draft proposal](https://github.com/apple/swift-evolution/blob/9992cf3c11c2d5e0ea20bee98657d93902d5b174/proposals/XXXX-function-builders.md), here's a quick recap. It allows you to declare any input parameter to a function as a "Function Builder". A function builder takes each individual in a line of a closure, and adds it to a single array. OK, technically, it converts it to a variadic parameter, but that presents itself as an Array inside your method, so it's essentially one-and-the-same. 
 
 So, if our Function is defined like so:
 
@@ -66,5 +66,5 @@ If `makeBeachDecision` is an instance of a custom type named `Function` how are 
 
 `let goingToTheBeach = makeBeachDecision()`
 
-If you haven't seen the Swift Dynamically Callalble Types Builders [draft proposal] (https://github.com/apple/swift-evolution/blob/master/proposals/0216-dynamic-callable.md), here's a quick recap: A class that only has one primary method can delgate that method so that the instance of the class itself can be called like a function. All you need to do is define that single method with the name `callAsFunction` and you get this functionality for free!
+If you haven't seen the Swift Dynamically Callalble Types Builders [draft proposal](https://github.com/apple/swift-evolution/blob/master/proposals/0216-dynamic-callable.md), here's a quick recap: A class that only has one primary method can delgate that method so that the instance of the class itself can be called like a function. All you need to do is define that single method with the name `callAsFunction` and you get this functionality for free!
 
