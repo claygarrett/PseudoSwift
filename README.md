@@ -27,8 +27,8 @@ let goingToTheBeach = makeBeachDecision()
 print(goingToTheBeach) // prints false
 ```
 
-### Function
-
+### The custom `Function` type
+ 
 OK, so what we see here is that we're instantiating a Function which takes a single parameter via a closure. The format of this closure might look a little strange, and for good reason. 
 
 ### First Question: How's this all glued together?
