@@ -4,7 +4,7 @@ import Foundation
 /// An object that sets/transforms values based on predefined logic
 /// Function steps can contain relatively simple functionality such as operators (+, -, *, &&, ||, etc)
 /// Or can contain much more complex logic .
-protocol FunctionStep {
+public protocol FunctionStep {
     /// Do the logic contained in this step by reading from, transforming, and setting dependent variables.
     func perform() throws
     
@@ -22,7 +22,7 @@ protocol ValueProducingFunctionStep {
     func perform() throws -> ReturnValue
 }
 
-class BoolEvaluator: ValueProducingFunctionStep {
+public class BoolEvaluator: ValueProducingFunctionStep {
     
     let varName: String
 
@@ -55,41 +55,43 @@ class BoolEvaluator: ValueProducingFunctionStep {
     
 }
 
-class True: ValueProducingFunctionStep {
-    typealias ReturnValue = Bool
-    func perform() throws -> Bool {
+public class True: ValueProducingFunctionStep {
+    public typealias ReturnValue = Bool
+    public func perform() throws -> Bool {
         return true
     }
+    public init() {}
 }
 
-class False: ValueProducingFunctionStep {
-    typealias ReturnValue = Bool
-    func perform() throws -> Bool {
+public class False: ValueProducingFunctionStep {
+    public typealias ReturnValue = Bool
+    public func perform() throws -> Bool {
         return false
     }
+    public init() {}
 }
 
-struct BoolAndPartial {
+public struct BoolAndPartial {
     let leftVar: String
     let rightVar: String
-    init(leftVar: String, rightVar: String) {
+    public init(leftVar: String, rightVar: String) {
         self.leftVar = leftVar
         self.rightVar = rightVar
     }
 }
 
-struct BoolOrPartial {
+public struct BoolOrPartial {
     let leftVar: String
     let rightVar: String
-    init(leftVar: String, rightVar: String) {
+    public init(leftVar: String, rightVar: String) {
         self.leftVar = leftVar
         self.rightVar = rightVar
     }
 }
 
-class FunctionOutput {
+public class FunctionOutput {
     var name: String
-    init(name: String) {
+    public init(name: String) {
         self.name = name
     }
 }

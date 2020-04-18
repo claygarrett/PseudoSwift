@@ -1,31 +1,24 @@
 
 
-//protocol ValueGettable {
-//    associatedtype T
-//    func getValue() throws -> T
-//}
-
-
-
-
-class ValueSettable<VarType>: ValueGettable<VarType> {
+public class ValueSettable<VarType>: ValueGettable<VarType> {
     private var _value: VarType
     
-    override func getValue() throws -> VarType {
+    public override func getValue() throws -> VarType {
         return _value
     }
-    func setValue(_ value: VarType) {
+    
+    public func setValue(_ value: VarType) {
         _value = value
     }
     
-    override init(_ name: String, _ val: VarType) {
+    public override init(_ name: String, _ val: VarType) {
         self._value = val
         super.init(name: name)
     }
 }
 
 /// A holder of a value of a specific type that can be read from and written to
-class ValueGettable<VarType> {
+public class ValueGettable<VarType> {
     func getValue() throws -> VarType {
         return try _valueProvider()
     }
@@ -68,7 +61,7 @@ func def(name: String) -> ValueGettable<Any> {
     return tempVariable
 }
 
-class VariableProvider<T> {
+public class VariableProvider<T> {
     var values: [String: ValueGettable<T>]
     
     func getReadable(name: String) -> ValueGettable<T> {
@@ -95,16 +88,15 @@ class NilVariable<VarType> {
         self.name = name
         self.type = type
     }
-    
 }
 
-extension String {
+public extension String {
     func toggle() -> BoolFlip {
         return BoolFlip(self)
     }
 }
 
-extension String {
+public extension String {
     func set(_ partial: BoolAndPartial) -> BoolAnd {
         return BoolAnd(varToSet: self, leftVar: partial.leftVar, rightVar: partial.rightVar)
     }

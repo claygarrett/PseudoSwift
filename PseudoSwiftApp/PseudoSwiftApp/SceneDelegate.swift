@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftUI
+import PseudoSwift
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
@@ -40,7 +41,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             ValueSettable("wavesAreHigh", false)
             ValueSettable("beachIsOpen", true)
             ValueSettable("goingToTheBeach", true)
-            "beachIsOpen" <~ ("sharksInWater" || "wavesAreHigh")
+            BoolAnd(varToSet: "beachIsOpen", leftVar: "sharksInWater", rightVar: "wavesAreHigh")
             If("beachIsOpen",
                Then: ["goingToTheBeach" <~ True()],
                Else: ["goingToTheBeach" <~ False()]

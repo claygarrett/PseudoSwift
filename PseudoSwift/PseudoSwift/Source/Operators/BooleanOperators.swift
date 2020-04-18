@@ -1,56 +1,56 @@
 /// Abstract superclass for any FunctionSteps that present as an operation between two variables
-class InfixOperator: FunctionStep {
+public class InfixOperator: FunctionStep {
     var leftVarName: String
     var rightVarName: String
     var varToSetName: String
     var boolProvider: VariableProvider<Bool>?
 
-    func addVariableProvider<T>(provider: VariableProvider<T>) {
+    public func addVariableProvider<T>(provider: VariableProvider<T>) {
         if provider.type().self == Bool.self {
             self.boolProvider = provider as? VariableProvider<Bool>
         }
     }
     
-    func requiredVariableProviders() -> [SupportedType] {
+    public func requiredVariableProviders() -> [SupportedType] {
         fatalError("Must Override")
     }
     
-    init(varToSet: String, leftVar: String, rightVar: String) {
+    public init(varToSet: String, leftVar: String, rightVar: String) {
         self.varToSetName = varToSet
         self.leftVarName = leftVar
         self.rightVarName = rightVar
     }
     
-    func perform() throws {
+    public func perform() throws {
         fatalError("Must Override")
     }
 }
 
 /// Abstract superclass for any FunctionSteps that present as an operation between two variables
-class SetBool: FunctionStep {
+public class SetBool: FunctionStep {
     
     var boolProvider: VariableProvider<Bool>?
     
     var varToSetName: String
     let valToSet: Bool
 
-    func addVariableProvider<T>(provider: VariableProvider<T>) {
+    public func addVariableProvider<T>(provider: VariableProvider<T>) {
         if provider.type().self == Bool.self {
            self.boolProvider = provider as? VariableProvider<Bool>
        }
     }
     
-    func requiredVariableProviders() -> [SupportedType] {
+    public func requiredVariableProviders() -> [SupportedType] {
           return [.boolean]
     }
   
     
-    init(varToSet: String, value: Bool) {
+    public init(varToSet: String, value: Bool) {
         self.varToSetName = varToSet
         self.valToSet = value
     }
     
-    func perform() throws {
+    public func perform() throws {
         guard let boolProvider = self.boolProvider else {
             throw VariableError.VariableProviderNotFound(source: "SetVar")
         }
@@ -61,12 +61,12 @@ class SetBool: FunctionStep {
 
 
 /// Compares two booleans. Returns true if they are both true, but otherwise returns false.
-class BoolAnd: InfixOperator {
-    override func requiredVariableProviders() -> [SupportedType] {
+public class BoolAnd: InfixOperator {
+    public override func requiredVariableProviders() -> [SupportedType] {
         return [.boolean]
     }
     
-    override func perform() throws {
+    public override func perform() throws {
         guard let boolProvider = self.boolProvider else {
             throw VariableError.VariableProviderNotFound(source: "BooleanFunctionAnd")
         }
@@ -79,12 +79,12 @@ class BoolAnd: InfixOperator {
 }
 
 /// Compares two booleans. Returns true if they are both true, but otherwise returns false.
-class BoolOr: InfixOperator {
-    override func requiredVariableProviders() -> [SupportedType] {
+public class BoolOr: InfixOperator {
+    public override func requiredVariableProviders() -> [SupportedType] {
         return [.boolean]
     }
     
-    override func perform() throws {
+    public override func perform() throws {
         guard let boolProvider = self.boolProvider else {
             throw VariableError.VariableProviderNotFound(source: "BooleanFunctionAnd")
         }
@@ -97,17 +97,17 @@ class BoolOr: InfixOperator {
 
 /// Changes a boolean's value to the other possible option.
 /// Changes true to false or false to true.
-class BoolFlip: FunctionStep {
+public class BoolFlip: FunctionStep {
     var targetName: String
     var boolProvider: VariableProvider<Bool>?
     
-    func addVariableProvider<T>(provider: VariableProvider<T>) {
+    public func addVariableProvider<T>(provider: VariableProvider<T>) {
         if provider.type().self == Bool.self {
             self.boolProvider = provider as? VariableProvider<Bool>
         }
     }
     
-    func requiredVariableProviders() -> [SupportedType] {
+    public func requiredVariableProviders() -> [SupportedType] {
         return [.boolean]
     }
     
@@ -115,7 +115,7 @@ class BoolFlip: FunctionStep {
         self.targetName = targetName
     }
     
-    func perform() throws {
+    public func perform() throws {
         guard let boolProvider = self.boolProvider else {
             throw VariableError.VariableProviderNotFound(source: "BooleanFunctionFlip")
         }
@@ -126,14 +126,14 @@ class BoolFlip: FunctionStep {
 
 /// Performs branching. Takes a condition and performs one set of FunctionSteps if the
 /// condition is true and a different set if it is false.
-class If: FunctionStep {
+public class If: FunctionStep {
     var boolProvider: VariableProvider<Bool>?
     let trueSteps: [FunctionStep]
     let falseSteps: [FunctionStep]
     let conditionEvaluator: BoolEvaluator
     
   
-    init(
+    public init(
         _ conditionBool: String,
          Then  trueSteps: [FunctionStep],
          Else falseSteps: [FunctionStep] = []) {
@@ -143,18 +143,18 @@ class If: FunctionStep {
         self.conditionEvaluator = BoolEvaluator(conditionBool)
     }
     
-    func addVariableProvider<T>(provider: VariableProvider<T>) {
+    public func addVariableProvider<T>(provider: VariableProvider<T>) {
         if provider.type().self == Bool.self {
             boolProvider = provider as? VariableProvider<Bool>
             conditionEvaluator.addVariableProvider(provider: provider)
         }
     }
     
-    func requiredVariableProviders() -> [SupportedType] {
+    public func requiredVariableProviders() -> [SupportedType] {
         return [.boolean]
     }
     
-    func perform() throws {
+    public func perform() throws {
         guard let boolProvider = self.boolProvider else {
             throw VariableError.VariableProviderNotFound(source: "BooleanFunctionFlip")
         }

@@ -23,7 +23,7 @@ import Foundation
 ///
 /// It's up to you to ensure you pass the correct types of elements to the function. If we find items
 /// of types that we don't expect passed into the function builder, we will throw.
-class Function<Output>: ValueGettable<Output> {
+public class Function<Output>: ValueGettable<Output> {
     override func getValue() throws -> Output {
         do { return try self() } catch { fatalError() }
     }
@@ -43,7 +43,7 @@ class Function<Output>: ValueGettable<Output> {
     /// All providers of boolean variables. Just a simplified wrapper for our map of variables
     var booleanVariableProvider: VariableProvider<Bool>
     
-    init(@FunctionVariablesBuilder _ lines: ()->[AnyObject], name: String = "") {
+    public init(@FunctionVariablesBuilder _ lines: ()->[AnyObject], name: String = "") {
         
         let allLines = lines()
         
@@ -105,7 +105,7 @@ class Function<Output>: ValueGettable<Output> {
     /// }
     /// someFunc() // enabled by callAsFunction
     /// ```
-    func callAsFunction() throws -> Output {
+    public func callAsFunction() throws -> Output {
         for step in steps {
             // Hook up all the variable providers that this step needs
             step.requiredVariableProviders().forEach {
@@ -134,8 +134,8 @@ class Function<Output>: ValueGettable<Output> {
 
 /// Our function builder that takes a row of lines and wraps them into an array that we parse
 @_functionBuilder
-class FunctionVariablesBuilder {
-    static func buildBlock(_ steps: AnyObject...) -> [AnyObject] {
+public class FunctionVariablesBuilder {
+    public static func buildBlock(_ steps: AnyObject...) -> [AnyObject] {
         return steps
     }
 }
