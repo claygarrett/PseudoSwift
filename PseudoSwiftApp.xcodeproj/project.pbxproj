@@ -14,8 +14,8 @@
 		424565AD243644E4006EB7FF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 424565AC243644E4006EB7FF /* Assets.xcassets */; };
 		424565B0243644E4006EB7FF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 424565AF243644E4006EB7FF /* Preview Assets.xcassets */; };
 		424565B3243644E4006EB7FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 424565B1243644E4006EB7FF /* LaunchScreen.storyboard */; };
-		424565BE243644E4006EB7FF /* PseudoSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424565BD243644E4006EB7FF /* PseudoSwiftTests.swift */; };
-		424565C9243644E4006EB7FF /* PseudoSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424565C8243644E4006EB7FF /* PseudoSwiftUITests.swift */; };
+		424565BE243644E4006EB7FF /* PseudoSwiftAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424565BD243644E4006EB7FF /* PseudoSwiftAppTests.swift */; };
+		424565C9243644E4006EB7FF /* PseudoSwiftAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424565C8243644E4006EB7FF /* PseudoSwiftAppUITests.swift */; };
 		424565D82436451F006EB7FF /* Function.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424565D72436451F006EB7FF /* Function.swift */; };
 		424565DA2436454D006EB7FF /* FunctionStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424565D92436454D006EB7FF /* FunctionStep.swift */; };
 		424565E024364648006EB7FF /* BooleanOperators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424565DF24364648006EB7FF /* BooleanOperators.swift */; };
@@ -43,7 +43,7 @@
 
 /* Begin PBXFileReference section */
 		420E9CC0244578B5008156B4 /* SourceShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceShortcuts.swift; sourceTree = "<group>"; };
-		424565A3243644E1006EB7FF /* PseudoSwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PseudoSwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		424565A3243644E1006EB7FF /* PseudoSwiftApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PseudoSwiftApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		424565A6243644E1006EB7FF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		424565A8243644E1006EB7FF /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		424565AA243644E1006EB7FF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -51,11 +51,11 @@
 		424565AF243644E4006EB7FF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		424565B2243644E4006EB7FF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		424565B4243644E4006EB7FF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		424565B9243644E4006EB7FF /* PseudoSwiftTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PseudoSwiftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		424565BD243644E4006EB7FF /* PseudoSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PseudoSwiftTests.swift; sourceTree = "<group>"; };
+		424565B9243644E4006EB7FF /* PseudoSwiftAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PseudoSwiftAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		424565BD243644E4006EB7FF /* PseudoSwiftAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PseudoSwiftAppTests.swift; sourceTree = "<group>"; };
 		424565BF243644E4006EB7FF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		424565C4243644E4006EB7FF /* PseudoSwiftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PseudoSwiftUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		424565C8243644E4006EB7FF /* PseudoSwiftUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PseudoSwiftUITests.swift; sourceTree = "<group>"; };
+		424565C4243644E4006EB7FF /* PseudoSwiftAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PseudoSwiftAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		424565C8243644E4006EB7FF /* PseudoSwiftAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PseudoSwiftAppUITests.swift; sourceTree = "<group>"; };
 		424565CA243644E4006EB7FF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		424565D72436451F006EB7FF /* Function.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Function.swift; sourceTree = "<group>"; };
 		424565D92436454D006EB7FF /* FunctionStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionStep.swift; sourceTree = "<group>"; };
@@ -101,7 +101,7 @@
 		4245659A243644E1006EB7FF = {
 			isa = PBXGroup;
 			children = (
-				424565A5243644E1006EB7FF /* PseudoSwift */,
+				424565A5243644E1006EB7FF /* PseudoSwiftApp */,
 				424565BC243644E4006EB7FF /* PseudoSwiftTests */,
 				424565C7243644E4006EB7FF /* PseudoSwiftUITests */,
 				424565A4243644E1006EB7FF /* Products */,
@@ -111,14 +111,14 @@
 		424565A4243644E1006EB7FF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				424565A3243644E1006EB7FF /* PseudoSwift.app */,
-				424565B9243644E4006EB7FF /* PseudoSwiftTests.xctest */,
-				424565C4243644E4006EB7FF /* PseudoSwiftUITests.xctest */,
+				424565A3243644E1006EB7FF /* PseudoSwiftApp.app */,
+				424565B9243644E4006EB7FF /* PseudoSwiftAppTests.xctest */,
+				424565C4243644E4006EB7FF /* PseudoSwiftAppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		424565A5243644E1006EB7FF /* PseudoSwift */ = {
+		424565A5243644E1006EB7FF /* PseudoSwiftApp */ = {
 			isa = PBXGroup;
 			children = (
 				424565D624364510006EB7FF /* Source */,
@@ -130,7 +130,7 @@
 				424565B4243644E4006EB7FF /* Info.plist */,
 				424565AE243644E4006EB7FF /* Preview Content */,
 			);
-			path = PseudoSwift;
+			path = PseudoSwiftApp;
 			sourceTree = "<group>";
 		};
 		424565AE243644E4006EB7FF /* Preview Content */ = {
@@ -144,7 +144,7 @@
 		424565BC243644E4006EB7FF /* PseudoSwiftTests */ = {
 			isa = PBXGroup;
 			children = (
-				424565BD243644E4006EB7FF /* PseudoSwiftTests.swift */,
+				424565BD243644E4006EB7FF /* PseudoSwiftAppTests.swift */,
 				424565BF243644E4006EB7FF /* Info.plist */,
 			);
 			path = PseudoSwiftTests;
@@ -153,7 +153,7 @@
 		424565C7243644E4006EB7FF /* PseudoSwiftUITests */ = {
 			isa = PBXGroup;
 			children = (
-				424565C8243644E4006EB7FF /* PseudoSwiftUITests.swift */,
+				424565C8243644E4006EB7FF /* PseudoSwiftAppUITests.swift */,
 				424565CA243644E4006EB7FF /* Info.plist */,
 			);
 			path = PseudoSwiftUITests;
@@ -208,9 +208,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		424565A2243644E1006EB7FF /* PseudoSwift */ = {
+		424565A2243644E1006EB7FF /* PseudoSwiftApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 424565CD243644E4006EB7FF /* Build configuration list for PBXNativeTarget "PseudoSwift" */;
+			buildConfigurationList = 424565CD243644E4006EB7FF /* Build configuration list for PBXNativeTarget "PseudoSwiftApp" */;
 			buildPhases = (
 				4245659F243644E1006EB7FF /* Sources */,
 				424565A0243644E1006EB7FF /* Frameworks */,
@@ -220,14 +220,14 @@
 			);
 			dependencies = (
 			);
-			name = PseudoSwift;
+			name = PseudoSwiftApp;
 			productName = PseudoSwift;
-			productReference = 424565A3243644E1006EB7FF /* PseudoSwift.app */;
+			productReference = 424565A3243644E1006EB7FF /* PseudoSwiftApp.app */;
 			productType = "com.apple.product-type.application";
 		};
-		424565B8243644E4006EB7FF /* PseudoSwiftTests */ = {
+		424565B8243644E4006EB7FF /* PseudoSwiftAppTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 424565D0243644E4006EB7FF /* Build configuration list for PBXNativeTarget "PseudoSwiftTests" */;
+			buildConfigurationList = 424565D0243644E4006EB7FF /* Build configuration list for PBXNativeTarget "PseudoSwiftAppTests" */;
 			buildPhases = (
 				424565B5243644E4006EB7FF /* Sources */,
 				424565B6243644E4006EB7FF /* Frameworks */,
@@ -238,14 +238,14 @@
 			dependencies = (
 				424565BB243644E4006EB7FF /* PBXTargetDependency */,
 			);
-			name = PseudoSwiftTests;
+			name = PseudoSwiftAppTests;
 			productName = PseudoSwiftTests;
-			productReference = 424565B9243644E4006EB7FF /* PseudoSwiftTests.xctest */;
+			productReference = 424565B9243644E4006EB7FF /* PseudoSwiftAppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		424565C3243644E4006EB7FF /* PseudoSwiftUITests */ = {
+		424565C3243644E4006EB7FF /* PseudoSwiftAppUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 424565D3243644E4006EB7FF /* Build configuration list for PBXNativeTarget "PseudoSwiftUITests" */;
+			buildConfigurationList = 424565D3243644E4006EB7FF /* Build configuration list for PBXNativeTarget "PseudoSwiftAppUITests" */;
 			buildPhases = (
 				424565C0243644E4006EB7FF /* Sources */,
 				424565C1243644E4006EB7FF /* Frameworks */,
@@ -256,9 +256,9 @@
 			dependencies = (
 				424565C6243644E4006EB7FF /* PBXTargetDependency */,
 			);
-			name = PseudoSwiftUITests;
+			name = PseudoSwiftAppUITests;
 			productName = PseudoSwiftUITests;
-			productReference = 424565C4243644E4006EB7FF /* PseudoSwiftUITests.xctest */;
+			productReference = 424565C4243644E4006EB7FF /* PseudoSwiftAppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -284,7 +284,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 4245659E243644E1006EB7FF /* Build configuration list for PBXProject "PseudoSwift" */;
+			buildConfigurationList = 4245659E243644E1006EB7FF /* Build configuration list for PBXProject "PseudoSwiftApp" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -297,9 +297,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				424565A2243644E1006EB7FF /* PseudoSwift */,
-				424565B8243644E4006EB7FF /* PseudoSwiftTests */,
-				424565C3243644E4006EB7FF /* PseudoSwiftUITests */,
+				424565A2243644E1006EB7FF /* PseudoSwiftApp */,
+				424565B8243644E4006EB7FF /* PseudoSwiftAppTests */,
+				424565C3243644E4006EB7FF /* PseudoSwiftAppUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -353,7 +353,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				424565BE243644E4006EB7FF /* PseudoSwiftTests.swift in Sources */,
+				424565BE243644E4006EB7FF /* PseudoSwiftAppTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -361,7 +361,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				424565C9243644E4006EB7FF /* PseudoSwiftUITests.swift in Sources */,
+				424565C9243644E4006EB7FF /* PseudoSwiftAppUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -370,12 +370,12 @@
 /* Begin PBXTargetDependency section */
 		424565BB243644E4006EB7FF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 424565A2243644E1006EB7FF /* PseudoSwift */;
+			target = 424565A2243644E1006EB7FF /* PseudoSwiftApp */;
 			targetProxy = 424565BA243644E4006EB7FF /* PBXContainerItemProxy */;
 		};
 		424565C6243644E4006EB7FF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 424565A2243644E1006EB7FF /* PseudoSwift */;
+			target = 424565A2243644E1006EB7FF /* PseudoSwiftApp */;
 			targetProxy = 424565C5243644E4006EB7FF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -511,9 +511,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"PseudoSwift/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"PseudoSwiftApp/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = PseudoSwift/Info.plist;
+				INFOPLIST_FILE = PseudoSwiftApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -530,9 +530,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"PseudoSwift/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"PseudoSwiftApp/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = PseudoSwift/Info.plist;
+				INFOPLIST_FILE = PseudoSwiftApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -627,7 +627,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4245659E243644E1006EB7FF /* Build configuration list for PBXProject "PseudoSwift" */ = {
+		4245659E243644E1006EB7FF /* Build configuration list for PBXProject "PseudoSwiftApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				424565CB243644E4006EB7FF /* Debug */,
@@ -636,7 +636,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		424565CD243644E4006EB7FF /* Build configuration list for PBXNativeTarget "PseudoSwift" */ = {
+		424565CD243644E4006EB7FF /* Build configuration list for PBXNativeTarget "PseudoSwiftApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				424565CE243644E4006EB7FF /* Debug */,
@@ -645,7 +645,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		424565D0243644E4006EB7FF /* Build configuration list for PBXNativeTarget "PseudoSwiftTests" */ = {
+		424565D0243644E4006EB7FF /* Build configuration list for PBXNativeTarget "PseudoSwiftAppTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				424565D1243644E4006EB7FF /* Debug */,
@@ -654,7 +654,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		424565D3243644E4006EB7FF /* Build configuration list for PBXNativeTarget "PseudoSwiftUITests" */ = {
+		424565D3243644E4006EB7FF /* Build configuration list for PBXNativeTarget "PseudoSwiftAppUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				424565D4243644E4006EB7FF /* Debug */,
