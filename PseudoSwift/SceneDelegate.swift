@@ -13,7 +13,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
     
-    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
@@ -30,25 +29,28 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window.makeKeyAndVisible()
         }
         
-        // next: use strings for variable names -- so we can reference strings at multiple steps
-        let flipBoolFunc = Function<Bool> {
-            "canFlipWithoutPriveleges" ~> false
-            "isAdmin" ~> true
-            "isFlipped" ~> false
-            "hasPermissionToflip" ~> false
-            "isFlipped".flipBool()
-            "hasPermissionToflip" ~> ("canFlipWithoutPriveleges" || "isAdmin")
-            "isFlipped" ~> ("isFlipped" && "hasPermissionToflip")
-            If(true,
-               Then: ["isFlipped".flipBool()],
-               Else: ["isAdmin".flipBool()]
+        let sharksInWaterFunction = Function<Bool>( {
+            ValueSettable("sharksInWater", false)
+            "sharksInWater".toggle()
+            <<<"sharksInWater"
+        }, name: "sharksInWater")
+        
+        let goingToBeachFunc = Function<Bool> {
+            sharksInWaterFunction
+            ValueSettable("wavesAreHigh", false)
+            ValueSettable("beachIsOpen", true)
+            ValueSettable("goingToTheBeach", true)
+            "beachIsOpen" <~ ("sharksInWater" || "wavesAreHigh")
+            If("beachIsOpen",
+               Then: ["goingToTheBeach" <~ True()],
+               Else: ["goingToTheBeach" <~ False()]
             )
-            >"isFlipped"
+            <<<"goingToTheBeach"
         }
         
         do {
-            let didWeFlip = try flipBoolFunc()
-            print(didWeFlip)
+            let goingToBeach = try goingToBeachFunc()
+            print(goingToBeach)
         } catch {
             fatalError()
         }

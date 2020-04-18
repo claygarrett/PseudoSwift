@@ -17,6 +17,58 @@ protocol FunctionStep {
     func requiredVariableProviders() -> [SupportedType]
 }
 
+protocol ValueProducingFunctionStep {
+    associatedtype ReturnValue
+    func perform() throws -> ReturnValue
+}
+
+class BoolEvaluator: ValueProducingFunctionStep {
+    
+    let varName: String
+
+    init(_ varName: String) {
+        self.varName = varName
+    }
+    
+    func perform() throws -> Bool {
+        guard let boolProvider = self.boolProvider else {
+            throw VariableError.VariableProviderNotFound(source: "Bool Evaluator")
+        }
+        
+        return try boolProvider.getReadable(name: varName).getValue()
+    }
+    
+    typealias ReturnValue = Bool
+    
+    var boolProvider: VariableProvider<Bool>?
+     
+
+    func addVariableProvider<T>(provider: VariableProvider<T>) {
+        if provider.type().self == Bool.self {
+            self.boolProvider = provider as? VariableProvider<Bool>
+        }
+    }
+    
+    func requiredVariableProviders() -> [SupportedType] {
+        return [.boolean]
+    }
+    
+}
+
+class True: ValueProducingFunctionStep {
+    typealias ReturnValue = Bool
+    func perform() throws -> Bool {
+        return true
+    }
+}
+
+class False: ValueProducingFunctionStep {
+    typealias ReturnValue = Bool
+    func perform() throws -> Bool {
+        return false
+    }
+}
+
 struct BoolAndPartial {
     let leftVar: String
     let rightVar: String

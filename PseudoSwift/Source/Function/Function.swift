@@ -23,8 +23,12 @@ import Foundation
 ///
 /// It's up to you to ensure you pass the correct types of elements to the function. If we find items
 /// of types that we don't expect passed into the function builder, we will throw.
-struct Function<Output> {
+class Function<Output>: ValueGettable<Output> {
+    override func getValue() throws -> Output {
+        do { return try self() } catch { fatalError() }
+    }
     
+    typealias T = Output
     /// The steps that make up the function. They are not directly dependent on each other
     /// but have a loosely-typed dependency on the provided variables. There should be
     /// a variable of matching name and type provided for each variable that exists in our steps.
@@ -34,18 +38,18 @@ struct Function<Output> {
     var outputVariableName: String!
     
     /// All boolean variables. We split all provided variables into maps by type.
-    var booleanVariables: [String: Variable<Bool>] = [:]
+    var booleanVariables: [String: ValueGettable<Bool>] = [:]
     
     /// All providers of boolean variables. Just a simplified wrapper for our map of variables
     var booleanVariableProvider: VariableProvider<Bool>
     
-    init(@FunctionVariablesBuilder _ lines: ()->[AnyObject]) {
+    init(@FunctionVariablesBuilder _ lines: ()->[AnyObject], name: String = "") {
         
         let allLines = lines()
         
         // Break out each variable from our lines
         let variables = allLines.compactMap { (line) -> Any? in
-            return line is Variable<Bool> ? line : nil
+            return line is ValueGettable<Bool> ? line : nil
         }
         
         // Break out each step from our lines
@@ -59,11 +63,8 @@ struct Function<Output> {
         // Split our variables by type
         for variable in variables {
             switch variable {
-            case let booleanVar as Variable<Bool>:
+            case let booleanVar as ValueGettable<Bool>:
                 self.booleanVariables[booleanVar.name] = booleanVar
-                if booleanVar.isOutput {
-                    self.outputVariableName = booleanVar.name
-                }
             default:
                 fatalError("Sent in an unexpected variable type")
             }
@@ -91,8 +92,12 @@ struct Function<Output> {
         guard outputVariableName.count > 0 else {
             fatalError("No output variable supplied")
         }
+        
+        super.init(name: name)
+        self._valueProvider = { try self() }
     }
     
+
     /// Enables our Function type to be callable. For instance:
     /// ```
     /// let someFunc = Function {
@@ -120,11 +125,10 @@ struct Function<Output> {
         }
         
         // Get the value for our final output and return it
-        if booleanVariableProvider.values.first!.value.value is Output {
-            return booleanVariableProvider.get(name: outputVariableName).value as! Output
-        }
         
-        fatalError("Output variable name was missing or of incorrect type")
+       return try booleanVariableProvider.getReadable(name: outputVariableName).getValue() as! Output
+       
+        
     }
 }
 

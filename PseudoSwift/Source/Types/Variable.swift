@@ -1,57 +1,85 @@
 
+
+//protocol ValueGettable {
+//    associatedtype T
+//    func getValue() throws -> T
+//}
+
+
+
+
+class ValueSettable<VarType>: ValueGettable<VarType> {
+    private var _value: VarType
+    
+    override func getValue() throws -> VarType {
+        return _value
+    }
+    func setValue(_ value: VarType) {
+        _value = value
+    }
+    
+    override init(_ name: String, _ val: VarType) {
+        self._value = val
+        super.init(name: name)
+    }
+}
+
 /// A holder of a value of a specific type that can be read from and written to
-class Variable<VarType> {
+class ValueGettable<VarType> {
+    func getValue() throws -> VarType {
+        return try _valueProvider()
+    }
+    
+    typealias T = VarType
     
     /// The name of this variable. Used for looking variables up when connecting
     /// FunctionSteps and Variables
     var name: String
+        
+    var _valueProvider: () throws ->VarType
     
-    /// The primitive value of this Variable
-    var value: VarType!
-    
-    /// Flags if this is a variable that should be used as an output Variable
-    var isOutput: Bool
-    
-    init(_ val: VarType, name: String, isOutput: Bool = false) {
-        self.value = val
+    init(_ name: String, _ val: VarType) {
+        self._valueProvider = { val }
         self.name = name
-        self.isOutput = isOutput
     }
 
-    init(name: String, isOutput: Bool = false) {
+    init(name: String) {
         self.name = name
-        self.isOutput = isOutput
+        // variables initialized with this input are meant to
+        // be temporary values that hold on to a type until they
+        // are converted to a proper version that has a value provider.
+        // so, calling them prior to that will result in a crash
+        _valueProvider = { fatalError() }
     }
     
-    /// Helper method that returns a variable but converts it to an output Variable
-    /// - Returns: The Variable, modified as an output Variable
-    func asOutput() -> Variable<VarType> {
-        self.isOutput = true
-        return self
-    }
 }
 
-extension Variable where VarType == Any {
-    func equal<T>(val: T) -> Variable<T> {
-        return Variable<T>(val , name: self.name)
+extension ValueGettable where VarType == Any {
+    func equal<T>(val: T) -> ValueGettable<T> {
+        return ValueGettable<T>(name, val)
     }
 }
 
 /// Global helper function to easily define a variable
 /// The Variable returned by  this method will not have a value
 /// but can be given one by following up the call with .equals(value)
-func def(name: String) -> Variable<Any> {
-    let tempVariable: Variable<Any> = Variable(name: name)
+func def(name: String) -> ValueGettable<Any> {
+    let tempVariable: ValueGettable<Any> = ValueGettable(name: name)
     return tempVariable
 }
 
 class VariableProvider<T> {
-    var values: [String: Variable<T>]
-    func get(name: String) -> Variable<T> {
+    var values: [String: ValueGettable<T>]
+    
+    func getReadable(name: String) -> ValueGettable<T> {
         return values[name]!
     }
     
-    init(values: [String: Variable<T>]) {
+    func getWritable(name: String) -> ValueSettable<T> {
+        return values[name]! as! ValueSettable<T>
+    }
+    
+    init(values: [String: ValueGettable<T>]) {
         self.values = values
     }
     
@@ -71,7 +99,7 @@ class NilVariable<VarType> {
 }
 
 extension String {
-    func flipBool() -> BoolFlip {
+    func toggle() -> BoolFlip {
         return BoolFlip(self)
     }
 }

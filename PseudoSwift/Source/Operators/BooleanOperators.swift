@@ -26,6 +26,40 @@ class InfixOperator: FunctionStep {
     }
 }
 
+/// Abstract superclass for any FunctionSteps that present as an operation between two variables
+class SetBool: FunctionStep {
+    
+    var boolProvider: VariableProvider<Bool>?
+    
+    var varToSetName: String
+    let valToSet: Bool
+
+    func addVariableProvider<T>(provider: VariableProvider<T>) {
+        if provider.type().self == Bool.self {
+           self.boolProvider = provider as? VariableProvider<Bool>
+       }
+    }
+    
+    func requiredVariableProviders() -> [SupportedType] {
+          return [.boolean]
+    }
+  
+    
+    init(varToSet: String, value: Bool) {
+        self.varToSetName = varToSet
+        self.valToSet = value
+    }
+    
+    func perform() throws {
+        guard let boolProvider = self.boolProvider else {
+            throw VariableError.VariableProviderNotFound(source: "SetVar")
+        }
+        let boolVariable = boolProvider.getWritable(name: varToSetName)
+        boolVariable.setValue(valToSet)
+    }
+}
+
+
 /// Compares two booleans. Returns true if they are both true, but otherwise returns false.
 class BoolAnd: InfixOperator {
     override func requiredVariableProviders() -> [SupportedType] {
@@ -36,11 +70,11 @@ class BoolAnd: InfixOperator {
         guard let boolProvider = self.boolProvider else {
             throw VariableError.VariableProviderNotFound(source: "BooleanFunctionAnd")
         }
-        let leftVar = boolProvider.get(name: leftVarName)
-        let rightVar = boolProvider.get(name: rightVarName)
-        let varToSet = boolProvider.get(name: varToSetName)
+        let leftVar = boolProvider.getReadable(name: leftVarName)
+        let rightVar = boolProvider.getReadable(name: rightVarName)
         
-        varToSet.value = rightVar.value && leftVar.value
+        let boolVariable = boolProvider.getWritable(name: varToSetName)
+        try boolVariable.setValue(rightVar.getValue() && leftVar.getValue())
     }
 }
 
@@ -54,11 +88,10 @@ class BoolOr: InfixOperator {
         guard let boolProvider = self.boolProvider else {
             throw VariableError.VariableProviderNotFound(source: "BooleanFunctionAnd")
         }
-        let leftVar = boolProvider.get(name: leftVarName)
-        let rightVar = boolProvider.get(name: rightVarName)
-        let varToSet = boolProvider.get(name: varToSetName)
-        
-        varToSet.value = rightVar.value || leftVar.value
+        let leftVar = boolProvider.getReadable(name: leftVarName)
+        let rightVar = boolProvider.getReadable(name: rightVarName)
+        let boolVariable = boolProvider.getWritable(name: varToSetName)
+        try boolVariable.setValue(rightVar.getValue() || leftVar.getValue())
     }
 }
 
@@ -86,8 +119,8 @@ class BoolFlip: FunctionStep {
         guard let boolProvider = self.boolProvider else {
             throw VariableError.VariableProviderNotFound(source: "BooleanFunctionFlip")
         }
-        let targetVar = boolProvider.get(name: targetName)
-        targetVar.value = !targetVar.value
+        let targetVar = boolProvider.getWritable(name: targetName)
+        try targetVar.setValue(!targetVar.getValue())
     }
 }
 
@@ -95,23 +128,25 @@ class BoolFlip: FunctionStep {
 /// condition is true and a different set if it is false.
 class If: FunctionStep {
     var boolProvider: VariableProvider<Bool>?
-    let condition: () -> Bool
     let trueSteps: [FunctionStep]
     let falseSteps: [FunctionStep]
+    let conditionEvaluator: BoolEvaluator
     
+  
     init(
-         _ condition:@escaping @autoclosure () -> Bool,
+        _ conditionBool: String,
          Then  trueSteps: [FunctionStep],
-         Else falseSteps: [FunctionStep]) {
+         Else falseSteps: [FunctionStep] = []) {
         
         self.trueSteps = trueSteps
         self.falseSteps = falseSteps
-        self.condition = condition
+        self.conditionEvaluator = BoolEvaluator(conditionBool)
     }
     
     func addVariableProvider<T>(provider: VariableProvider<T>) {
         if provider.type().self == Bool.self {
-            self.boolProvider = provider as? VariableProvider<Bool>
+            boolProvider = provider as? VariableProvider<Bool>
+            conditionEvaluator.addVariableProvider(provider: provider)
         }
     }
     
@@ -124,7 +159,12 @@ class If: FunctionStep {
             throw VariableError.VariableProviderNotFound(source: "BooleanFunctionFlip")
         }
         
-        let stepsToRun = condition() ? trueSteps : falseSteps
+        
+        guard let stepsToRun = try? conditionEvaluator.perform() ? trueSteps : falseSteps else {
+            return
+        }
+      
+        
         
         stepsToRun.forEach { step in
             step.requiredVariableProviders().forEach {
