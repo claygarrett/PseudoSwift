@@ -31,22 +31,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         let sharksInWaterFunction = Function<Bool>( {
-            ValueSettable("sharksInWater", false)
+            Var("sharksInWater", false)
             "sharksInWater".toggle()
             <<<"sharksInWater"
         }, name: "sharksInWater")
         
         let goingToBeachFunc = Function<Bool> {
             sharksInWaterFunction
-            ValueSettable("wavesAreHigh", false)
-            ValueSettable("beachIsOpen", true)
-            ValueSettable("goingToTheBeach", true)
+            Let("wavesAreHigh", false)
+            Var("beachIsOpen", true)
+            Var("goingToTheBeach", true)
             BoolAnd(varToSet: "beachIsOpen", leftVar: "sharksInWater", rightVar: "wavesAreHigh")
             If("beachIsOpen",
                Then: ["goingToTheBeach" <~ True()],
                Else: ["goingToTheBeach" <~ False()]
             )
-            <<<"goingToTheBeach"
+            Return("goingToTheBeach")
         }
         
         do {

@@ -36,3 +36,7 @@ public func <~(lhs: String, rhs: False) -> SetBool {
 public prefix func <<<(lhs: String) -> FunctionOutput {
     return FunctionOutput(name: lhs)
 }
+
+public func Return(_ variableName: String) -> FunctionOutput {
+    return FunctionOutput(name: variableName)
+}

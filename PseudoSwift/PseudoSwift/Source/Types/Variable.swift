@@ -1,4 +1,6 @@
 
+public typealias Var = ValueSettable
+public typealias Let = ValueGettable
 
 public class ValueSettable<VarType>: ValueGettable<VarType> {
     private var _value: VarType
@@ -31,7 +33,7 @@ public class ValueGettable<VarType> {
         
     var _valueProvider: () throws ->VarType
     
-    init(_ name: String, _ val: VarType) {
+    public init(_ name: String, _ val: VarType) {
         self._valueProvider = { val }
         self.name = name
     }
