@@ -19,7 +19,7 @@ That's what PseudoSwift is made for!
 
 I started with a couple of fundamental types that all come together via the `Function` type. Let's start by seeing what it looks like to build a simple function with a few basic building blocks at compile time:
 
-```
+```swift
 let goingToBeachFunc = Function<Bool> {
     Var("sharksAreInWater", false)
     Let("wavesAreHigh", false)
