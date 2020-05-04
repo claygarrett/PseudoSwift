@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4249304B24602C5900D783B9 /* FunctionStart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249304A24602C5900D783B9 /* FunctionStart.swift */; };
 		427E1A76244BB46600536054 /* PseudoSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427E1A6C244BB46600536054 /* PseudoSwift.framework */; };
 		427E1A7B244BB46600536054 /* PseudoSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427E1A7A244BB46600536054 /* PseudoSwiftTests.swift */; };
 		427E1A7D244BB46600536054 /* PseudoSwift.h in Headers */ = {isa = PBXBuildFile; fileRef = 427E1A6F244BB46600536054 /* PseudoSwift.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -30,6 +31,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4249304A24602C5900D783B9 /* FunctionStart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionStart.swift; sourceTree = "<group>"; };
 		427E1A6C244BB46600536054 /* PseudoSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PseudoSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		427E1A6F244BB46600536054 /* PseudoSwift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PseudoSwift.h; sourceTree = "<group>"; };
 		427E1A70244BB46600536054 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 			children = (
 				427E1A94244BB59B00536054 /* Function.swift */,
 				427E1A95244BB59B00536054 /* FunctionStep.swift */,
+				4249304A24602C5900D783B9 /* FunctionStart.swift */,
 			);
 			path = Function;
 			sourceTree = "<group>";
@@ -266,6 +269,7 @@
 			files = (
 				427E1AA3244BB59B00536054 /* SupportedType.swift in Sources */,
 				427E1AA0244BB59B00536054 /* Errors.swift in Sources */,
+				4249304B24602C5900D783B9 /* FunctionStart.swift in Sources */,
 				427E1AA2244BB59B00536054 /* Variable.swift in Sources */,
 				427E1A9F244BB59B00536054 /* FunctionStep.swift in Sources */,
 				427E1AA1244BB59B00536054 /* SourceShortcuts.swift in Sources */,

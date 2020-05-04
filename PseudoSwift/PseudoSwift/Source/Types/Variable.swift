@@ -38,7 +38,7 @@ public class ValueGettable<VarType> {
         self.name = name
     }
 
-    init(name: String) {
+    public init(name: String) {
         self.name = name
         // variables initialized with this input are meant to
         // be temporary values that hold on to a type until they

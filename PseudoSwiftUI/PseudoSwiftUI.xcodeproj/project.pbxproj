@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		42493045245FC5FB00D783B9 /* FunctionListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42493044245FC5FB00D783B9 /* FunctionListTableViewController.swift */; };
+		42493048245FC71000D783B9 /* FunctionListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42493046245FC71000D783B9 /* FunctionListCell.swift */; };
+		42493049245FC71000D783B9 /* FunctionListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42493047245FC71000D783B9 /* FunctionListCell.xib */; };
+		4249304D24607E3C00D783B9 /* Outlet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249304C24607E3C00D783B9 /* Outlet.swift */; };
 		427E1B0E244EA99500536054 /* PseudoSwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427E1B04244EA99500536054 /* PseudoSwiftUI.framework */; };
 		427E1B13244EA99500536054 /* PseudoSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427E1B12244EA99500536054 /* PseudoSwiftUITests.swift */; };
 		427E1B15244EA99500536054 /* PseudoSwiftUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 427E1B07244EA99500536054 /* PseudoSwiftUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -47,6 +51,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		42493044245FC5FB00D783B9 /* FunctionListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionListTableViewController.swift; sourceTree = "<group>"; };
+		42493046245FC71000D783B9 /* FunctionListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionListCell.swift; sourceTree = "<group>"; };
+		42493047245FC71000D783B9 /* FunctionListCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FunctionListCell.xib; sourceTree = "<group>"; };
+		4249304C24607E3C00D783B9 /* Outlet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Outlet.swift; sourceTree = "<group>"; };
 		427E1B04244EA99500536054 /* PseudoSwiftUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PseudoSwiftUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		427E1B07244EA99500536054 /* PseudoSwiftUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PseudoSwiftUI.h; sourceTree = "<group>"; };
 		427E1B08244EA99500536054 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -84,6 +92,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		42493043245FC5D400D783B9 /* Functions */ = {
+			isa = PBXGroup;
+			children = (
+				42493044245FC5FB00D783B9 /* FunctionListTableViewController.swift */,
+				42493046245FC71000D783B9 /* FunctionListCell.swift */,
+				42493047245FC71000D783B9 /* FunctionListCell.xib */,
+			);
+			path = Functions;
+			sourceTree = "<group>";
+		};
 		427E1AFA244EA99500536054 = {
 			isa = PBXGroup;
 			children = (
@@ -125,6 +143,7 @@
 		427E1B1E244EAA0500536054 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				42493043245FC5D400D783B9 /* Functions */,
 				4292FA052453EE5000956D27 /* Connections */,
 				427E1B1F244EAA0C00536054 /* Views */,
 			);
@@ -139,6 +158,7 @@
 				4292F9F2244F1A9900956D27 /* WorkspaceViewController.xib */,
 				4292F9FC24506EBD00956D27 /* Variable.swift */,
 				4292F9FD24506EBD00956D27 /* VariableViewController.xib */,
+				4249304C24607E3C00D783B9 /* Outlet.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -258,6 +278,7 @@
 				4292FA042451102F00956D27 /* Wire.xib in Resources */,
 				4292F9FF24506EBD00956D27 /* VariableViewController.xib in Resources */,
 				4292F9F4244F1A9900956D27 /* WorkspaceViewController.xib in Resources */,
+				42493049245FC71000D783B9 /* FunctionListCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -278,8 +299,11 @@
 				4292FA072453EE7800956D27 /* ConnectionDragHandler.swift in Sources */,
 				4292F9FE24506EBD00956D27 /* Variable.swift in Sources */,
 				4292F9F3244F1A9900956D27 /* Workspace.swift in Sources */,
+				42493048245FC71000D783B9 /* FunctionListCell.swift in Sources */,
+				4249304D24607E3C00D783B9 /* Outlet.swift in Sources */,
 				4292FA022450D43D00956D27 /* Wire.swift in Sources */,
 				4292F9ED244F174700956D27 /* Container.swift in Sources */,
+				42493045245FC5FB00D783B9 /* FunctionListTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -2,16 +2,16 @@
 
 infix operator <~
 infix operator &&
-infix operator ||
+//infix operator ||
 prefix operator <<<
 
 public func &&(lhs: String, rhs: String) -> BoolAndPartial {
     return BoolAndPartial(leftVar: lhs, rightVar: rhs)
 }
-
-public func ||(lhs: String, rhs: String) -> BoolOrPartial {
-    return BoolOrPartial(leftVar: lhs, rightVar: rhs)
-}
+//
+//public func ||(lhs: String, rhs: String) -> BoolOrPartial {
+//    return BoolOrPartial(leftVar: lhs, rightVar: rhs)
+//}
 
 public func <~(lhs: String, rhs: Bool) -> ValueGettable<Bool> {
     return ValueGettable(lhs, rhs)

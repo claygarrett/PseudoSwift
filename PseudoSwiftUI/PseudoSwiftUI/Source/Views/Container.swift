@@ -9,12 +9,6 @@
 import UIKit
 import PseudoSwift
 
-// MARK: - Variable
-
-struct VariableViewModel {
-    let name: String
-    let type: SupportedType
-}
 
 // MARK: - Connection
 
@@ -34,50 +28,13 @@ class Connection {
     }
 }
 
-// MARK: - Outlet
-
-enum OutletType: Int {
-    case inputValue
-    case outputValue
-    case inputFlow
-    case outputFlow
-    
-    var backgroundColor: UIColor {
-        switch self {
-        case .inputValue, .inputFlow:
-            return .systemPink
-        case .outputValue, .outputFlow:
-            return .systemPurple
-        }
-    }
-}
-
-class Outlet {
-    var type: OutletType
-    var inputVariable: VariableViewModel
-    var view: UIView
-    var connection: Connection?
-    
-    init(type: OutletType, inputVariable: VariableViewModel, view: UIView, connection: Connection? = nil) {
-        self.type = type
-        self.inputVariable = inputVariable
-        self.view = view
-        self.connection = connection
-    }
-    
-    func clearConnection() {
-        self.connection?.clear()
-        self.connection = nil
-    }
-}
-
 
 // MARK: - Container
 
 struct ContainerType {
     let input: SupportedType?
     let ouptut: SupportedType?
-    let variables: [VariableViewModel]
+    let variables: [VariableDefinition]
 }
 
 class ContainerViewController: UIViewController {
@@ -99,9 +56,9 @@ class ContainerViewController: UIViewController {
 
     // MARK: - Initializers
     
-    init(positionPercentage: CGPoint, input: VariableViewModel? = nil, output: VariableViewModel? = nil, variables: [VariableViewModel] = [], name: String) {
+    init(positionPercentage: CGPoint, inputs: [VariableDefinition] = [], output: VariableDefinition? = nil, variables: [VariableDefinition] = [], name: String) {
         
-        if let input = input {
+        for input in inputs {
             let inputOutlet = Outlet(type: .inputValue, inputVariable: input, view: UIView())
             outlets.append(inputOutlet)
         }
@@ -116,7 +73,7 @@ class ContainerViewController: UIViewController {
         
         super.init(nibName: nil, bundle: nil)
         
-           containerDragGesture = UIPanGestureRecognizer(target: self, action: #selector(doContainerDrag))
+        containerDragGesture = UIPanGestureRecognizer(target: self, action: #selector(doContainerDrag))
     }
     
     required init?(coder: NSCoder) {
@@ -136,12 +93,12 @@ class ContainerViewController: UIViewController {
         let inputOutlets = outlets.filter { $0.type == OutletType.inputValue }
         let outputOutlets = outlets.filter {  $0.type == OutletType.outputValue }
         
-        for outlet in outputOutlets {
-            outlet.view.frame = CGRect(x: viewWidth - ContainerViewController.inputOutputWidth - connectionMargin, y: connectionMargin, width: ContainerViewController.inputOutputWidth, height: ContainerViewController.inputOutputWidth)
+        for (index, outlet) in outputOutlets.enumerated() {
+            outlet.view.frame = CGRect(x: viewWidth - ContainerViewController.inputOutputWidth - connectionMargin, y: 50 + connectionMargin + CGFloat(index) * ContainerViewController.inputOutputWidth + connectionMargin * CGFloat(index), width: ContainerViewController.inputOutputWidth, height: ContainerViewController.inputOutputWidth)
         }
         
-        for outlet in inputOutlets {
-            outlet.view.frame = CGRect(x: connectionMargin, y: connectionMargin, width: ContainerViewController.inputOutputWidth, height: ContainerViewController.inputOutputWidth)
+        for (index, outlet) in inputOutlets.enumerated() {
+            outlet.view.frame = CGRect(x: connectionMargin, y: 50 + connectionMargin + CGFloat(index) * ContainerViewController.inputOutputWidth + connectionMargin * CGFloat(index), width: ContainerViewController.inputOutputWidth, height: ContainerViewController.inputOutputWidth)
         }
     }
     
@@ -152,20 +109,34 @@ class ContainerViewController: UIViewController {
         nameLabel.textColor = .white
         self.view.addSubview(nameLabel)
         
-        
-        for outlet in outlets {
-            styleInputOutputView(forOutlet: outlet)
-            self.view.addSubview(outlet.view)
+        let inputOutlets = outlets.filter( { $0.type == .inputValue })
+        for (index, inputOutlet) in inputOutlets.enumerated() {
+            styleInputView(forOutlet: inputOutlet)
+            self.view.addSubview(inputOutlet.view)
             let dragGesture = UIPanGestureRecognizer(target: self, action: #selector(doOutletDrag))
             dragGestures.append(dragGesture)
-            outlet.view.addGestureRecognizer(dragGesture)
+            inputOutlet.view.addGestureRecognizer(dragGesture)
+        }
+        
+        let outputOutlets = outlets.filter( { $0.type == .outputValue })
+        for outputOutlet in outputOutlets {
+            styleInputView(forOutlet: outputOutlet)
+            self.view.addSubview(outputOutlet.view)
+            let dragGesture = UIPanGestureRecognizer(target: self, action: #selector(doOutletDrag))
+            dragGestures.append(dragGesture)
+            outputOutlet.view.addGestureRecognizer(dragGesture)
         }
         
         view.isUserInteractionEnabled = true
         view.addGestureRecognizer(containerDragGesture)
     }
     
-    func styleInputOutputView(forOutlet outlet: Outlet) {
+    func styleInputView(forOutlet outlet: Outlet) {
+        outlet.view.layer.cornerRadius = ContainerViewController.connectionCornerRadius
+        outlet.view.backgroundColor = outlet.type.backgroundColor
+    }
+    
+    func styleOutputView(forOutlet outlet: Outlet) {
         outlet.view.layer.cornerRadius = ContainerViewController.connectionCornerRadius
         outlet.view.backgroundColor = outlet.type.backgroundColor
     }
@@ -206,11 +177,9 @@ class ContainerViewController: UIViewController {
         default:
             break
         }
-        print("origin, dest", dragOrigin, dragDestination)
         self.dragDelegate?.didDragConnectionHandlerFromView(
             from: self,
             atPosition: dragOrigin, to: dragDestination)
-        //.movedBy(vector: CGVector(dx: 10, dy: 10)),
     }
     
     @objc public func doContainerDrag(_ recognizer:UIPanGestureRecognizer) {

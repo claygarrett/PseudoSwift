@@ -7,22 +7,30 @@
 //
 
 import UIKit
+import PseudoSwift
 
-public class WorkspaceViewController: UIViewController, ConnectionDragHandler {
+public class WorkspaceViewController: UIViewController, ConnectionDragHandler, FunctionStepSelectionDelegate {
+
     
     
+    var currentFunction: Function<Bool> = Function<Bool>(name: "Main Function")
     var connections: [Connection] = []
     var activeWire: Wire?
     var containers: [ContainerViewController] = []
     let containerWidth: CGFloat = 200
+    let functionList = FunctionListTableViewController(functions: ["BoolFlip", "BoolAnd"])
+    let runButton = UIButton()
+    var functionSteps: [FunctionStep] = []
+    
     
     public override func viewDidLoad() {
         super.viewDidLoad()
+        
         view.isUserInteractionEnabled = true
-        addContainer(leftPercent: 0.35, topPercent: 0.3)
-        addContainer(leftPercent: 0.4, topPercent: 0.63)
-        addContainer(leftPercent: 0.3, topPercent: 0.8)
-        addContainer(leftPercent: 0.1, topPercent: 0.7)
+        
+        addContainer(name: "FunctionStart", inputVariables: [], outputVariable: nil)
+        addFunctionList()
+        addButton()
     }
     
     enum VerticalDirection {
@@ -39,6 +47,21 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler {
         layoutSubviews()
     }
     
+    func addButton() {
+        runButton.frame = .init(x: 20, y: 20, width: 100, height: 40)
+        runButton.backgroundColor = .purple
+        runButton.setTitle("Run!", for: .normal)
+        runButton.setTitleColor(.white, for: .normal    )
+        runButton.layer.cornerRadius = 10
+        runButton.addTarget(self, action: #selector(WorkspaceViewController.runTapped(_:)), for: .touchUpInside)
+        view.addSubview(runButton)
+    }
+    
+    @objc func runTapped(_ sender:UIButton!) {
+        let funcVal = try?currentFunction.callAsFunction()
+        print(funcVal)
+    }
+    
     func layoutSubviews() {
         let workspaceWidth = self.view.frame.size.width
         let workspaceHeight = self.view.frame.size.height
@@ -46,25 +69,33 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler {
         for container in containers {
             
             let newContainerFrame = CGRect(
-            x: container.positionPercentage.x * workspaceWidth,
-            y: container.positionPercentage.y * workspaceHeight,
-            width: containerWidth,
-            height: containerWidth)
+                x: container.positionPercentage.x * workspaceWidth,
+                y: container.positionPercentage.y * workspaceHeight,
+                width: containerWidth,
+                height: containerWidth)
             container.view.frame = newContainerFrame
         }
+        
+        let functionListWidth: CGFloat = 200
+        
+        functionList.view.frame = CGRect(x: self.view.frame.size.width - functionListWidth, y: 0, width: functionListWidth, height: self.view.frame.size.height)
     }
     
-    func addContainer(leftPercent: CGFloat, topPercent: CGFloat) {
-       let inputVariable = VariableViewModel(name: "inputVariable", type: .boolean)
-        let outputVariable = VariableViewModel(name: "outputVariable", type: .boolean)
-        let container = ContainerViewController(positionPercentage: CGPoint(x: leftPercent, y: topPercent), input: inputVariable, output: outputVariable, name: "multiplyNums")
+    func addContainer(name: String, inputVariables: [VariableDefinition], outputVariable: VariableDefinition?) {
+        // clay: You are HERE. Next step - VariableDefinition needs to distinguish between input variables and output variables
+        let container = ContainerViewController(positionPercentage: CGPoint(x: 0.1, y: 0.1), inputs: inputVariables, output: outputVariable, name: name)
         container.dragDelegate = self
         self.addChild(container)
         self.view.addSubview(container.view)
-         self.containers.append(container)
+        self.containers.append(container)
     }
     
-  
+    func addFunctionList() {
+        self.view.addSubview(functionList.view)
+        self.addChild(functionList)
+        functionList.view.backgroundColor = .purple
+        functionList.selectionDelegate = self
+    }
     
     func didStartConnectionDragHandlerFromView(from fromContainer: ContainerViewController, outlet: Outlet) {
         let wire = getBlankWire()
@@ -124,8 +155,6 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler {
         destinationContainer: ContainerViewController,
         destinationOutlet: Outlet) {
         
-  
-        
         guard let activeWire = self.activeWire else { return }
         if sourceOutlet.type == destinationOutlet.type {
             fatalError("Cannot connect the same type of outlets")
@@ -140,7 +169,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler {
         
         sourceOutlet.clearConnection()
         destinationOutlet.clearConnection()
-
+        
         
         let connection = Connection(sourceOutlet: sourceOutlet, destintationOutlet: destinationOutlet, wire: placedWire)
         sourceOutlet.connection = connection
@@ -151,6 +180,24 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler {
         placedWire.inputOutlet = inputOutlet
         placedWire.outputOutlet = outputOutlet
     }
+    
+    // MARK: - FunctionStepSelectionDelegate
+      
+      func didSelectFunction(functionStep: String) {
+          switch functionStep {
+          case "BoolAnd":
+            let boolAndStep = BoolAnd(varToSet: "varToSet", leftVar: "leftVar", rightVar: "rightVar")
+            addContainer(name: "BoolAnd", inputVariables: boolAndStep.inputVariables, outputVariable: boolAndStep.outputVariables.first)
+            currentFunction.addLine(boolAndStep)
+          case "BoolFlip":
+              let variable = ValueSettable<Bool>("coin", true)
+              currentFunction.addLine(variable)
+              currentFunction.addLine(BoolFlip("coin"))
+              currentFunction.addLine(FunctionOutput(name: "coin"))
+          default:
+              break
+          }
+      }
 }
 
 extension CGPoint {
@@ -205,4 +252,5 @@ extension CGRect {
         
         return CGRect(origin: newOrigin, size: newSize)
     }
+
 }

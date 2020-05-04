@@ -32,7 +32,7 @@ public class Function<Output>: ValueGettable<Output> {
     /// The steps that make up the function. They are not directly dependent on each other
     /// but have a loosely-typed dependency on the provided variables. There should be
     /// a variable of matching name and type provided for each variable that exists in our steps.
-    let steps: [FunctionStep]
+    var steps: [FunctionStep]
     
     /// The name of the variable that should be returned after performing all of our steps
     var outputVariableName: String!
@@ -42,6 +42,12 @@ public class Function<Output>: ValueGettable<Output> {
     
     /// All providers of boolean variables. Just a simplified wrapper for our map of variables
     var booleanVariableProvider: VariableProvider<Bool>
+    
+    public override init(name: String = "") {
+        self.steps = []
+        self.booleanVariableProvider = VariableProvider<Bool>(values: [:])
+        super.init(name: name)
+    }
     
     public init(@FunctionVariablesBuilder _ lines: ()->[AnyObject], name: String = "") {
         
@@ -97,6 +103,30 @@ public class Function<Output>: ValueGettable<Output> {
         self._valueProvider = { try self() }
     }
     
+    public func addLine(_ line: AnyObject) {
+        // Break out each variable from our lines
+        if line is ValueGettable<Bool> {
+            switch line {
+            case let booleanVar as ValueGettable<Bool>:
+                self.booleanVariables[booleanVar.name] = booleanVar
+            default:
+                fatalError("Sent in an unexpected variable type")
+            }
+        }
+        
+        if let step = line as? FunctionStep {
+              self.steps.append(step)
+        }
+         
+       
+        if let outputStep = line as? FunctionOutput {
+            outputVariableName = outputStep.name
+        }
+        
+        // Wrap our variables in providers
+        booleanVariableProvider = VariableProvider(values: self.booleanVariables)
+    }
+    
 
     /// Enables our Function type to be callable. For instance:
     /// ```
@@ -112,6 +142,10 @@ public class Function<Output>: ValueGettable<Output> {
                 switch $0 {
                 case .boolean:
                     step.addVariableProvider(provider: booleanVariableProvider)
+                case .functionStep:
+                    fatalError("Implement me")
+                case .array(type: let type):
+                    fatalError("Implement me")
                 }
             }
             
