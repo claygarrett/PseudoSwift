@@ -2,9 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:PseudoSwift/PseudoSwift.xcodeproj">
+      location = "group:PseudoSwiftApp/PseudoSwiftApp.xcodeproj">
    </FileRef>
    <FileRef
-      location = "container:PseudoSwiftApp/PseudoSwiftApp.xcodeproj">
+      location = "group:PseudoSwiftUI/PseudoSwiftUI.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:PseudoSwift/PseudoSwift.xcodeproj">
    </FileRef>
 </Workspace>

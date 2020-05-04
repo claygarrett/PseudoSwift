@@ -1,14 +1,14 @@
 //
-//  PseudoSwiftUITests.swift
-//  PseudoSwiftUITests
+//  PseudoSwiftAppUITests.swift
+//  PseudoSwiftAppUITests
 //
-//  Created by Clayton Garrett on 4/2/20.
+//  Created by Clayton Garrett on 4/21/20.
 //  Copyright © 2020 Clayton Garrett. All rights reserved.
 //
 
 import XCTest
 
-class PseudoSwiftUITests: XCTestCase {
+class PseudoSwiftAppUITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

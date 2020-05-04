@@ -1,8 +1,8 @@
 //
 //  AppDelegate.swift
-//  PseudoSwift
+//  PseudoSwiftApp
 //
-//  Created by Clayton Garrett on 4/2/20.
+//  Created by Clayton Garrett on 4/21/20.
 //  Copyright © 2020 Clayton Garrett. All rights reserved.
 //
 
