@@ -8,9 +8,9 @@ public indirect enum SupportedType: Equatable {
 }
 
 public struct VariableDefinition {
-    let name: String
-    let type: SupportedType
-    let direction: VariableDirection
+    public let name: String
+    public let type: SupportedType
+    public let direction: VariableDirection
     
     public init(name: String, type: SupportedType, direction: VariableDirection) {
         self.name = name

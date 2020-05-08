@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct FunctionStart: FunctionStep {
+class FunctionStart: FunctionStep {
     var outputVariables: [VariableDefinition] {
         return []
     }

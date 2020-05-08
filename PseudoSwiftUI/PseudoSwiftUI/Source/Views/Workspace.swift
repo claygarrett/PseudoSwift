@@ -10,25 +10,24 @@ import UIKit
 import PseudoSwift
 
 public class WorkspaceViewController: UIViewController, ConnectionDragHandler, FunctionStepSelectionDelegate {
-
-    
     
     var currentFunction: Function<Bool> = Function<Bool>(name: "Main Function")
     var connections: [Connection] = []
     var activeWire: Wire?
-    var containers: [ContainerViewController] = []
-    let containerWidth: CGFloat = 200
-    let functionList = FunctionListTableViewController(functions: ["BoolFlip", "BoolAnd"])
+    var containers: [Container] = []
+    let containerWidth: CGFloat = 300
+    let containerHeight: CGFloat = 200
+    let functionList = FunctionListTableViewController(functions: ["DefineBool", "BoolFlip", "BoolAnd"])
     let runButton = UIButton()
     var functionSteps: [FunctionStep] = []
-    
+    var booleanVariables: [ValueGettable<Bool>] = []
     
     public override func viewDidLoad() {
         super.viewDidLoad()
         
         view.isUserInteractionEnabled = true
         
-        addContainer(name: "FunctionStart", inputVariables: [], outputVariable: nil)
+        addFunctionContainer(name: "FunctionStart", inputVariables: [], outputVariable: nil)
         addFunctionList()
         addButton()
     }
@@ -72,7 +71,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
                 x: container.positionPercentage.x * workspaceWidth,
                 y: container.positionPercentage.y * workspaceHeight,
                 width: containerWidth,
-                height: containerWidth)
+                height: containerHeight)
             container.view.frame = newContainerFrame
         }
         
@@ -81,9 +80,16 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         functionList.view.frame = CGRect(x: self.view.frame.size.width - functionListWidth, y: 0, width: functionListWidth, height: self.view.frame.size.height)
     }
     
-    func addContainer(name: String, inputVariables: [VariableDefinition], outputVariable: VariableDefinition?) {
-        // clay: You are HERE. Next step - VariableDefinition needs to distinguish between input variables and output variables
-        let container = ContainerViewController(positionPercentage: CGPoint(x: 0.1, y: 0.1), inputs: inputVariables, output: outputVariable, name: name)
+    func addVariableContainer(name: String, outputVariable: VariableDefinition) {
+        let container = VariableContainer(positionPercentage: CGPoint(x: 0.1, y: 0.1), output: outputVariable, name: name)
+        container.dragDelegate = self
+        self.addChild(container)
+        self.view.addSubview(container.view)
+        self.containers.append(container)
+    }
+    
+    func addFunctionContainer(name: String, inputVariables: [VariableDefinition], outputVariable: VariableDefinition?) {
+        let container = FunctionContainer(positionPercentage: CGPoint(x: 0.1, y: 0.1), inputs: inputVariables, output: outputVariable, name: name)
         container.dragDelegate = self
         self.addChild(container)
         self.view.addSubview(container.view)
@@ -97,7 +103,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         functionList.selectionDelegate = self
     }
     
-    func didStartConnectionDragHandlerFromView(from fromContainer: ContainerViewController, outlet: Outlet) {
+    func didStartConnectionDragHandlerFromView(from fromContainer: Container, outlet: Outlet) {
         let wire = getBlankWire()
         self.activeWire = wire
     }
@@ -110,7 +116,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         return wire
     }
     
-    func didDragConnectionHandlerFromView(from fromContainer: ContainerViewController, atPosition: CGPoint, to toPosition: CGPoint) {
+    func didDragConnectionHandlerFromView(from fromContainer: Container, atPosition: CGPoint, to toPosition: CGPoint) {
         
         let containerViewFrame = fromContainer.view.frame
         let inputHandlePosition = containerViewFrame.origin.movedBy(
@@ -124,16 +130,19 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         
     }
     
-    func didEndConnectionDragHandlerFromView(from fromContainer: ContainerViewController, fromOutlet: Outlet, toEndPosition endPosition: CGPoint) {
+    func didEndConnectionDragHandlerFromView(from fromContainer: Container, fromOutlet: Outlet, toEndPosition endPosition: CGPoint) {
         // our end position is measured from the center of the connector
         // we want our hit test to be measured from the top-left corner
         let adjustedEndPosition = endPosition
         
         for container in containers {
             for outlet in container.outlets {
-                let locationConnectableView = fromContainer.view.convert(adjustedEndPosition, to: outlet.view)
-                if(outlet.view.point(inside: locationConnectableView, with: nil)) {
+                let inlet = (outlet.view as! OutletView).inlet
+                let locationConnectableView = fromContainer.view.convert(adjustedEndPosition, to: inlet)
+                print("YO", locationConnectableView)
+                if(inlet.point(inside: locationConnectableView, with: nil)) {
                     print("True \(container.view!.frame)")
+                    
                     makeConnection(
                         sourceContainer: fromContainer,
                         sourceOutlet: fromOutlet,
@@ -149,11 +158,21 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         activeWire = nil
     }
     
+    /// Makes a connection between two nodes of compatible input/output types. This essentailly represents
+    /// a variable present in both the source and destination function steps.
+    /// - Parameters:
+    ///   - sourceContainer: The container of the source outlet.
+    ///   - sourceOutlet: The source outlet
+    ///   - destinationContainer: The container of the destination outlet
+    ///   - destinationOutlet: The destination outlet
     func makeConnection(
-        sourceContainer: ContainerViewController,
+        sourceContainer: Container,
         sourceOutlet: Outlet,
-        destinationContainer: ContainerViewController,
+        destinationContainer: Container,
         destinationOutlet: Outlet) {
+        
+        let variable = SetBoolEqualTo(varToSetName: destinationOutlet.variable.name, varWithValueName: sourceOutlet.variable.name)
+        currentFunction.addLine(variable)
         
         guard let activeWire = self.activeWire else { return }
         if sourceOutlet.type == destinationOutlet.type {
@@ -182,22 +201,28 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     }
     
     // MARK: - FunctionStepSelectionDelegate
-      
-      func didSelectFunction(functionStep: String) {
-          switch functionStep {
-          case "BoolAnd":
+    
+    func didSelectFunction(functionStep: String) {
+        switch functionStep {
+            
+        case "BoolAnd":
             let boolAndStep = BoolAnd(varToSet: "varToSet", leftVar: "leftVar", rightVar: "rightVar")
-            addContainer(name: "BoolAnd", inputVariables: boolAndStep.inputVariables, outputVariable: boolAndStep.outputVariables.first)
+            addFunctionContainer(name: "BoolAnd", inputVariables: boolAndStep.inputVariables, outputVariable: boolAndStep.outputVariables.first)
             currentFunction.addLine(boolAndStep)
-          case "BoolFlip":
-              let variable = ValueSettable<Bool>("coin", true)
-              currentFunction.addLine(variable)
-              currentFunction.addLine(BoolFlip("coin"))
-              currentFunction.addLine(FunctionOutput(name: "coin"))
-          default:
-              break
-          }
-      }
+        case "BoolFlip":
+            let variable = ValueSettable<Bool>("coin", true)
+            currentFunction.addLine(variable)
+            currentFunction.addLine(BoolFlip("coin"))
+            currentFunction.addLine(FunctionOutput(name: "coin"))
+        case "DefineBool":
+            let name = "Variable 1"
+            let boolAndStep = Var("Variable 1", false)
+            addVariableContainer(name: name, outputVariable: VariableDefinition(name: "output", type: .boolean, direction: .output))
+            currentFunction.addLine(boolAndStep)
+        default:
+            break
+        }
+    }
 }
 
 extension CGPoint {
@@ -252,5 +277,5 @@ extension CGRect {
         
         return CGRect(origin: newOrigin, size: newSize)
     }
-
+    
 }

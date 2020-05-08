@@ -103,3 +103,49 @@ public extension String {
         return BoolAnd(varToSet: self, leftVar: partial.leftVar, rightVar: partial.rightVar)
     }
 }
+
+
+
+public class SetBoolEqualTo: FunctionStep {
+    public func perform() throws {
+        guard let boolProvider = self.boolProvider else {
+            throw VariableError.VariableProviderNotFound(source: "SetBoolEqualTo")
+        }
+        let varToSet = boolProvider.getWritable(name: varToSetName)
+        let varWithValue = boolProvider.getReadable(name: varWithValueName)
+        guard let value = try? varWithValue.getValue() else {
+            fatalError("No value found for variable")
+        }
+        varToSet.setValue(value)
+    }
+    
+    public init(varToSetName: String, varWithValueName: String) {
+        self.varToSetName = varToSetName
+        self.varWithValueName = varWithValueName
+        
+    }
+    
+    public var varToSetName: String
+    public var varWithValueName: String
+    public var boolProvider: VariableProvider<Bool>? = nil
+
+    public func addVariableProvider<T>(provider: VariableProvider<T>) {
+        if provider.type().self == Bool.self {
+            self.boolProvider = provider as? VariableProvider<Bool>
+        }
+    }
+    
+    public func requiredVariableProviders() -> [SupportedType] {
+        return [.boolean]
+    }
+    
+    public var inputVariables: [VariableDefinition] {
+        return [VariableDefinition(name: "leftVar", type: .boolean, direction: .input)]
+    }
+    
+    public var outputVariables: [VariableDefinition] {
+        return [VariableDefinition(name: "rightVar", type: .boolean, direction: .input)]
+    }
+    
+    
+}

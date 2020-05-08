@@ -185,8 +185,8 @@ class Wire: UIViewController {
         let corner: CGRect.Corner
         
         guard
-            let inputPosition = self.inputOutlet?.view.convert(CGPoint(x: 10, y: 10), to: self.view.superview),
-            let outputPosition = self.outputOutlet?.view.convert(CGPoint(x: 10, y: 10), to: self.view.superview) else {
+            let inputPosition = self.inputOutlet?.view.inlet.convert(CGPoint(x: 10, y: 10), to: self.view.superview),
+            let outputPosition = self.outputOutlet?.view.inlet.convert(CGPoint(x: 10, y: 10), to: self.view.superview) else {
                 return
         }
                 
@@ -199,8 +199,8 @@ class Wire: UIViewController {
         )
         self.view.frame = wireFrame
         
-        self.inputPosition = self.inputOutlet?.view.convert(CGPoint.zero, to: self.view.superview)
-        self.outputPosition = self.outputOutlet?.view.convert(CGPoint.zero, to: self.view.superview)
+        self.inputPosition = self.inputOutlet?.view.inlet.convert(CGPoint.zero, to: self.view.superview)
+        self.outputPosition = self.outputOutlet?.view.inlet.convert(CGPoint.zero, to: self.view.superview)
         
         calculateLine()
         

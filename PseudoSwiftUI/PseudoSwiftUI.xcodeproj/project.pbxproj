@@ -11,6 +11,10 @@
 		42493048245FC71000D783B9 /* FunctionListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42493046245FC71000D783B9 /* FunctionListCell.swift */; };
 		42493049245FC71000D783B9 /* FunctionListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42493047245FC71000D783B9 /* FunctionListCell.xib */; };
 		4249304D24607E3C00D783B9 /* Outlet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249304C24607E3C00D783B9 /* Outlet.swift */; };
+		4249304F24624E4C00D783B9 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249304E24624E4C00D783B9 /* Connection.swift */; };
+		4249305224624ED800D783B9 /* FunctionContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249305124624ED800D783B9 /* FunctionContainer.swift */; };
+		4249305424624EE100D783B9 /* VariableContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249305324624EE100D783B9 /* VariableContainer.swift */; };
+		4249305624626E6600D783B9 /* OutletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249305524626E6600D783B9 /* OutletView.swift */; };
 		427E1B0E244EA99500536054 /* PseudoSwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427E1B04244EA99500536054 /* PseudoSwiftUI.framework */; };
 		427E1B13244EA99500536054 /* PseudoSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427E1B12244EA99500536054 /* PseudoSwiftUITests.swift */; };
 		427E1B15244EA99500536054 /* PseudoSwiftUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 427E1B07244EA99500536054 /* PseudoSwiftUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -55,6 +59,10 @@
 		42493046245FC71000D783B9 /* FunctionListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionListCell.swift; sourceTree = "<group>"; };
 		42493047245FC71000D783B9 /* FunctionListCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FunctionListCell.xib; sourceTree = "<group>"; };
 		4249304C24607E3C00D783B9 /* Outlet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Outlet.swift; sourceTree = "<group>"; };
+		4249304E24624E4C00D783B9 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
+		4249305124624ED800D783B9 /* FunctionContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionContainer.swift; sourceTree = "<group>"; };
+		4249305324624EE100D783B9 /* VariableContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableContainer.swift; sourceTree = "<group>"; };
+		4249305524626E6600D783B9 /* OutletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutletView.swift; sourceTree = "<group>"; };
 		427E1B04244EA99500536054 /* PseudoSwiftUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PseudoSwiftUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		427E1B07244EA99500536054 /* PseudoSwiftUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PseudoSwiftUI.h; sourceTree = "<group>"; };
 		427E1B08244EA99500536054 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -100,6 +108,18 @@
 				42493047245FC71000D783B9 /* FunctionListCell.xib */,
 			);
 			path = Functions;
+			sourceTree = "<group>";
+		};
+		4249305024624EC700D783B9 /* Containers */ = {
+			isa = PBXGroup;
+			children = (
+				4292F9EC244F174700956D27 /* Container.swift */,
+				4249305124624ED800D783B9 /* FunctionContainer.swift */,
+				4249305324624EE100D783B9 /* VariableContainer.swift */,
+				4249304C24607E3C00D783B9 /* Outlet.swift */,
+				4249305524626E6600D783B9 /* OutletView.swift */,
+			);
+			path = Containers;
 			sourceTree = "<group>";
 		};
 		427E1AFA244EA99500536054 = {
@@ -153,12 +173,12 @@
 		427E1B1F244EAA0C00536054 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				4292F9EC244F174700956D27 /* Container.swift */,
+				4249305024624EC700D783B9 /* Containers */,
 				4292F9F1244F1A9900956D27 /* Workspace.swift */,
 				4292F9F2244F1A9900956D27 /* WorkspaceViewController.xib */,
 				4292F9FC24506EBD00956D27 /* Variable.swift */,
 				4292F9FD24506EBD00956D27 /* VariableViewController.xib */,
-				4249304C24607E3C00D783B9 /* Outlet.swift */,
+				4249304E24624E4C00D783B9 /* Connection.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -296,14 +316,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4249304F24624E4C00D783B9 /* Connection.swift in Sources */,
 				4292FA072453EE7800956D27 /* ConnectionDragHandler.swift in Sources */,
 				4292F9FE24506EBD00956D27 /* Variable.swift in Sources */,
 				4292F9F3244F1A9900956D27 /* Workspace.swift in Sources */,
 				42493048245FC71000D783B9 /* FunctionListCell.swift in Sources */,
 				4249304D24607E3C00D783B9 /* Outlet.swift in Sources */,
 				4292FA022450D43D00956D27 /* Wire.swift in Sources */,
+				4249305224624ED800D783B9 /* FunctionContainer.swift in Sources */,
 				4292F9ED244F174700956D27 /* Container.swift in Sources */,
 				42493045245FC5FB00D783B9 /* FunctionListTableViewController.swift in Sources */,
+				4249305424624EE100D783B9 /* VariableContainer.swift in Sources */,
+				4249305624626E6600D783B9 /* OutletView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
