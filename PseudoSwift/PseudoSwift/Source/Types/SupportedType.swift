@@ -7,8 +7,8 @@ public indirect enum SupportedType: Equatable {
     case array(type: SupportedType)
 }
 
-public struct VariableDefinition {
-    public let name: String
+public class VariableDefinition {
+    public var name: String
     public let type: SupportedType
     public let direction: VariableDirection
     

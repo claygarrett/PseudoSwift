@@ -3,21 +3,24 @@ import UIKit
 import PseudoSwift
 
 
-final class VariableContainer: Container {
+final class VariableContainer: Container, UITextFieldDelegate {
 
     var textBox: UITextField!
     let output: VariableDefinition
+    let toggle: UISwitch
+    let value: ValueSettable<Bool>
     
-    init(positionPercentage: CGPoint, output: VariableDefinition, name: String) {
+    init(value: ValueSettable<Bool>, positionPercentage: CGPoint, output: VariableDefinition) {
         self.output = output
-        super.init(positionPercentage: positionPercentage, name: name)
-        
-        
+        self.toggle = UISwitch()
+        self.value = value
+        super.init(positionPercentage: positionPercentage, name: value.name)
     }
     
     override func viewDidLoad() {
-        let outputOutlet = Outlet(type: .outputValue, inputVariable: output, index: 0, frame: self.view.frame)
+        let outputOutlet = Outlet(value: value, type: .outputValue, index: 0, frame: self.view.frame)
         outlets.append(outputOutlet)
+        super.viewDidLoad()
     }
     
     required init?(coder: NSCoder) {
@@ -30,7 +33,32 @@ final class VariableContainer: Container {
         textBox.frame = CGRect(x: 20, y: 20, width: 120, height: 20)
         textBox.font = .boldSystemFont(ofSize: 24)
         textBox.textColor = .systemPink
+        textBox.delegate = self
+        toggle.frame = CGRect(x: 20, y: 50, width: 100, height: 40)
+        
+        toggle.addTarget(self, action: #selector(stateChanged), for: .valueChanged)
+        
         self.view.addSubview(textBox)
+        self.view.addSubview(toggle)
+        
+        textBox.addTarget(self, action: #selector(VariableContainer.textChanged(textbox:)), for: .editingChanged)
     }
     
+     @objc func stateChanged(switchState: UISwitch) {
+        value.setValue(switchState.isOn)
+    }
+    
+    @objc func textChanged(textbox: UITextView) {
+        let name = self.textBox.text ?? ""
+        self.outlets.first!.updateVariableName(name: name)
+//        value.name = name
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        return true
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
 }

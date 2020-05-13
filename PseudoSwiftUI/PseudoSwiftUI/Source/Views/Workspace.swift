@@ -8,6 +8,7 @@
 
 import UIKit
 import PseudoSwift
+import Foundation
 
 public class WorkspaceViewController: UIViewController, ConnectionDragHandler, FunctionStepSelectionDelegate {
     
@@ -17,7 +18,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     var containers: [Container] = []
     let containerWidth: CGFloat = 300
     let containerHeight: CGFloat = 200
-    let functionList = FunctionListTableViewController(functions: ["DefineBool", "BoolFlip", "BoolAnd"])
+    let functionList = FunctionListTableViewController(functions: ["DefineBool", "BoolFlip", "BoolAnd", "FunctionOutput"])
     let runButton = UIButton()
     var functionSteps: [FunctionStep] = []
     var booleanVariables: [ValueGettable<Bool>] = []
@@ -27,7 +28,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         
         view.isUserInteractionEnabled = true
         
-        addFunctionContainer(name: "FunctionStart", inputVariables: [], outputVariable: nil)
+//        addFunctionContainer(name: "FunctionStart", inputVariables: [], outputVariable: nil)
         addFunctionList()
         addButton()
     }
@@ -80,16 +81,24 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         functionList.view.frame = CGRect(x: self.view.frame.size.width - functionListWidth, y: 0, width: functionListWidth, height: self.view.frame.size.height)
     }
     
-    func addVariableContainer(name: String, outputVariable: VariableDefinition) {
-        let container = VariableContainer(positionPercentage: CGPoint(x: 0.1, y: 0.1), output: outputVariable, name: name)
+    func addVariableContainer(value: ValueSettable<Bool>, outputVariable: VariableDefinition) {
+        let container = VariableContainer(value: value, positionPercentage: CGPoint(x: 0.1, y: 0.1), output: outputVariable)
         container.dragDelegate = self
         self.addChild(container)
         self.view.addSubview(container.view)
         self.containers.append(container)
     }
     
-    func addFunctionContainer(name: String, inputVariables: [VariableDefinition], outputVariable: VariableDefinition?) {
+    func addFunctionContainer(name: String, inputVariables: [ValueSettable<Bool>], outputVariable: ValueSettable<Bool>?) {
         let container = FunctionContainer(positionPercentage: CGPoint(x: 0.1, y: 0.1), inputs: inputVariables, output: outputVariable, name: name)
+        container.dragDelegate = self
+        self.addChild(container)
+        self.view.addSubview(container.view)
+        self.containers.append(container)
+    }
+    
+    func addOutputContainer(value: ValueSettable<Bool>) {
+        let container = OutputContainer(value: value, positionPercentage: CGPoint(x: 0.1, y: 0.1), name: value.name)
         container.dragDelegate = self
         self.addChild(container)
         self.view.addSubview(container.view)
@@ -137,7 +146,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         
         for container in containers {
             for outlet in container.outlets {
-                let inlet = (outlet.view as! OutletView).inlet
+                let inlet = (outlet.view ).inlet
                 let locationConnectableView = fromContainer.view.convert(adjustedEndPosition, to: inlet)
                 print("YO", locationConnectableView)
                 if(inlet.point(inside: locationConnectableView, with: nil)) {
@@ -171,8 +180,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         destinationContainer: Container,
         destinationOutlet: Outlet) {
         
-        let variable = SetBoolEqualTo(varToSetName: destinationOutlet.variable.name, varWithValueName: sourceOutlet.variable.name)
-        currentFunction.addLine(variable)
+        sourceOutlet.value.follow(follower: destinationOutlet.value)
         
         guard let activeWire = self.activeWire else { return }
         if sourceOutlet.type == destinationOutlet.type {
@@ -206,18 +214,32 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         switch functionStep {
             
         case "BoolAnd":
+            let leftVar = ValueSettable("leftVar", false)
+            let rightVar = ValueSettable("rightVar", false)
+            let varToSet = ValueSettable("varToSet", false)
+            currentFunction.addLine(leftVar)
+            currentFunction.addLine(rightVar)
+            currentFunction.addLine(varToSet)
             let boolAndStep = BoolAnd(varToSet: "varToSet", leftVar: "leftVar", rightVar: "rightVar")
-            addFunctionContainer(name: "BoolAnd", inputVariables: boolAndStep.inputVariables, outputVariable: boolAndStep.outputVariables.first)
+            addFunctionContainer(name: "BoolAnd", inputVariables: [leftVar, rightVar], outputVariable: varToSet)
             currentFunction.addLine(boolAndStep)
         case "BoolFlip":
-            let variable = ValueSettable<Bool>("coin", true)
+            let input = ValueSettable<Bool>("target", true)
+            addFunctionContainer(name: "target", inputVariables: [input], outputVariable: input)
+            currentFunction.addLine(input)
+            currentFunction.addLine(BoolFlip("target"))
+        case "FunctionOutput":
+            let id = UUID().uuidString
+            let variable = ValueSettable<Bool>(id, false)
+            let output = FunctionOutput(name: id)
             currentFunction.addLine(variable)
-            currentFunction.addLine(BoolFlip("coin"))
-            currentFunction.addLine(FunctionOutput(name: "coin"))
+            currentFunction.addLine(output)
+            addOutputContainer(value: variable)
+
         case "DefineBool":
-            let name = "Variable 1"
-            let boolAndStep = Var("Variable 1", false)
-            addVariableContainer(name: name, outputVariable: VariableDefinition(name: "output", type: .boolean, direction: .output))
+            let guid = UUID().uuidString
+            let boolAndStep = Var(guid, false)
+            addVariableContainer(value: boolAndStep, outputVariable: VariableDefinition(name: guid, type: .boolean, direction: .output))
             currentFunction.addLine(boolAndStep)
         default:
             break

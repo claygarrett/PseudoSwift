@@ -28,6 +28,7 @@
 		4292FA022450D43D00956D27 /* Wire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4292FA002450D43D00956D27 /* Wire.swift */; };
 		4292FA042451102F00956D27 /* Wire.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4292FA012450D43D00956D27 /* Wire.xib */; };
 		4292FA072453EE7800956D27 /* ConnectionDragHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4292FA062453EE7800956D27 /* ConnectionDragHandler.swift */; };
+		42C4FDBA2468BC0F0003D8CE /* OutputContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C4FDB92468BC0F0003D8CE /* OutputContainer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,6 +79,7 @@
 		4292FA002450D43D00956D27 /* Wire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wire.swift; sourceTree = "<group>"; };
 		4292FA012450D43D00956D27 /* Wire.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Wire.xib; sourceTree = "<group>"; };
 		4292FA062453EE7800956D27 /* ConnectionDragHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDragHandler.swift; sourceTree = "<group>"; };
+		42C4FDB92468BC0F0003D8CE /* OutputContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputContainer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +120,7 @@
 				4249305324624EE100D783B9 /* VariableContainer.swift */,
 				4249304C24607E3C00D783B9 /* Outlet.swift */,
 				4249305524626E6600D783B9 /* OutletView.swift */,
+				42C4FDB92468BC0F0003D8CE /* OutputContainer.swift */,
 			);
 			path = Containers;
 			sourceTree = "<group>";
@@ -326,6 +329,7 @@
 				4249305224624ED800D783B9 /* FunctionContainer.swift in Sources */,
 				4292F9ED244F174700956D27 /* Container.swift in Sources */,
 				42493045245FC5FB00D783B9 /* FunctionListTableViewController.swift in Sources */,
+				42C4FDBA2468BC0F0003D8CE /* OutputContainer.swift in Sources */,
 				4249305424624EE100D783B9 /* VariableContainer.swift in Sources */,
 				4249305624626E6600D783B9 /* OutletView.swift in Sources */,
 			);

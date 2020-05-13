@@ -6,11 +6,11 @@ import PseudoSwift
 final class FunctionContainer: Container {
     
     let nameLabel: UILabel = UILabel()
-    let inputs: [VariableDefinition]
-    let output: VariableDefinition?
+    let inputs: [ValueSettable<Bool>]
+    let output: ValueSettable<Bool>?
 
     
-    init(positionPercentage: CGPoint, inputs: [VariableDefinition] = [], output: VariableDefinition? = nil, variables: [VariableDefinition] = [], name: String) {
+    init(positionPercentage: CGPoint, inputs: [ValueSettable<Bool>] = [], output: ValueSettable<Bool>? = nil, variables: [ValueSettable<Bool>] = [], name: String) {
         self.inputs = inputs
         self.output = output
         super.init(positionPercentage: positionPercentage, name: name)
@@ -19,12 +19,12 @@ final class FunctionContainer: Container {
     
     override func viewDidLoad() {
         for (index, input) in inputs.enumerated() {
-            let inputOutlet = Outlet(type: .inputValue, inputVariable: input, index: index, frame: self.view.frame)
+            let inputOutlet = Outlet(value: input, type: .inputValue, index: index, frame: self.view.frame)
             outlets.append(inputOutlet)
         }
         
         if let output = output {
-            let outputOutlet = Outlet(type: .outputValue, inputVariable: output, index: 0, frame: self.view.frame)
+            let outputOutlet = Outlet(value: output, type: .outputValue, index: 0, frame: self.view.frame)
             outlets.append(outputOutlet)
         }
         super.viewDidLoad()

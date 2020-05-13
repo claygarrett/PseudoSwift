@@ -49,6 +49,8 @@ public class Function<Output>: ValueGettable<Output> {
         super.init(name: name)
     }
     
+    
+    
     public init(@FunctionVariablesBuilder _ lines: ()->[AnyObject], name: String = "") {
         
         let allLines = lines()
@@ -115,9 +117,8 @@ public class Function<Output>: ValueGettable<Output> {
         }
         
         if let step = line as? FunctionStep {
-              self.steps.append(step)
+            self.steps.append(step)
         }
-         
        
         if let outputStep = line as? FunctionOutput {
             outputVariableName = outputStep.name
@@ -126,7 +127,6 @@ public class Function<Output>: ValueGettable<Output> {
         // Wrap our variables in providers
         booleanVariableProvider = VariableProvider(values: self.booleanVariables)
     }
-    
 
     /// Enables our Function type to be callable. For instance:
     /// ```

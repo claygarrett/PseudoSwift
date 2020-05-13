@@ -97,7 +97,9 @@ public class BoolAnd: InfixOperator {
         let rightVar = boolProvider.getReadable(name: rightVarName)
         
         let boolVariable = boolProvider.getWritable(name: varToSetName)
-        try boolVariable.setValue(rightVar.getValue() && leftVar.getValue())
+        let rightVarValue = try rightVar.getValue()
+        let leftVarValue = try leftVar.getValue()
+        boolVariable.setValue(leftVarValue && rightVarValue)
     }
 }
 
