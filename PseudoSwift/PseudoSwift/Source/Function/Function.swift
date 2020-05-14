@@ -49,8 +49,6 @@ public class Function<Output>: ValueGettable<Output> {
         super.init(name: name)
     }
     
-    
-    
     public init(@FunctionVariablesBuilder _ lines: ()->[AnyObject], name: String = "") {
         
         let allLines = lines()
@@ -89,8 +87,6 @@ public class Function<Output>: ValueGettable<Output> {
         }).first else {
             fatalError("Function did not have an output step")
         }
-        
-        
         
         // Wrap our variables in providers
         booleanVariableProvider = VariableProvider(values: self.booleanVariables)
@@ -144,7 +140,7 @@ public class Function<Output>: ValueGettable<Output> {
                     step.addVariableProvider(provider: booleanVariableProvider)
                 case .functionStep:
                     fatalError("Implement me")
-                case .array(type: let type):
+                case .array:
                     fatalError("Implement me")
                 }
             }

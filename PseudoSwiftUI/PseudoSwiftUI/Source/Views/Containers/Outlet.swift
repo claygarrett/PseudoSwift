@@ -15,26 +15,46 @@ enum OutletType: Int {
 class Outlet {
     var type: OutletType
     var view: OutletView
-    var connection: Connection?
-    var value: ValueSettable<Bool>
+    var connections: [Connection]
     
-    init(value: ValueSettable<Bool>, type: OutletType, connection: Connection? = nil, index: Int, frame: CGRect) {
-        self.type = type
-        self.connection = connection
-        self.value = value
-        
-        view = OutletView(frame: frame, direction: Outlet.getDirectionFromOutletType(type: type), index: index, name: value.name)
+    init(type: OutletType, connection: Connection? = nil, index: Int, frame: CGRect, name: String?) {
+           self.type = type
+           self.connections = connection == nil ? [] : [connection!]
+           
+           view = OutletView(frame: frame, direction: ValueOutlet.getDirectionFromOutletType(type: type), index: index, name: name)
+       }
+    
+    
+    func clearConnections() {
+        connections.forEach { connection in
+            connection.clear()
+        }
+            
+        self.connections = []
     }
     
-    func clearConnection() {
-        self.connection?.clear()
-        self.connection = nil
+    func addConnection(connection: Connection) {
+        connections.append(connection)
     }
     
-    func updateVariableName(name: String) {
-        self.value.name = name
-        self.view.label.text = name
+    func hasConnection(connection: Connection) -> Bool {
+        return connections.contains(where: { $0 === connection })
     }
+    
+    
+    func clearIncomingConnections() {
+        let incomingConnections = connections.filter { $0.destintationOutlet === self }
+        for connection in incomingConnections {
+            connection.clear()
+        }
+        connections.removeAll { (connection) -> Bool in
+            connections.contains(where: { connection === $0 })
+        }
+            
+        self.connections = []
+    }
+    
+  
     
     static func getDirectionFromOutletType(type: OutletType) -> VariableDirection {
         switch type {
@@ -43,5 +63,31 @@ class Outlet {
         case .outputFlow, .outputValue:
             return .output
         }
+    }
+}
+
+
+class ValueOutlet: Outlet {
+
+    var value: ValueSettable<Bool>
+    
+    init(value: ValueSettable<Bool>, type: OutletType, connection: Connection? = nil, index: Int, frame: CGRect) {
+        self.value = value
+        super.init(type: type, index: index, frame: frame, name: value.name)
+    }
+    
+    func updateVariableName(name: String) {
+          self.value.name = name
+          self.view.label.text = name
+      }
+    
+}
+
+
+class FlowOutlet: Outlet {
+
+    
+    init(type: OutletType, connection: Connection? = nil, index: Int, frame: CGRect) {
+        super.init(type: type, index: index, frame: frame, name: nil)
     }
 }

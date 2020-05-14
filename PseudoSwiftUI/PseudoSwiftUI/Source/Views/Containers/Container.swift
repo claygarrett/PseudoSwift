@@ -80,12 +80,7 @@ class Container: UIViewController, Containing {
         typeLabel.textColor = .systemPink
         self.view.addSubview(typeLabel)
     }
-    
-    override func viewDidLayoutSubviews() {
-        let viewWidth = view.frame.size.width
-        
-    }
-    
+
     private func initializeOutlets() {
         
         let inputOutlets = outlets.filter( { $0.type == .inputValue })
@@ -119,10 +114,9 @@ class Container: UIViewController, Containing {
     // MARK: - Dragging
     
     @objc public func doOutletDrag(_ recognizer:UIPanGestureRecognizer) {
-        print("Do outlet drag")
         guard
             let draggedView = recognizer.view,
-            let outlet = outlets.first(where: { $0.view === draggedView.superview }) else {
+            let outlet = outlets.compactMap({ $0 as? ValueOutlet }).first(where: { $0.view === draggedView.superview }) else {
                 return
         }
         
@@ -133,9 +127,7 @@ class Container: UIViewController, Containing {
                 x: startDragOffsetFromOrigin.x,
                 y: startDragOffsetFromOrigin.y)
         )
-        
-        print(dragOrigin, dragDestination)
-        
+
         switch recognizer.state {
         case .began:
             startDragOffsetFromOrigin = recognizer.location(in: draggedView)
@@ -176,9 +168,10 @@ class Container: UIViewController, Containing {
         
         switch recognizer.state {
         case .began:
-            for outlet in self.outlets {
-                guard let connection = outlet.connection else { continue }
-                connection.wire.outletPositionMoveStarted(outlet: outlet)
+            for outlet in self.outlets.compactMap( { $0 as? ValueOutlet }) {
+                for connection in outlet.connections {
+                    connection.wire.outletPositionMoveStarted(outlet: outlet)
+                }
             }
             
         case .ended:
@@ -187,9 +180,11 @@ class Container: UIViewController, Containing {
             break
         }
         
-        for outlet in self.outlets {
-            guard let connection = outlet.connection else { continue }
-            connection.wire.outletPositionMoved(outlet: outlet, position: translationInView)
+        for outlet in self.outlets.compactMap( { $0 as? ValueOutlet }) {
+            for connection in outlet.connections {
+                connection.wire.outletPositionMoved(outlet: outlet, position: translationInView)
+            }
+            
         }
         
     }

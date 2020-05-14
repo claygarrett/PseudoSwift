@@ -48,8 +48,6 @@ public class ValueSettable<VarType>: ValueGettable<VarType> {
 
 /// A holder of a value of a specific type that can be read from and written to
 public class ValueGettable<VarType> {
-    
-    
     typealias T = VarType
     
     /// The name of this variable. Used for looking variables up when connecting
@@ -72,9 +70,7 @@ public class ValueGettable<VarType> {
         // are converted to a proper version that has a value provider.
         // so, calling them prior to that will result in a crash
         _valueProvider = { 
-            print(name)
             fatalError()
-            
         }
         initializer = { fatalError() }
     }
@@ -140,8 +136,6 @@ public extension String {
     }
 }
 
-
-
 public class SetBoolEqualTo: FunctionStep {
     public func perform() throws {
         guard let boolProvider = self.boolProvider else {
@@ -158,7 +152,6 @@ public class SetBoolEqualTo: FunctionStep {
     public init(varToSetName: String, varWithValueName: String) {
         self.varToSetName = varToSetName
         self.varWithValueName = varWithValueName
-        
     }
     
     public var varToSetName: String

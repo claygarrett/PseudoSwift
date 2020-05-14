@@ -18,7 +18,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     var containers: [Container] = []
     let containerWidth: CGFloat = 300
     let containerHeight: CGFloat = 200
-    let functionList = FunctionListTableViewController(functions: ["DefineBool", "BoolFlip", "BoolAnd", "FunctionOutput"])
+    let functionList = FunctionListTableViewController(functions: ["DefineBool", "SetBool", "BoolFlip", "BoolAnd", "FunctionOutput"])
     let runButton = UIButton()
     var functionSteps: [FunctionStep] = []
     var booleanVariables: [ValueGettable<Bool>] = []
@@ -59,7 +59,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     
     @objc func runTapped(_ sender:UIButton!) {
         let funcVal = try?currentFunction.callAsFunction()
-        print(funcVal)
+        print(funcVal ?? "Nil")
     }
     
     func layoutSubviews() {
@@ -81,8 +81,8 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         functionList.view.frame = CGRect(x: self.view.frame.size.width - functionListWidth, y: 0, width: functionListWidth, height: self.view.frame.size.height)
     }
     
-    func addVariableContainer(value: ValueSettable<Bool>, outputVariable: VariableDefinition) {
-        let container = VariableContainer(value: value, positionPercentage: CGPoint(x: 0.1, y: 0.1), output: outputVariable)
+    func addDefVariableContainer(value: ValueSettable<Bool>, outputVariable: VariableDefinition) {
+        let container = DefVariableContainer(value: value, positionPercentage: CGPoint(x: 0.1, y: 0.1), output: outputVariable)
         container.dragDelegate = self
         self.addChild(container)
         self.view.addSubview(container.view)
@@ -112,7 +112,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         functionList.selectionDelegate = self
     }
     
-    func didStartConnectionDragHandlerFromView(from fromContainer: Container, outlet: Outlet) {
+    func didStartConnectionDragHandlerFromView(from fromContainer: Container, outlet: ValueOutlet) {
         let wire = getBlankWire()
         self.activeWire = wire
     }
@@ -139,19 +139,16 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         
     }
     
-    func didEndConnectionDragHandlerFromView(from fromContainer: Container, fromOutlet: Outlet, toEndPosition endPosition: CGPoint) {
+    func didEndConnectionDragHandlerFromView(from fromContainer: Container, fromOutlet: ValueOutlet, toEndPosition endPosition: CGPoint) {
         // our end position is measured from the center of the connector
         // we want our hit test to be measured from the top-left corner
         let adjustedEndPosition = endPosition
         
         for container in containers {
-            for outlet in container.outlets {
+            for outlet in container.outlets.compactMap({ $0 as? ValueOutlet}) {
                 let inlet = (outlet.view ).inlet
                 let locationConnectableView = fromContainer.view.convert(adjustedEndPosition, to: inlet)
-                print("YO", locationConnectableView)
                 if(inlet.point(inside: locationConnectableView, with: nil)) {
-                    print("True \(container.view!.frame)")
-                    
                     makeConnection(
                         sourceContainer: fromContainer,
                         sourceOutlet: fromOutlet,
@@ -176,9 +173,9 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     ///   - destinationOutlet: The destination outlet
     func makeConnection(
         sourceContainer: Container,
-        sourceOutlet: Outlet,
+        sourceOutlet: ValueOutlet,
         destinationContainer: Container,
-        destinationOutlet: Outlet) {
+        destinationOutlet: ValueOutlet) {
         
         sourceOutlet.value.follow(follower: destinationOutlet.value)
         
@@ -194,13 +191,13 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         let placedWire = activeWire
         self.activeWire = nil
         
-        sourceOutlet.clearConnection()
-        destinationOutlet.clearConnection()
+//        sourceOutlet.clearConnection()
+        destinationOutlet.clearIncomingConnections()
         
         
         let connection = Connection(sourceOutlet: sourceOutlet, destintationOutlet: destinationOutlet, wire: placedWire)
-        sourceOutlet.connection = connection
-        destinationOutlet.connection = connection
+        sourceOutlet.addConnection(connection: connection)
+        destinationOutlet.addConnection(connection: connection)
         connections.append(connection)
         let inputOutlet = sourceOutlet.type == OutletType.inputValue ? sourceOutlet : destinationOutlet
         let outputOutlet = sourceOutlet.type == OutletType.outputValue ? sourceOutlet : destinationOutlet
@@ -235,12 +232,22 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
             currentFunction.addLine(variable)
             currentFunction.addLine(output)
             addOutputContainer(value: variable)
-
         case "DefineBool":
             let guid = UUID().uuidString
             let boolAndStep = Var(guid, false)
-            addVariableContainer(value: boolAndStep, outputVariable: VariableDefinition(name: guid, type: .boolean, direction: .output))
+            addDefVariableContainer(value: boolAndStep, outputVariable: VariableDefinition(name: guid, type: .boolean, direction: .output))
             currentFunction.addLine(boolAndStep)
+        case "SetBool":
+            let varToSetName = UUID().uuidString
+            let varToSetFromName = UUID().uuidString
+            let varToSet = ValueSettable<Bool>(varToSetName, true)
+            let varToSetFrom = ValueSettable<Bool>(varToSetFromName, true)
+
+            let setVarToVar = SetBoolEqualTo(varToSetName: varToSetName, varWithValueName: varToSetFromName)
+            addFunctionContainer(name: "SetBoolEqualTo", inputVariables: [varToSet, varToSetFrom], outputVariable: nil)
+            currentFunction.addLine(varToSet)
+            currentFunction.addLine(varToSetFrom)
+            currentFunction.addLine(setVarToVar)
         default:
             break
         }

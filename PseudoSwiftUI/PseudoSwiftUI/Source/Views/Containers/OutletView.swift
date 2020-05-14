@@ -18,7 +18,7 @@ public class OutletView: UIView {
     let inputInletBackgroundColor: UIColor = .systemPink
     let outputInletBackgroundColor: UIColor = .systemPurple
     
-    init(frame: CGRect, direction: VariableDirection, index: Int, name: String) {
+    init(frame: CGRect, direction: VariableDirection, index: Int, name: String?) {
         let startY = connectionTopMargin + connectionMargin + CGFloat(index) * Container.inputOutputWidth + connectionMargin * CGFloat(index)
         
         switch direction {

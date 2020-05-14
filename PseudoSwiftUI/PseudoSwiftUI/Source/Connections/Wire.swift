@@ -30,8 +30,8 @@ class Wire: UIViewController {
     var inputPosition: CGPoint? = nil
     var outputPosition: CGPoint? = nil
     
-    var inputOutlet: Outlet? = nil
-    var outputOutlet: Outlet? = nil
+    var inputOutlet: ValueOutlet? = nil
+    var outputOutlet: ValueOutlet? = nil
     
     var pinRadius: CGFloat {
         return pinDiameter / 2
@@ -166,24 +166,11 @@ class Wire: UIViewController {
     
     var wireFrameWhenStarted: CGRect = .zero
     
-    func outletPositionMoveStarted(outlet: Outlet) {
+    func outletPositionMoveStarted(outlet: ValueOutlet) {
         wireFrameWhenStarted = self.view.frame
-        
-//        if let inputOutlet = self.inputOutlet, outlet === inputOutlet {
-//
-//        } else if let outputOutlet = self.outputOutlet, outlet === outputOutlet  {
-//            wireFrameWhenStarted = CGPoint(
-//                x: self.view.frame.maxX,
-//                y: self.view.frame.maxY
-//            )
-//        }
-        
-//        print("outlet move started: outletPositionWhenMoveStarted: \(outletPositionWhenMoveStarted)")
     }
     
-    func outletPositionMoved(outlet: Outlet, position: CGPoint) {
-        let corner: CGRect.Corner
-        
+    func outletPositionMoved(outlet: ValueOutlet, position: CGPoint) {        
         guard
             let inputPosition = self.inputOutlet?.view.inlet.convert(CGPoint(x: 10, y: 10), to: self.view.superview),
             let outputPosition = self.outputOutlet?.view.inlet.convert(CGPoint(x: 10, y: 10), to: self.view.superview) else {
@@ -203,29 +190,9 @@ class Wire: UIViewController {
         self.outputPosition = self.outputOutlet?.view.inlet.convert(CGPoint.zero, to: self.view.superview)
         
         calculateLine()
-        
-        
-//
-//
-//
-//        if let inputOutlet = self.inputOutlet, outlet === inputOutlet {
-//            print("top left")
-//            corner = .topLeft
-//        } else if let outputOutlet = self.outputOutlet, outlet === outputOutlet  {
-//            print("top right")
-//            corner = .topRight
-//        } else {
-//            print("neither")
-//            return
-//        }
-//
-//        self.view.frame = wireFrameWhenStarted.movingCorner(
-//            vector: CGVector(dx: position.x, dy: position.y),
-//            corner: corner)
-//        print("outlet moved. position: \(position)")
     }
     
-    func outletPositionMoveEnded(outlet: Outlet, position: CGPoint) {
+    func outletPositionMoveEnded(outlet: ValueOutlet, position: CGPoint) {
         
     }
 }

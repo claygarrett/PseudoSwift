@@ -13,7 +13,7 @@
 		4249304D24607E3C00D783B9 /* Outlet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249304C24607E3C00D783B9 /* Outlet.swift */; };
 		4249304F24624E4C00D783B9 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249304E24624E4C00D783B9 /* Connection.swift */; };
 		4249305224624ED800D783B9 /* FunctionContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249305124624ED800D783B9 /* FunctionContainer.swift */; };
-		4249305424624EE100D783B9 /* VariableContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249305324624EE100D783B9 /* VariableContainer.swift */; };
+		4249305424624EE100D783B9 /* DefVariableContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249305324624EE100D783B9 /* DefVariableContainer.swift */; };
 		4249305624626E6600D783B9 /* OutletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249305524626E6600D783B9 /* OutletView.swift */; };
 		427E1B0E244EA99500536054 /* PseudoSwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427E1B04244EA99500536054 /* PseudoSwiftUI.framework */; };
 		427E1B13244EA99500536054 /* PseudoSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427E1B12244EA99500536054 /* PseudoSwiftUITests.swift */; };
@@ -29,6 +29,7 @@
 		4292FA042451102F00956D27 /* Wire.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4292FA012450D43D00956D27 /* Wire.xib */; };
 		4292FA072453EE7800956D27 /* ConnectionDragHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4292FA062453EE7800956D27 /* ConnectionDragHandler.swift */; };
 		42C4FDBA2468BC0F0003D8CE /* OutputContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C4FDB92468BC0F0003D8CE /* OutputContainer.swift */; };
+		42F226B0246CB64B00C050CD /* SetVariableContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F226AF246CB64B00C050CD /* SetVariableContainer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,7 +63,7 @@
 		4249304C24607E3C00D783B9 /* Outlet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Outlet.swift; sourceTree = "<group>"; };
 		4249304E24624E4C00D783B9 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
 		4249305124624ED800D783B9 /* FunctionContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionContainer.swift; sourceTree = "<group>"; };
-		4249305324624EE100D783B9 /* VariableContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableContainer.swift; sourceTree = "<group>"; };
+		4249305324624EE100D783B9 /* DefVariableContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefVariableContainer.swift; sourceTree = "<group>"; };
 		4249305524626E6600D783B9 /* OutletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutletView.swift; sourceTree = "<group>"; };
 		427E1B04244EA99500536054 /* PseudoSwiftUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PseudoSwiftUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		427E1B07244EA99500536054 /* PseudoSwiftUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PseudoSwiftUI.h; sourceTree = "<group>"; };
@@ -80,6 +81,7 @@
 		4292FA012450D43D00956D27 /* Wire.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Wire.xib; sourceTree = "<group>"; };
 		4292FA062453EE7800956D27 /* ConnectionDragHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDragHandler.swift; sourceTree = "<group>"; };
 		42C4FDB92468BC0F0003D8CE /* OutputContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputContainer.swift; sourceTree = "<group>"; };
+		42F226AF246CB64B00C050CD /* SetVariableContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetVariableContainer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,7 +119,8 @@
 			children = (
 				4292F9EC244F174700956D27 /* Container.swift */,
 				4249305124624ED800D783B9 /* FunctionContainer.swift */,
-				4249305324624EE100D783B9 /* VariableContainer.swift */,
+				4249305324624EE100D783B9 /* DefVariableContainer.swift */,
+				42F226AF246CB64B00C050CD /* SetVariableContainer.swift */,
 				4249304C24607E3C00D783B9 /* Outlet.swift */,
 				4249305524626E6600D783B9 /* OutletView.swift */,
 				42C4FDB92468BC0F0003D8CE /* OutputContainer.swift */,
@@ -327,10 +330,11 @@
 				4249304D24607E3C00D783B9 /* Outlet.swift in Sources */,
 				4292FA022450D43D00956D27 /* Wire.swift in Sources */,
 				4249305224624ED800D783B9 /* FunctionContainer.swift in Sources */,
+				42F226B0246CB64B00C050CD /* SetVariableContainer.swift in Sources */,
 				4292F9ED244F174700956D27 /* Container.swift in Sources */,
 				42493045245FC5FB00D783B9 /* FunctionListTableViewController.swift in Sources */,
 				42C4FDBA2468BC0F0003D8CE /* OutputContainer.swift in Sources */,
-				4249305424624EE100D783B9 /* VariableContainer.swift in Sources */,
+				4249305424624EE100D783B9 /* DefVariableContainer.swift in Sources */,
 				4249305624626E6600D783B9 /* OutletView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

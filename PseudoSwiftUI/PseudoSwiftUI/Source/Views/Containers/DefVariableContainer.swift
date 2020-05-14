@@ -3,7 +3,7 @@ import UIKit
 import PseudoSwift
 
 
-final class VariableContainer: Container, UITextFieldDelegate {
+final class DefVariableContainer: Container, UITextFieldDelegate {
 
     var textBox: UITextField!
     let output: VariableDefinition
@@ -18,7 +18,7 @@ final class VariableContainer: Container, UITextFieldDelegate {
     }
     
     override func viewDidLoad() {
-        let outputOutlet = Outlet(value: value, type: .outputValue, index: 0, frame: self.view.frame)
+        let outputOutlet = ValueOutlet(value: value, type: .outputValue, index: 0, frame: self.view.frame)
         outlets.append(outputOutlet)
         super.viewDidLoad()
     }
@@ -41,7 +41,7 @@ final class VariableContainer: Container, UITextFieldDelegate {
         self.view.addSubview(textBox)
         self.view.addSubview(toggle)
         
-        textBox.addTarget(self, action: #selector(VariableContainer.textChanged(textbox:)), for: .editingChanged)
+        textBox.addTarget(self, action: #selector(DefVariableContainer.textChanged(textbox:)), for: .editingChanged)
     }
     
      @objc func stateChanged(switchState: UISwitch) {
@@ -50,7 +50,10 @@ final class VariableContainer: Container, UITextFieldDelegate {
     
     @objc func textChanged(textbox: UITextView) {
         let name = self.textBox.text ?? ""
-        self.outlets.first!.updateVariableName(name: name)
+        if let outlet = self.outlets.first as? ValueOutlet {
+            outlet.updateVariableName(name: name)
+        }
+        
 //        value.name = name
     }
     

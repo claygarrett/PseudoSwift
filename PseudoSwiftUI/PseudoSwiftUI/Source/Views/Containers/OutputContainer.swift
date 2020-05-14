@@ -13,7 +13,7 @@ final class OutputContainer: Container {
     }
     
     override func viewDidLoad() {
-        let outputOutlet = Outlet(value: value, type: .inputValue, index: 0, frame: self.view.frame)
+        let outputOutlet = ValueOutlet(value: value, type: .inputValue, index: 0, frame: self.view.frame)
             outlets.append(outputOutlet)
         
         super.viewDidLoad()
