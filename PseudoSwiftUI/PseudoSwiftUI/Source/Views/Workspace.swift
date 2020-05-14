@@ -89,6 +89,14 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         self.containers.append(container)
     }
     
+    func addSetVariableContainer(value: ValueSettable<Bool>) {
+        let container = SetVariableContainer(value: value, positionPercentage: CGPoint(x: 0.1, y: 0.1))
+        container.dragDelegate = self
+        self.addChild(container)
+        self.view.addSubview(container.view)
+        self.containers.append(container)
+    }
+    
     func addFunctionContainer(name: String, inputVariables: [ValueSettable<Bool>], outputVariable: ValueSettable<Bool>?) {
         let container = FunctionContainer(positionPercentage: CGPoint(x: 0.1, y: 0.1), inputs: inputVariables, output: outputVariable, name: name)
         container.dragDelegate = self
@@ -238,13 +246,15 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
             addDefVariableContainer(value: boolAndStep, outputVariable: VariableDefinition(name: guid, type: .boolean, direction: .output))
             currentFunction.addLine(boolAndStep)
         case "SetBool":
+            
+            
             let varToSetName = UUID().uuidString
             let varToSetFromName = UUID().uuidString
             let varToSet = ValueSettable<Bool>(varToSetName, true)
             let varToSetFrom = ValueSettable<Bool>(varToSetFromName, true)
 
             let setVarToVar = SetBoolEqualTo(varToSetName: varToSetName, varWithValueName: varToSetFromName)
-            addFunctionContainer(name: "SetBoolEqualTo", inputVariables: [varToSet, varToSetFrom], outputVariable: nil)
+            addSetVariableContainer(value: varToSet)
             currentFunction.addLine(varToSet)
             currentFunction.addLine(varToSetFrom)
             currentFunction.addLine(setVarToVar)

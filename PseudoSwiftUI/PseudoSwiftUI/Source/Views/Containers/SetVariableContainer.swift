@@ -5,18 +5,18 @@ import PseudoSwift
 
 final class SetVariableContainer: Container, UITextFieldDelegate {
 
-    let toggle: UISwitch
     let value: ValueSettable<Bool>
     
     init(value: ValueSettable<Bool>, positionPercentage: CGPoint) {
-        self.toggle = UISwitch()
         self.value = value
         super.init(positionPercentage: positionPercentage, name: value.name)
     }
     
     override func viewDidLoad() {
-        let inputFlowOutlet = FlowOutlet(type: .outputValue, index: 0, frame: self.view.frame)
+        let inputFlowOutlet = FlowOutlet(type: .inputFlow, index: 0, frame: self.view.frame)
+        let inputValueOutlet = ValueOutlet(value: value, type: .inputValue, index: 1, frame: self.view.frame)
         outlets.append(inputFlowOutlet)
+        outlets.append(inputValueOutlet)
         super.viewDidLoad()
     }
     
@@ -26,10 +26,6 @@ final class SetVariableContainer: Container, UITextFieldDelegate {
     
     override func draw() {
      
-        toggle.frame = CGRect(x: 20, y: 50, width: 100, height: 40)
-        
-
-        self.view.addSubview(toggle)
         
     }
     

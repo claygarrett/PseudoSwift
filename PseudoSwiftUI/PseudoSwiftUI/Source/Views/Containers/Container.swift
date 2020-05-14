@@ -83,6 +83,14 @@ class Container: UIViewController, Containing {
 
     private func initializeOutlets() {
         
+        let inputFlowOutlets = outlets.filter( { $0.type == .inputFlow })
+               for inputOutlet in inputFlowOutlets {
+                   self.view.addSubview(inputOutlet.view)
+                   let dragGesture = UIPanGestureRecognizer(target: self, action: #selector(doOutletDrag))
+                   dragGestures.append(dragGesture)
+                   inputOutlet.view.addGestureRecognizer(dragGesture)
+               }
+        
         let inputOutlets = outlets.filter( { $0.type == .inputValue })
         for inputOutlet in inputOutlets {
             self.view.addSubview(inputOutlet.view)
