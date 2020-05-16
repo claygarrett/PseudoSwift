@@ -253,7 +253,6 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
             destinationContainer: Container,
             destinationOutlet: FlowOutlet) {
             
-//            sourceOutlet.value.follow(follower: destinationOutlet.value)
             
             guard let activeWire = self.activeWire else { return }
             if sourceOutlet.direction == destinationOutlet.direction {
@@ -263,10 +262,9 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
             let placedWire = activeWire
             self.activeWire = nil
             
-    //        sourceOutlet.clearConnection()
-            destinationOutlet.clearIncomingConnections()
+            sourceOutlet.clearConnections()
+            destinationOutlet.clearConnections()
             
-
             let connection = Connection(sourceOutlet: sourceOutlet, destintationOutlet: destinationOutlet, wire: placedWire)
             sourceOutlet.addConnection(connection: connection)
             destinationOutlet.addConnection(connection: connection)
