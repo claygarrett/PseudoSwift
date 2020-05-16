@@ -16,10 +16,26 @@ enum ConnectionPosition {
     case bottomRight
 }
 
+enum WireType {
+    case flowWire
+    case valueWire
+    
+    var color: CGColor {
+        switch self {
+        case .flowWire:
+            return UIColor.green.cgColor
+        case .valueWire:
+            return  UIColor.systemPink.cgColor
+        }
+    }
+}
+
 class Wire: UIViewController {
 
     @IBOutlet weak var inputConnection: UIView!
     @IBOutlet weak var outputConnection: UIView!
+    
+    let type: WireType
     
     var inputCorner: ConnectionPosition = .topLeft
     var outputCorner: ConnectionPosition = .bottomRight
@@ -42,6 +58,15 @@ class Wire: UIViewController {
         super.viewDidLoad()
         inputConnection.layer.cornerRadius = cornerRadius
         outputConnection.layer.cornerRadius = cornerRadius
+    }
+    
+    init(type: WireType, nibName: String?, bundle: Bundle?) {
+        self.type = type
+        super.init(nibName: nibName, bundle: bundle)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     func calculateLine() {
@@ -86,9 +111,6 @@ class Wire: UIViewController {
         let inputOrigin: CGPoint
         let outputOrigin: CGPoint
  
-        
-        
-
         switch inputCorner {
         case .topLeft:
             inputOrigin = topLeftPoint
@@ -128,7 +150,6 @@ class Wire: UIViewController {
         )
     }
     
-    
     func updateWireFrame(inputHandlePosition: CGPoint, outputHandlePosition: CGPoint) {
         
         let wireFrame = CGRect(
@@ -156,7 +177,7 @@ class Wire: UIViewController {
         linePath.addLine(to: end)
         line.path = linePath.cgPath
         line.lineDashPattern = [2, 5]
-        line.strokeColor = UIColor.systemPink.cgColor
+        line.strokeColor = type.color
         line.lineWidth = 2
         line.lineJoin = CAShapeLayerLineJoin.round
         line.lineCap = .round

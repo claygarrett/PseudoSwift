@@ -9,13 +9,11 @@ final class SetVariableContainer: Container, UITextFieldDelegate {
     
     init(value: ValueSettable<Bool>, positionPercentage: CGPoint) {
         self.value = value
-        super.init(positionPercentage: positionPercentage, name: value.name)
+        super.init(positionPercentage: positionPercentage, name: value.name, isFlowConductor: true)
     }
     
     override func viewDidLoad() {
-        let inputFlowOutlet = FlowOutlet(type: .inputFlow, index: 0, frame: self.view.frame)
         let inputValueOutlet = ValueOutlet(value: value, type: .inputValue, index: 1, frame: self.view.frame)
-        outlets.append(inputFlowOutlet)
         outlets.append(inputValueOutlet)
         super.viewDidLoad()
     }

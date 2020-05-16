@@ -17,39 +17,56 @@ public class OutletView: UIView {
     let connectionTopMargin: CGFloat = 40
     let inputInletBackgroundColor: UIColor = .systemPink
     let outputInletBackgroundColor: UIColor = .systemPurple
+    let flowInletColor: UIColor = .green
     
-    init(frame: CGRect, direction: VariableDirection, index: Int, name: String?) {
+    // TODO: Remove frame from instantation
+    init(frame: CGRect, type: OutletType, index: Int, name: String?) {
         let startY = connectionTopMargin + connectionMargin + CGFloat(index) * Container.inputOutputWidth + connectionMargin * CGFloat(index)
         
-        switch direction {
-        case .input:
-            self.inlet = UIView(frame: CGRect(x: connectionMargin, y: startY, width: 20, height: 20))
-            self.label = UILabel(frame: CGRect(x: 40, y: startY, width: 120, height: 20))
+        // TODO: Make output outlets draggable by name. They're currently outside the frame
+        // as our math is expecting the outlet to be at the begginging of the frame.
+        // Need to put output outlets on far right of frame and adjust math accordingly.
+        
+        let frame: CGRect
+        switch type {
+        case .inputValue:
+            frame = CGRect(x: connectionMargin, y: startY, width: 180, height: 20)
+            self.inlet = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
+            self.label = UILabel(frame: CGRect(x: 30, y: 0, width: 120, height: 20))
             inlet.backgroundColor = inputInletBackgroundColor
-        case .output:
-            self.inlet = UIView(frame: CGRect(x: 300 - connectionMargin - 20, y: startY, width: 20, height: 20))
-            self.label = UILabel(frame: CGRect(x: 120, y: startY, width: 140, height: 20))
+        case .outputValue:
+            frame = CGRect(x: 300 - connectionMargin - 20, y: startY, width: 180, height: 20)
+            self.inlet = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
+            self.label = UILabel(frame: CGRect(x: -150, y: 0, width: 140, height: 20))
             self.label.textAlignment = .right
             inlet.backgroundColor = outputInletBackgroundColor
+        case .inputFlow:
+            frame = CGRect(x: connectionMargin, y: startY, width: 180, height: 20)
+            self.inlet = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
+            self.label = UILabel(frame: CGRect(x: 30, y: 0, width: 120, height: 20))
+            inlet.backgroundColor = flowInletColor
+        case .outputFlow:
+            frame = CGRect(x: 300 - connectionMargin - 20, y: startY, width: 20, height: 20)
+            self.inlet = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
+            self.label = UILabel(frame: CGRect(x: -150, y: 0, width: 140, height: 20))
+            self.label.textAlignment = .right
+            inlet.backgroundColor = flowInletColor
         }
         
         self.label.textColor = UIColor(white: 0.85, alpha: 1)
         self.label.font = .systemFont(ofSize: 13)
         self.inlet.layer.cornerRadius = Container.connectionCornerRadius
-
+        
         super.init(frame: frame)
         label.text = name
         self.addSubview(label)
         self.addSubview(inlet)
         self.isUserInteractionEnabled = true
-        self.inlet.isUserInteractionEnabled = true
+        self.inlet.isUserInteractionEnabled = false
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public override func addGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer) {
-        inlet.addGestureRecognizer(gestureRecognizer)
-    }
 }

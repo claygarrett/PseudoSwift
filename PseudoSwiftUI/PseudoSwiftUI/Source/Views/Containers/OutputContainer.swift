@@ -9,7 +9,7 @@ final class OutputContainer: Container {
     
     init(value: ValueSettable<Bool>, positionPercentage: CGPoint, name: String) {
         self.value = value
-        super.init(positionPercentage: positionPercentage, name: name)
+        super.init(positionPercentage: positionPercentage, name: name, isFlowConductor: false)
     }
     
     override func viewDidLoad() {

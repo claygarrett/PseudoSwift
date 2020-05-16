@@ -16,8 +16,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     var connections: [Connection] = []
     var activeWire: Wire?
     var containers: [Container] = []
-    let containerWidth: CGFloat = 300
-    let containerHeight: CGFloat = 200
+
     let functionList = FunctionListTableViewController(functions: ["DefineBool", "SetBool", "BoolFlip", "BoolAnd", "FunctionOutput"])
     let runButton = UIButton()
     var functionSteps: [FunctionStep] = []
@@ -28,7 +27,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         
         view.isUserInteractionEnabled = true
         
-//        addFunctionContainer(name: "FunctionStart", inputVariables: [], outputVariable: nil)
+        addFunctionContainer(name: "FunctionStart", inputVariables: [], outputVariable: nil)
         addFunctionList()
         addButton()
     }
@@ -71,8 +70,8 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
             let newContainerFrame = CGRect(
                 x: container.positionPercentage.x * workspaceWidth,
                 y: container.positionPercentage.y * workspaceHeight,
-                width: containerWidth,
-                height: containerHeight)
+                width: Container.containerWidth,
+                height: Container.containerHeight)
             container.view.frame = newContainerFrame
         }
         
@@ -120,33 +119,42 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         functionList.selectionDelegate = self
     }
     
-    func didStartConnectionDragHandlerFromView(from fromContainer: Container, outlet: ValueOutlet) {
-        let wire = getBlankWire()
+    func didStartConnectionDragHandlerFromView(from fromContainer: Container, outlet: Outlet) {
+        print("did start")
+        let wire = getBlankWire(wireType: outlet.wireType)
         self.activeWire = wire
     }
     
-    func getBlankWire() -> Wire {
+    func getBlankWire(wireType: WireType) -> Wire {
         let bundle = Bundle(identifier: "com.claygarrett.PseudoSwiftUI")
-        let wire = Wire(nibName: "Wire", bundle: bundle)
+        let wire = Wire(type: wireType, nibName: "Wire", bundle: bundle)
         self.view.addSubview(wire.view)
         self.addChild(wire)
         return wire
     }
     
     func didDragConnectionHandlerFromView(from fromContainer: Container, atPosition: CGPoint, to toPosition: CGPoint) {
-        
         let containerViewFrame = fromContainer.view.frame
         let inputHandlePosition = containerViewFrame.origin.movedBy(
             translationPoint: CGPoint(x: atPosition.x, y: atPosition.y)
         )
         
+        print("atPosition", atPosition)
+        print("toPosition", toPosition)
+        print("-----")
+        
         activeWire?.updateWireFrame(
             inputHandlePosition: inputHandlePosition, outputHandlePosition: inputHandlePosition.movedBy(
                 translationPoint: CGPoint(x: toPosition.x - atPosition.x, y: toPosition.y - atPosition.y  ))
         )
-        
     }
     
+    func didEndConnectionDragHandlerFromView(from fromContainer: Container, fromOutlet: Outlet, toEndPosition endPosition: CGPoint) {
+        if let valueOutlet = fromOutlet as? ValueOutlet {
+            didEndConnectionDragHandlerFromView(from: fromContainer, fromOutlet: valueOutlet, toEndPosition: endPosition)
+        }
+    }
+        
     func didEndConnectionDragHandlerFromView(from fromContainer: Container, fromOutlet: ValueOutlet, toEndPosition endPosition: CGPoint) {
         // our end position is measured from the center of the connector
         // we want our hit test to be measured from the top-left corner
@@ -246,8 +254,6 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
             addDefVariableContainer(value: boolAndStep, outputVariable: VariableDefinition(name: guid, type: .boolean, direction: .output))
             currentFunction.addLine(boolAndStep)
         case "SetBool":
-            
-            
             let varToSetName = UUID().uuidString
             let varToSetFromName = UUID().uuidString
             let varToSet = ValueSettable<Bool>(varToSetName, true)

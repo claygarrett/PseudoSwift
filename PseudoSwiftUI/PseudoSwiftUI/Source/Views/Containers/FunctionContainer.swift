@@ -8,12 +8,13 @@ final class FunctionContainer: Container {
     let nameLabel: UILabel = UILabel()
     let inputs: [ValueSettable<Bool>]
     let output: ValueSettable<Bool>?
+    
 
     
     init(positionPercentage: CGPoint, inputs: [ValueSettable<Bool>] = [], output: ValueSettable<Bool>? = nil, variables: [ValueSettable<Bool>] = [], name: String) {
         self.inputs = inputs
         self.output = output
-        super.init(positionPercentage: positionPercentage, name: name)
+        super.init(positionPercentage: positionPercentage, name: name, isFlowConductor: false)
         
     }
     

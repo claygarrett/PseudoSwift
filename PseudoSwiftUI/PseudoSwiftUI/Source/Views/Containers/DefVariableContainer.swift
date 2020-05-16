@@ -14,7 +14,7 @@ final class DefVariableContainer: Container, UITextFieldDelegate {
         self.output = output
         self.toggle = UISwitch()
         self.value = value
-        super.init(positionPercentage: positionPercentage, name: value.name)
+        super.init(positionPercentage: positionPercentage, name: value.name, isFlowConductor: false)
     }
     
     override func viewDidLoad() {
