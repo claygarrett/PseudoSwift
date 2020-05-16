@@ -3,32 +3,36 @@
 import UIKit
 import PseudoSwift
 
+enum OutletDirection: Int {
+    case input
+    case output
+}
+
 enum OutletType: Int {
-    case inputValue
-    case outputValue
-    case inputFlow
-    case outputFlow
-    
-    var wireType: WireType {
-        switch self {
-        case .inputFlow, .outputFlow:
-            return .flowWire
-        case .inputValue, .outputValue:
-            return .valueWire
-        }
-    }
+    case value
+    case flow
 }
 
 class Outlet {
-    var type: OutletType
-    var view: OutletView
+    var direction: OutletDirection
+    var view: OutletView!
     var connections: [Connection]
     
-    init(type: OutletType, connection: Connection? = nil, index: Int, frame: CGRect, name: String?) {
-        self.type = type
+    var type: OutletType {
+        if self is ValueOutlet {
+            return .value
+        } else if self is FlowOutlet {
+            return .flow
+        } else {
+            fatalError("Must use a subclass of Outlet")
+        }
+    }
+    
+    init(direction: OutletDirection, connection: Connection? = nil, index: Int, frame: CGRect, name: String?) {
+        self.direction = direction
         self.connections = connection == nil ? [] : [connection!]
         
-        view = OutletView(frame: frame, type: type, index: index, name: name)
+        view = OutletView(frame: frame, direction: direction, type: type, index: index, name: name)
         print(self.view.frame)
     }
 
@@ -60,37 +64,27 @@ class Outlet {
         self.connections = []
     }
     
-    static func getDirectionFromOutletType(type: OutletType) -> VariableDirection {
-        switch type {
-        case .inputFlow, .inputValue:
-            return .input
-        case .outputFlow, .outputValue:
-            return .output
-        }
-    }
-    
-    var wireType: WireType {
-        return type.wireType
-    }
 }
 
 class ValueOutlet: Outlet {
     
     var value: ValueSettable<Bool>
     
-    init(value: ValueSettable<Bool>, type: OutletType, connection: Connection? = nil, index: Int, frame: CGRect) {
+    init(value: ValueSettable<Bool>, direction: OutletDirection, connection: Connection? = nil, index: Int, frame: CGRect) {
         self.value = value
-        super.init(type: type, index: index, frame: frame, name: value.name)
+        super.init(direction: direction, index: index, frame: frame, name: value.name)
     }
     
     func updateVariableName(name: String) {
         self.value.name = name
         self.view.label.text = name
     }
+    
+
 }
 
 class FlowOutlet: Outlet {
-    init(type: OutletType, connection: Connection? = nil, index: Int, frame: CGRect) {
-        super.init(type: type, index: index, frame: frame, name: nil)
+    init(direction: OutletDirection, connection: Connection? = nil, index: Int, frame: CGRect) {
+        super.init(direction: direction, index: index, frame: frame, name: nil)
     }
 }

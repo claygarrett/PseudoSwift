@@ -1,10 +1,10 @@
 
 class Connection {
-    let sourceOutlet: ValueOutlet
-    let destintationOutlet: ValueOutlet
+    let sourceOutlet: Outlet
+    let destintationOutlet: Outlet
     let wire: Wire
     
-    init(sourceOutlet: ValueOutlet, destintationOutlet: ValueOutlet, wire: Wire) {
+    init(sourceOutlet: Outlet, destintationOutlet: Outlet, wire: Wire) {
         self.sourceOutlet = sourceOutlet
         self.destintationOutlet = destintationOutlet
         self.wire = wire

@@ -20,7 +20,7 @@ public class OutletView: UIView {
     let flowInletColor: UIColor = .green
     
     // TODO: Remove frame from instantation
-    init(frame: CGRect, type: OutletType, index: Int, name: String?) {
+    init(frame: CGRect, direction: OutletDirection, type: OutletType, index: Int, name: String?) {
         let startY = connectionTopMargin + connectionMargin + CGFloat(index) * Container.inputOutputWidth + connectionMargin * CGFloat(index)
         
         // TODO: Make output outlets draggable by name. They're currently outside the frame
@@ -28,24 +28,24 @@ public class OutletView: UIView {
         // Need to put output outlets on far right of frame and adjust math accordingly.
         
         let frame: CGRect
-        switch type {
-        case .inputValue:
+        switch (direction, type) {
+        case (.input, .value):
             frame = CGRect(x: connectionMargin, y: startY, width: 180, height: 20)
             self.inlet = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
             self.label = UILabel(frame: CGRect(x: 30, y: 0, width: 120, height: 20))
             inlet.backgroundColor = inputInletBackgroundColor
-        case .outputValue:
+        case (.output, .value):
             frame = CGRect(x: 300 - connectionMargin - 20, y: startY, width: 180, height: 20)
             self.inlet = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
             self.label = UILabel(frame: CGRect(x: -150, y: 0, width: 140, height: 20))
             self.label.textAlignment = .right
             inlet.backgroundColor = outputInletBackgroundColor
-        case .inputFlow:
+        case (.input, .flow):
             frame = CGRect(x: connectionMargin, y: startY, width: 180, height: 20)
             self.inlet = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
             self.label = UILabel(frame: CGRect(x: 30, y: 0, width: 120, height: 20))
             inlet.backgroundColor = flowInletColor
-        case .outputFlow:
+        case (.output, .flow):
             frame = CGRect(x: 300 - connectionMargin - 20, y: startY, width: 20, height: 20)
             self.inlet = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
             self.label = UILabel(frame: CGRect(x: -150, y: 0, width: 140, height: 20))

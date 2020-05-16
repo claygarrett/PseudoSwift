@@ -13,7 +13,7 @@ final class SetVariableContainer: Container, UITextFieldDelegate {
     }
     
     override func viewDidLoad() {
-        let inputValueOutlet = ValueOutlet(value: value, type: .inputValue, index: 1, frame: self.view.frame)
+        let inputValueOutlet = ValueOutlet(value: value, direction: .input, index: 1, frame: self.view.frame)
         outlets.append(inputValueOutlet)
         super.viewDidLoad()
     }

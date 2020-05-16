@@ -96,10 +96,10 @@ class Container: UIViewController, Containing {
         
         if !self.isFlowConductor { return }
         
-        let inputFlowOutlet = FlowOutlet(type: .inputFlow, index: 0, frame: containerFrame)
+        let inputFlowOutlet = FlowOutlet(direction: .input, index: 0, frame: containerFrame)
         outlets.append(inputFlowOutlet)
         
-        let outputFlowOutlet = FlowOutlet(type: .outputFlow, index: 0, frame: containerFrame)
+        let outputFlowOutlet = FlowOutlet(direction: .output, index: 0, frame: containerFrame)
         outlets.append(outputFlowOutlet)
         
         // draw our flow oulets
@@ -119,7 +119,7 @@ class Container: UIViewController, Containing {
     private func initializeValueOutlets() {
         // draw our value oulets
         // TODO: rename these to DattaOutlets
-        let inputOutlets = outlets.filter( { $0.type == .inputValue })
+        let inputOutlets = outlets.filter( { $0.direction == .input })
         for inputOutlet in inputOutlets {
             self.view.addSubview(inputOutlet.view)
             let dragGesture = UIPanGestureRecognizer(target: self, action: #selector(doValueOutletDrag))
@@ -127,7 +127,7 @@ class Container: UIViewController, Containing {
             inputOutlet.view.addGestureRecognizer(dragGesture)
         }
         
-        let outputOutlets = outlets.filter( { $0.type == .outputValue })
+        let outputOutlets = outlets.filter( { $0.direction == .output })
         for outputOutlet in outputOutlets {
             self.view.addSubview(outputOutlet.view)
             let dragGesture = UIPanGestureRecognizer(target: self, action: #selector(doValueOutletDrag))
@@ -150,10 +150,19 @@ class Container: UIViewController, Containing {
     // MARK: - Dragging
     
     @objc public func doValueOutletDrag(_ recognizer:UIPanGestureRecognizer) {
-        guard
-            let draggedView = recognizer.view,
-            let outlet = outlets.compactMap({ $0 as? ValueOutlet }).first(where: { $0.view === draggedView }) else {
-                return
+        guard let draggedView = recognizer.view else {
+            return
+        }
+        
+        let outlet: Outlet
+        if let valueOutlet = outlets.compactMap({ $0 as? ValueOutlet }).first(where: { $0.view === draggedView }) {
+            // we're dragging a value outlet
+            outlet = valueOutlet
+        } else if let flowOutlet = outlets.compactMap({ $0 as? FlowOutlet }).first(where: { $0.view === draggedView }) {
+            // we're dragging a flow outlet
+            outlet = flowOutlet
+        } else {
+            return
         }
         
         let offsetFromOriginalPosition = recognizer.translation(in: self.view)
@@ -166,7 +175,6 @@ class Container: UIViewController, Containing {
                 x: startDragOffsetFromOrigin.x,
                 y: startDragOffsetFromOrigin.y
             ))
-//        print("positionInContainer", positionInContainer)
         
         let dragOrigin = draggedView.frame.origin.movedBy(vector: CGVector(dx: 10, dy: 10))
         let dragDestination = draggedView.frame.origin
@@ -188,35 +196,6 @@ class Container: UIViewController, Containing {
         self.dragDelegate?.didDragConnectionHandlerFromView(
             from: self,
             atPosition: dragOrigin, to: positionInContainer)
-    }
-    
-    @objc public func doFlowOutletDrag(_ recognizer:UIPanGestureRecognizer) {
-        guard
-            let draggedView = recognizer.view,
-            let outlet = outlets.compactMap({ $0 as? FlowOutlet }).first(where: { $0.view === draggedView }) else {
-                return
-        }
-        
-        let dragOrigin = draggedView.frame.origin.movedBy(vector: CGVector(dx: 10, dy: 10))
-        let dragDestination = draggedView.frame.origin
-            .movedBy(translationPoint: recognizer.translation(in: self.view))
-            .movedBy(translationPoint: CGPoint(
-                x: startDragOffsetFromOrigin.x,
-                y: startDragOffsetFromOrigin.y)
-        )
-        
-        switch recognizer.state {
-        case .began:
-            startDragOffsetFromOrigin = recognizer.location(in: draggedView)
-            self.dragDelegate?.didStartConnectionDragHandlerFromView(from: self, outlet: outlet)
-        case .ended:
-            self.dragDelegate?.didEndConnectionDragHandlerFromView(from: self, fromOutlet: outlet, toEndPosition: dragDestination)
-        default:
-            break
-        }
-        self.dragDelegate?.didDragConnectionHandlerFromView(
-            from: self,
-            atPosition: dragOrigin, to: dragDestination)
     }
     
     @objc public func doContainerDrag(_ recognizer:UIPanGestureRecognizer) {
@@ -244,7 +223,7 @@ class Container: UIViewController, Containing {
         
         switch recognizer.state {
         case .began:
-            for outlet in self.outlets.compactMap( { $0 as? ValueOutlet }) {
+            for outlet in self.outlets {
                 for connection in outlet.connections {
                     connection.wire.outletPositionMoveStarted(outlet: outlet)
                 }
@@ -256,7 +235,7 @@ class Container: UIViewController, Containing {
             break
         }
         
-        for outlet in self.outlets.compactMap( { $0 as? ValueOutlet }) {
+        for outlet in self.outlets {
             for connection in outlet.connections {
                 connection.wire.outletPositionMoved(outlet: outlet, position: translationInView)
             }

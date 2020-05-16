@@ -16,26 +16,13 @@ enum ConnectionPosition {
     case bottomRight
 }
 
-enum WireType {
-    case flowWire
-    case valueWire
-    
-    var color: CGColor {
-        switch self {
-        case .flowWire:
-            return UIColor.green.cgColor
-        case .valueWire:
-            return  UIColor.systemPink.cgColor
-        }
-    }
-}
 
 class Wire: UIViewController {
 
     @IBOutlet weak var inputConnection: UIView!
     @IBOutlet weak var outputConnection: UIView!
     
-    let type: WireType
+    let type: OutletType
     
     var inputCorner: ConnectionPosition = .topLeft
     var outputCorner: ConnectionPosition = .bottomRight
@@ -46,13 +33,23 @@ class Wire: UIViewController {
     var inputPosition: CGPoint? = nil
     var outputPosition: CGPoint? = nil
     
-    var inputOutlet: ValueOutlet? = nil
-    var outputOutlet: ValueOutlet? = nil
+    var inputOutlet: Outlet? = nil
+    var outputOutlet: Outlet? = nil
     
     var pinRadius: CGFloat {
         return pinDiameter / 2
     }
+    
     var line: CAShapeLayer = CAShapeLayer()
+
+    var color: CGColor {
+        switch self.type {
+        case .flow:
+            return UIColor.green.cgColor
+        case .value:
+            return  UIColor.systemPink.cgColor
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,7 +57,7 @@ class Wire: UIViewController {
         outputConnection.layer.cornerRadius = cornerRadius
     }
     
-    init(type: WireType, nibName: String?, bundle: Bundle?) {
+    init(type: OutletType, nibName: String?, bundle: Bundle?) {
         self.type = type
         super.init(nibName: nibName, bundle: bundle)
     }
@@ -177,7 +174,7 @@ class Wire: UIViewController {
         linePath.addLine(to: end)
         line.path = linePath.cgPath
         line.lineDashPattern = [2, 5]
-        line.strokeColor = type.color
+        line.strokeColor = color
         line.lineWidth = 2
         line.lineJoin = CAShapeLayerLineJoin.round
         line.lineCap = .round
@@ -187,11 +184,11 @@ class Wire: UIViewController {
     
     var wireFrameWhenStarted: CGRect = .zero
     
-    func outletPositionMoveStarted(outlet: ValueOutlet) {
+    func outletPositionMoveStarted(outlet: Outlet) {
         wireFrameWhenStarted = self.view.frame
     }
     
-    func outletPositionMoved(outlet: ValueOutlet, position: CGPoint) {        
+    func outletPositionMoved(outlet: Outlet, position: CGPoint) {        
         guard
             let inputPosition = self.inputOutlet?.view.inlet.convert(CGPoint(x: 10, y: 10), to: self.view.superview),
             let outputPosition = self.outputOutlet?.view.inlet.convert(CGPoint(x: 10, y: 10), to: self.view.superview) else {

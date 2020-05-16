@@ -18,7 +18,7 @@ final class DefVariableContainer: Container, UITextFieldDelegate {
     }
     
     override func viewDidLoad() {
-        let outputOutlet = ValueOutlet(value: value, type: .outputValue, index: 0, frame: self.view.frame)
+        let outputOutlet = ValueOutlet(value: value, direction: .output, index: 0, frame: self.view.frame)
         outlets.append(outputOutlet)
         super.viewDidLoad()
     }
