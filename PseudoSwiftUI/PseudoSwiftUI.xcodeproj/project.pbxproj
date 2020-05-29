@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		423C82FF24708C2C00F05397 /* FlowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423C82FE24708C2C00F05397 /* FlowManager.swift */; };
 		42493045245FC5FB00D783B9 /* FunctionListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42493044245FC5FB00D783B9 /* FunctionListTableViewController.swift */; };
 		42493048245FC71000D783B9 /* FunctionListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42493046245FC71000D783B9 /* FunctionListCell.swift */; };
 		42493049245FC71000D783B9 /* FunctionListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42493047245FC71000D783B9 /* FunctionListCell.xib */; };
@@ -57,6 +58,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		423C82FE24708C2C00F05397 /* FlowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowManager.swift; sourceTree = "<group>"; };
 		42493044245FC5FB00D783B9 /* FunctionListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionListTableViewController.swift; sourceTree = "<group>"; };
 		42493046245FC71000D783B9 /* FunctionListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionListCell.swift; sourceTree = "<group>"; };
 		42493047245FC71000D783B9 /* FunctionListCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FunctionListCell.xib; sourceTree = "<group>"; };
@@ -185,6 +187,7 @@
 				4292F9FC24506EBD00956D27 /* Variable.swift */,
 				4292F9FD24506EBD00956D27 /* VariableViewController.xib */,
 				4249304E24624E4C00D783B9 /* Connection.swift */,
+				423C82FE24708C2C00F05397 /* FlowManager.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -332,6 +335,7 @@
 				4249305224624ED800D783B9 /* FunctionContainer.swift in Sources */,
 				42F226B0246CB64B00C050CD /* SetVariableContainer.swift in Sources */,
 				4292F9ED244F174700956D27 /* Container.swift in Sources */,
+				423C82FF24708C2C00F05397 /* FlowManager.swift in Sources */,
 				42493045245FC5FB00D783B9 /* FunctionListTableViewController.swift in Sources */,
 				42C4FDBA2468BC0F0003D8CE /* OutputContainer.swift in Sources */,
 				4249305424624EE100D783B9 /* DefVariableContainer.swift in Sources */,

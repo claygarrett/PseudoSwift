@@ -18,8 +18,8 @@ final class DefVariableContainer: Container, UITextFieldDelegate {
     }
     
     override func viewDidLoad() {
-        let outputOutlet = ValueOutlet(value: value, direction: .output, index: 0, frame: self.view.frame)
-        outlets.append(outputOutlet)
+        let outputOutlet = ValueOutlet(value: value, direction: .output, index: 0, frame: self.view.frame, container: self)
+        boolOutlets.append(outputOutlet)
         super.viewDidLoad()
     }
     
@@ -50,7 +50,7 @@ final class DefVariableContainer: Container, UITextFieldDelegate {
     
     @objc func textChanged(textbox: UITextView) {
         let name = self.textBox.text ?? ""
-        if let outlet = self.outlets.first as? ValueOutlet {
+        if let outlet = self.boolOutlets.first as? ValueOutlet {
             outlet.updateVariableName(name: name)
         }
         

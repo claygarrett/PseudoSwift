@@ -14,32 +14,32 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-              
-              let sharksInWaterFunction = Function<Bool>( {
-                  Var("sharksInWater", false)
-                  "sharksInWater".toggle()
-                  <<<"sharksInWater"
-              }, name: "sharksInWater")
-              
-              let goingToBeachFunc = Function<Bool> {
-                  sharksInWaterFunction
-                  Let("wavesAreHigh", false)
-                  Var("beachIsOpen", true)
-                  Var("goingToTheBeach", true)
-                  BoolAnd(varToSet: "beachIsOpen", leftVar: "sharksInWater", rightVar: "wavesAreHigh")
-                  If("beachIsOpen",
-                     Then: ["goingToTheBeach" <~ True()],
-                     Else: ["goingToTheBeach" <~ False()]
-                  )
-                  Return("goingToTheBeach")
-              }
-              
-              do {
-                  let goingToBeach = try goingToBeachFunc()
-                  print(goingToBeach)
-              } catch {
-                  fatalError()
-              }
+//              
+//              let sharksInWaterFunction = Function<Bool>( {
+//                  Var("sharksInWater", false)
+//                  "sharksInWater".toggle()
+//                  <<<"sharksInWater"
+//              }, name: "sharksInWater")
+//              
+//              let goingToBeachFunc = Function<Bool> {
+//                  sharksInWaterFunction
+//                  Let("wavesAreHigh", false)
+//                  Var("beachIsOpen", true)
+//                  Var("goingToTheBeach", true)
+//                  BoolAnd(varToSet: "beachIsOpen", leftVar: "sharksInWater", rightVar: "wavesAreHigh")
+//                  If("beachIsOpen",
+//                     Then: ["goingToTheBeach" <~ True()],
+//                     Else: ["goingToTheBeach" <~ False()]
+//                  )
+//                  Return("goingToTheBeach")
+//              }
+//              
+//              do {
+//                  let goingToBeach = try goingToBeachFunc()
+//                  print(goingToBeach)
+//              } catch {
+//                  fatalError()
+//              }
     }
 
 

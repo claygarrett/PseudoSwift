@@ -20,13 +20,13 @@ final class FunctionContainer: Container {
     
     override func viewDidLoad() {
         for (index, input) in inputs.enumerated() {
-            let inputOutlet = ValueOutlet(value: input, direction: .input, index: index, frame: self.view.frame)
-            outlets.append(inputOutlet)
+            let inputOutlet = ValueOutlet(value: input, direction: .input, index: index, frame: self.view.frame, container: self)
+            boolOutlets.append(inputOutlet)
         }
         
         if let output = output {
-            let outputOutlet = ValueOutlet(value: output, direction: .output, index: 0, frame: self.view.frame)
-            outlets.append(outputOutlet)
+            let outputOutlet = ValueOutlet(value: output, direction: .output, index: 0, frame: self.view.frame, container: self)
+            boolOutlets.append(outputOutlet)
         }
         super.viewDidLoad()
     }

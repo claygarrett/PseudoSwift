@@ -17,7 +17,7 @@ enum ConnectionPosition {
 }
 
 
-class Wire: UIViewController {
+public class Wire<ValueType>: UIViewController {
 
     @IBOutlet weak var inputConnection: UIView!
     @IBOutlet weak var outputConnection: UIView!
@@ -33,8 +33,8 @@ class Wire: UIViewController {
     var inputPosition: CGPoint? = nil
     var outputPosition: CGPoint? = nil
     
-    var inputOutlet: Outlet? = nil
-    var outputOutlet: Outlet? = nil
+    var sourceOutlet: Outlet<ValueType>? = nil
+    var destinationOutlet: Outlet<ValueType>? = nil
     
     var pinRadius: CGFloat {
         return pinDiameter / 2
@@ -51,14 +51,16 @@ class Wire: UIViewController {
         }
     }
 
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         inputConnection.layer.cornerRadius = cornerRadius
         outputConnection.layer.cornerRadius = cornerRadius
     }
     
-    init(type: OutletType, nibName: String?, bundle: Bundle?) {
+    init(type: OutletType, sourceOutlet: Outlet<ValueType>?, destinationOutlet: Outlet<ValueType>?, nibName: String?, bundle: Bundle?) {
         self.type = type
+        self.sourceOutlet = sourceOutlet
+        self.destinationOutlet = destinationOutlet
         super.init(nibName: nibName, bundle: bundle)
     }
     
@@ -184,14 +186,14 @@ class Wire: UIViewController {
     
     var wireFrameWhenStarted: CGRect = .zero
     
-    func outletPositionMoveStarted(outlet: Outlet) {
+    func outletPositionMoveStarted(outlet: Outlet<ValueType>) {
         wireFrameWhenStarted = self.view.frame
     }
     
-    func outletPositionMoved(outlet: Outlet, position: CGPoint) {        
+    func outletPositionMoved(outlet: Outlet<ValueType>, position: CGPoint) {
         guard
-            let inputPosition = self.inputOutlet?.view.inlet.convert(CGPoint(x: 10, y: 10), to: self.view.superview),
-            let outputPosition = self.outputOutlet?.view.inlet.convert(CGPoint(x: 10, y: 10), to: self.view.superview) else {
+            let inputPosition = self.sourceOutlet?.view.inlet.convert(CGPoint(x: 10, y: 10), to: self.view.superview),
+            let outputPosition = self.destinationOutlet?.view.inlet.convert(CGPoint(x: 10, y: 10), to: self.view.superview) else {
                 return
         }
                 
@@ -204,13 +206,13 @@ class Wire: UIViewController {
         )
         self.view.frame = wireFrame
         
-        self.inputPosition = self.inputOutlet?.view.inlet.convert(CGPoint.zero, to: self.view.superview)
-        self.outputPosition = self.outputOutlet?.view.inlet.convert(CGPoint.zero, to: self.view.superview)
+        self.inputPosition = self.sourceOutlet?.view.inlet.convert(CGPoint.zero, to: self.view.superview)
+        self.outputPosition = self.destinationOutlet?.view.inlet.convert(CGPoint.zero, to: self.view.superview)
         
         calculateLine()
     }
     
-    func outletPositionMoveEnded(outlet: ValueOutlet, position: CGPoint) {
+    func outletPositionMoveEnded(outlet: ValueOutlet<ValueType>, position: CGPoint) {
         
     }
 }

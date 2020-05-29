@@ -13,10 +13,10 @@ import Foundation
 public class WorkspaceViewController: UIViewController, ConnectionDragHandler, FunctionStepSelectionDelegate {
     
     var currentFunction: Function<Bool> = Function<Bool>(name: "Main Function")
-    var connections: [Connection] = []
-    var activeWire: Wire?
+    var boolWires: [Wire<Bool>] = []
+    var activeWire: Wire<Bool>?
     var containers: [Container] = []
-
+    
     let functionList = FunctionListTableViewController(functions: ["DefineBool", "SetBool", "BoolFlip", "BoolAnd", "FunctionOutput"])
     let runButton = UIButton()
     var functionSteps: [FunctionStep] = []
@@ -89,7 +89,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     }
     
     func addSetVariableContainer(value: ValueSettable<Bool>) {
-        let container = SetVariableContainer(value: value, positionPercentage: CGPoint(x: 0.1, y: 0.1))
+        let container = SetVariableContainer<Bool>(value: value, positionPercentage: CGPoint(x: 0.1, y: 0.1))
         container.dragDelegate = self
         self.addChild(container)
         self.view.addSubview(container.view)
@@ -120,16 +120,56 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         functionList.selectionDelegate = self
     }
     
-    func didStartConnectionDragHandlerFromView(from fromContainer: Container, outlet: Outlet) {
-        let wire = getBlankWire(type: outlet.type)
-        self.activeWire = wire
+    func didStartConnectionDragHandlerFromView<ValueType>(from fromContainer: Container, outlet: Outlet<ValueType>) {
+        switch outlet {
+        case let castedOutlet as ValueOutlet<Bool>:
+            didStartConnectionDragHandlerFromView(from: fromContainer, outlet: castedOutlet)
+        case let castedOutlet as FlowOutlet<Bool>:
+            didStartConnectionDragHandlerFromView(from: fromContainer, outlet: castedOutlet)
+        default:
+            return
+        }
     }
     
-    func getBlankWire(type: OutletType) -> Wire {
+    func didStartConnectionDragHandlerFromView(from fromContainer: Container, outlet: ValueOutlet<Bool>) {
+        switch outlet.direction {
+        case .input:
+            self.activeWire = getWire(sourceOutlet: nil, destinationOutlet: outlet)
+        case .output:
+            self.activeWire = getWire(sourceOutlet: outlet, destinationOutlet: nil)
+        }
+    }
+    
+    func didStartConnectionDragHandlerFromView(from fromContainer: Container, outlet: FlowOutlet<Bool>) {
+        switch outlet.direction {
+        case .input:
+            self.activeWire = getWire(sourceOutlet: nil, destinationOutlet: outlet)
+        case .output:
+            self.activeWire = getWire(sourceOutlet: outlet, destinationOutlet: nil)
+        }
+    }
+    
+    func getWire(sourceOutlet: FlowOutlet<Bool>?, destinationOutlet: FlowOutlet<Bool>?) -> Wire<Bool>? {
+        sourceOutlet?.clearWire()
+        destinationOutlet?.clearWire()
         let bundle = Bundle(identifier: "com.claygarrett.PseudoSwiftUI")
-        let wire = Wire(type: type, nibName: "Wire", bundle: bundle)
+        let wire = Wire(type: .flow, sourceOutlet: sourceOutlet, destinationOutlet: destinationOutlet, nibName: "Wire", bundle: bundle)
         self.view.addSubview(wire.view)
         self.addChild(wire)
+        sourceOutlet?.wire = wire
+        destinationOutlet?.wire = wire
+        return wire
+        
+    }
+    
+    func getWire<WireType>(sourceOutlet: ValueOutlet<WireType>?, destinationOutlet: ValueOutlet<WireType>?) -> Wire<WireType>? {
+        destinationOutlet?.clearWires()
+        let bundle = Bundle(identifier: "com.claygarrett.PseudoSwiftUI")
+        let wire = Wire(type: .value, sourceOutlet: sourceOutlet, destinationOutlet: destinationOutlet, nibName: "Wire", bundle: bundle)
+        self.view.addSubview(wire.view)
+        self.addChild(wire)
+        sourceOutlet?.addWire(wire: wire)
+        destinationOutlet?.addWire(wire: wire)
         return wire
     }
     
@@ -145,54 +185,59 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         )
     }
     
-    func didEndConnectionDragHandlerFromView(from fromContainer: Container, fromOutlet: Outlet, toEndPosition endPosition: CGPoint) {
-        if let valueOutlet = fromOutlet as? ValueOutlet {
+    func didEndConnectionDragHandlerFromView<OutletType>(from fromContainer: Container, fromOutlet: Outlet<OutletType>, toEndPosition endPosition: CGPoint) {
+        if let valueOutlet = fromOutlet as? ValueOutlet<Bool> {
             didEndConnectionDragHandlerFromView(from: fromContainer, fromOutlet: valueOutlet, toEndPosition: endPosition)
-        } else if let flowOutlet = fromOutlet as? FlowOutlet {
+        } else if let flowOutlet = fromOutlet as? FlowOutlet<Bool> {
             didEndConnectionDragHandlerFromView(from: fromContainer, fromOutlet: flowOutlet, toEndPosition: endPosition)
         }
     }
-        
-    func didEndConnectionDragHandlerFromView(from fromContainer: Container, fromOutlet: FlowOutlet, toEndPosition endPosition: CGPoint) {
-           // our end position is measured from the center of the connector
-           // we want our hit test to be measured from the top-left corner
-           let adjustedEndPosition = endPosition
-           
-           for container in containers {
-               for outlet in container.outlets.compactMap({ $0 as? FlowOutlet}) {
-                   let inlet = (outlet.view ).inlet
-                   let locationConnectableView = fromContainer.view.convert(adjustedEndPosition, to: inlet)
-                   if(inlet.point(inside: locationConnectableView, with: nil)) {
-                       makeConnection(
-                           sourceContainer: fromContainer,
-                           sourceOutlet: fromOutlet,
-                           destinationContainer: container,
-                           destinationOutlet: outlet)
-                       return
-                   }
-               }
-           }
-           
-           activeWire?.view.removeFromSuperview()
-           activeWire?.removeFromParent()
-           activeWire = nil
-       }
     
-    func didEndConnectionDragHandlerFromView(from fromContainer: Container, fromOutlet: ValueOutlet, toEndPosition endPosition: CGPoint) {
+    func didEndConnectionDragHandlerFromView(from fromContainer: Container, fromOutlet: FlowOutlet<Bool>, toEndPosition endPosition: CGPoint) {
+        // our end position is measured from the center of the connector
+        // we want our hit test to be measured from the top-left corner
+        let adjustedEndPosition = endPosition
+        
+        for container in containers.compactMap({ $0 as? FlowContainer<Bool> }) {
+            // NOTE: We only do this for FlowContainers and do it on their input/output outlets
+            let flowOutlet: FlowOutlet<Bool>?
+            switch fromOutlet.direction {
+            case .input:
+                flowOutlet = container.outputFlowOutlet
+            case .output:
+                flowOutlet = container.inputFlowOutlet
+            }
+            
+            guard let outlet = flowOutlet else {
+                continue
+            }
+            
+            let inlet = outlet.view.inlet
+            let locationConnectableView = fromContainer.view.convert(adjustedEndPosition, to: inlet)
+            if(inlet.point(inside: locationConnectableView, with: nil)) {
+                makeConnection(sourceOutlet: fromOutlet, destinationOutlet: outlet)
+                return
+            }
+            
+            
+        }
+        
+        activeWire?.view.removeFromSuperview()
+        activeWire?.removeFromParent()
+        activeWire = nil
+    }
+    
+    func didEndConnectionDragHandlerFromView(from fromContainer: Container, fromOutlet: ValueOutlet<Bool>, toEndPosition endPosition: CGPoint) {
         // our end position is measured from the center of the connector
         // we want our hit test to be measured from the top-left corner
         let adjustedEndPosition = endPosition
         
         for container in containers {
-            for outlet in container.outlets.compactMap({ $0 as? ValueOutlet}) {
-                let inlet = (outlet.view ).inlet
+            for outlet in container.boolOutlets.compactMap({ $0 as? ValueOutlet}) {
+                let inlet = outlet.view.inlet
                 let locationConnectableView = fromContainer.view.convert(adjustedEndPosition, to: inlet)
                 if(inlet.point(inside: locationConnectableView, with: nil)) {
-                    makeConnection(
-                        sourceContainer: fromContainer,
-                        sourceOutlet: fromOutlet,
-                        destinationContainer: container,
-                        destinationOutlet: outlet)
+                    makeConnection(sourceOutlet: fromOutlet, destinationOutlet: outlet)
                     return
                 }
             }
@@ -206,15 +251,12 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     /// Makes a connection between two nodes of compatible input/output types. This essentailly represents
     /// a variable present in both the source and destination function steps.
     /// - Parameters:
-    ///   - sourceContainer: The container of the source outlet.
     ///   - sourceOutlet: The source outlet
-    ///   - destinationContainer: The container of the destination outlet
     ///   - destinationOutlet: The destination outlet
     func makeConnection(
-        sourceContainer: Container,
-        sourceOutlet: ValueOutlet,
-        destinationContainer: Container,
-        destinationOutlet: ValueOutlet) {
+        sourceOutlet: ValueOutlet<Bool>,
+        destinationOutlet: ValueOutlet<Bool>
+    ) {
         
         sourceOutlet.value.follow(follower: destinationOutlet.value)
         
@@ -223,57 +265,45 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
             fatalError("Cannot connect outlets of the same direction")
         }
         
-        let placedWire = activeWire
+        destinationOutlet.clearIncomingWires()
+        
+        switch destinationOutlet.direction {
+        case .input:
+            activeWire.destinationOutlet = destinationOutlet
+        case .output:
+            activeWire.sourceOutlet = destinationOutlet
+        }
+        
+        destinationOutlet.addWire(wire: activeWire)
+        boolWires.append(activeWire)
         self.activeWire = nil
-        
-//        sourceOutlet.clearConnection()
-        destinationOutlet.clearIncomingConnections()
-        
-        
-        let connection = Connection(sourceOutlet: sourceOutlet, destintationOutlet: destinationOutlet, wire: placedWire)
-        sourceOutlet.addConnection(connection: connection)
-        destinationOutlet.addConnection(connection: connection)
-        connections.append(connection)
-        let inputOutlet = sourceOutlet.direction == .input ? sourceOutlet : destinationOutlet
-        let outputOutlet = sourceOutlet.direction == .output ? sourceOutlet : destinationOutlet
-        placedWire.inputOutlet = inputOutlet
-        placedWire.outputOutlet = outputOutlet
     }
     
-      /// Makes a connection between two nodes of compatible input/output types. This essentailly represents
-        /// a variable present in both the source and destination function steps.
-        /// - Parameters:
-        ///   - sourceContainer: The container of the source outlet.
-        ///   - sourceOutlet: The source outlet
-        ///   - destinationContainer: The container of the destination outlet
-        ///   - destinationOutlet: The destination outlet
-        func makeConnection(
-            sourceContainer: Container,
-            sourceOutlet: FlowOutlet,
-            destinationContainer: Container,
-            destinationOutlet: FlowOutlet) {
-            
-            
-            guard let activeWire = self.activeWire else { return }
-            if sourceOutlet.direction == destinationOutlet.direction {
-                fatalError("Cannot connect outlets of the same direction")
-            }
-            
-            let placedWire = activeWire
-            self.activeWire = nil
-            
-            sourceOutlet.clearConnections()
-            destinationOutlet.clearConnections()
-            
-            let connection = Connection(sourceOutlet: sourceOutlet, destintationOutlet: destinationOutlet, wire: placedWire)
-            sourceOutlet.addConnection(connection: connection)
-            destinationOutlet.addConnection(connection: connection)
-            connections.append(connection)
-            let inputOutlet = sourceOutlet.direction == .input ? sourceOutlet : destinationOutlet
-            let outputOutlet = sourceOutlet.direction == .output ? sourceOutlet : destinationOutlet
-            placedWire.inputOutlet = inputOutlet
-            placedWire.outputOutlet = outputOutlet
+    /// Makes a connection between two nodes of compatible input/output types. This essentailly represents
+    /// a variable present in both the source and destination function steps.
+    /// - Parameters:
+    ///   - sourceOutlet: The source outlet
+    ///   - destinationOutlet: The destination outlet
+    func makeConnection(
+        sourceOutlet: FlowOutlet<Bool>,
+        destinationOutlet: FlowOutlet<Bool>) {
+        
+        guard let activeWire = self.activeWire else { return }
+        if sourceOutlet.direction == destinationOutlet.direction {
+            fatalError("Cannot connect outlets of the same direction")
         }
+        
+        switch destinationOutlet.direction {
+        case .input:
+            activeWire.destinationOutlet = destinationOutlet
+        case .output:
+            activeWire.sourceOutlet = destinationOutlet
+        }
+        
+        destinationOutlet.wire = activeWire
+        boolWires.append(activeWire)
+        self.activeWire = nil
+    }
     
     // MARK: - FunctionStepSelectionDelegate
     
@@ -312,7 +342,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
             let varToSetFromName = UUID().uuidString
             let varToSet = ValueSettable<Bool>(varToSetName, true)
             let varToSetFrom = ValueSettable<Bool>(varToSetFromName, true)
-
+            
             let setVarToVar = SetBoolEqualTo(varToSetName: varToSetName, varWithValueName: varToSetFromName)
             addSetVariableContainer(value: varToSet)
             currentFunction.addLine(varToSet)

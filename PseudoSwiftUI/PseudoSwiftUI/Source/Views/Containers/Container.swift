@@ -23,9 +23,182 @@ protocol Containing: AnyObject {
     func draw()
 }
 
-class Container: UIViewController, Containing {
+public class FlowContainer<ValueType>: Container {
+    // TODO: Genericize
+    var inputFlowOutlet: FlowOutlet<Bool>? = nil
+    var outputFlowOutlet: FlowOutlet<Bool>? = nil
     
-    var outlets: [Outlet] = []
+    var flowOutlets: [FlowOutlet<Bool>] {
+        return self.boolOutlets.compactMap { (outlet) -> FlowOutlet<Bool>? in
+            return outlet as? FlowOutlet
+        }
+    }
+    var nextContainer: Container? {
+        return outputFlowOutlet?.wire?.destinationOutlet?.container
+    }
+    
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        initializeFlowOutlets()
+    }
+    
+    private func initializeFlowOutlets() {
+        
+        if !self.isFlowConductor { return }
+        
+        let inputFlowOutlet = FlowOutlet<Bool>(direction: .input, index: 0, frame: containerFrame, container: self)
+        self.inputFlowOutlet = inputFlowOutlet
+        
+        let outputFlowOutlet = FlowOutlet<Bool>(direction: .output, index: 0, frame: containerFrame, container: self)
+        self.outputFlowOutlet = outputFlowOutlet
+        
+        // draw our flow oulets
+        
+        self.view.addSubview(inputFlowOutlet.view)
+        let inputDragGesture = UIPanGestureRecognizer(target: self, action: #selector(doValueOutletDrag))
+        dragGestures.append(inputDragGesture)
+        inputFlowOutlet.view.addGestureRecognizer(inputDragGesture)
+        
+        self.view.addSubview(outputFlowOutlet.view)
+        let outputDragGesture = UIPanGestureRecognizer(target: self, action: #selector(doValueOutletDrag))
+        dragGestures.append(outputDragGesture)
+        outputFlowOutlet.view.addGestureRecognizer(outputDragGesture)
+        
+    }
+    
+    // TODO: Find a way to not duplicate code here if possible.
+    // This is a duplicate of the main container doContainerDrag but adds additional calls for input/outputFlowOutlets
+    // Same for doValueOutletDrag
+    @objc public override func doContainerDrag(_ recognizer: UIPanGestureRecognizer) {
+        
+        guard let draggedView = recognizer.view else { return }
+        
+        if originBeforeDrag == nil {
+            originBeforeDrag = draggedView.frame.origin
+        }
+        
+        guard let originBeforeDrag = originBeforeDrag else {
+            return
+        }
+        
+        let existingSize: CGSize = draggedView.frame.size
+        
+        let translationInView = recognizer.translation(in: view.superview)
+        
+        let newOrigin = originBeforeDrag.movedBy(translationPoint: translationInView)
+        draggedView.frame = CGRect(origin: newOrigin , size: existingSize)
+        
+        let xPercent = newOrigin.x / self.view!.superview!.frame.size.width
+        let yPercent = newOrigin.y / self.view!.superview!.frame.size.height
+        
+        positionPercentage = CGPoint(x: xPercent, y: yPercent)
+        
+        switch recognizer.state {
+        case .began:
+            for outlet in self.boolValueOutlets {
+                for wire in outlet.wires {
+                    wire.outletPositionMoveStarted(outlet: outlet)
+                }
+            }
+            
+            if let inputOutlet = inputFlowOutlet {
+                inputOutlet.wire?.outletPositionMoveStarted(outlet: inputOutlet)
+            }
+            
+            if let outputFlow = outputFlowOutlet {
+                outputFlow.wire?.outletPositionMoveStarted(outlet: outputFlow)
+            }
+            
+            
+            
+        case .ended:
+            self.originBeforeDrag = nil
+        default:
+            break
+        }
+        
+        for outlet in self.boolValueOutlets {
+            for wire in outlet.wires {
+                wire.outletPositionMoved(outlet: outlet, position: translationInView)
+            }
+        }
+        
+        // todo: Make these (and all similar calls) not have to go through wire since we're getting the wire from outlet and also passing in outlet
+        
+        if let inputOutlet = inputFlowOutlet {
+            inputOutlet.wire?.outletPositionMoved(outlet: inputOutlet, position: translationInView)
+        }
+        
+        if let outputFlow = outputFlowOutlet {
+            outputFlow.wire?.outletPositionMoved(outlet: outputFlow, position: translationInView)
+        }
+    }
+    
+    @objc override public func doValueOutletDrag(_ recognizer:UIPanGestureRecognizer) {
+           guard let draggedView = recognizer.view else {
+               return
+           }
+           
+           let outlet: Outlet<Bool>
+           if let valueOutlet = boolOutlets.compactMap({ $0 as? ValueOutlet }).first(where: { $0.view === draggedView }) {
+               // we're dragging a value outlet
+               outlet = valueOutlet
+           } else if let flowOutlet = inputFlowOutlet, flowOutlet.view === draggedView {
+               // we're dragging a flow outlet
+               outlet = flowOutlet
+           } else if let flowOutlet = outputFlowOutlet, flowOutlet.view === draggedView {
+           // we're dragging a flow outlet
+                outlet = flowOutlet
+           } else {
+               return
+           }
+           
+           let offsetFromOriginalPosition = recognizer.translation(in: self.view)
+           let positionOfDraggedoutlet = draggedView.frame
+           print("positionOfDraggedoutlet", positionOfDraggedoutlet)
+           
+           let positionInContainer = offsetFromOriginalPosition
+               .movedBy(translationPoint: positionOfDraggedoutlet.origin)
+               .movedBy(translationPoint: CGPoint(
+                   x: startDragOffsetFromOrigin.x,
+                   y: startDragOffsetFromOrigin.y
+               ))
+           
+           let dragOrigin = draggedView.frame.origin.movedBy(vector: CGVector(dx: 10, dy: 10))
+           let dragDestination = draggedView.frame.origin
+               .movedBy(translationPoint: recognizer.translation(in: self.view))
+               .movedBy(translationPoint: CGPoint(
+                   x: startDragOffsetFromOrigin.x,
+                   y: startDragOffsetFromOrigin.y)
+           )
+           
+           switch recognizer.state {
+           case .began:
+               startDragOffsetFromOrigin = recognizer.location(in: draggedView)
+               self.dragDelegate?.didStartConnectionDragHandlerFromView(from: self, outlet: outlet)
+           case .ended:
+               self.dragDelegate?.didEndConnectionDragHandlerFromView(from: self, fromOutlet: outlet, toEndPosition: dragDestination)
+           default:
+               break
+           }
+           self.dragDelegate?.didDragConnectionHandlerFromView(
+               from: self,
+               atPosition: dragOrigin, to: positionInContainer)
+       }
+}
+
+public class Container: UIViewController, Containing {
+    
+    var boolOutlets: [Outlet<Bool>] = []
+    
+    var boolValueOutlets: [ValueOutlet<Bool>] {
+        return self.boolOutlets.compactMap { (outlet) -> ValueOutlet<Bool>? in
+            return outlet as? ValueOutlet
+        }
+    }
+    
+    
+    
     static let inputOutputWidth: CGFloat = 20
     static var connectionCornerRadius: CGFloat { return inputOutputWidth / 2 }
     let containerCornerRadius: CGFloat = 10
@@ -65,7 +238,7 @@ class Container: UIViewController, Containing {
     
     // MARK: - View / Layout
     
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         initializeOutlets()
         // initializeTypeLabel()
@@ -88,38 +261,15 @@ class Container: UIViewController, Containing {
     }
     
     private func initializeOutlets() {
-        initializeFlowOutlets()
         initializeValueOutlets()
     }
     
-    private func initializeFlowOutlets() {
-        
-        if !self.isFlowConductor { return }
-        
-        let inputFlowOutlet = FlowOutlet(direction: .input, index: 0, frame: containerFrame)
-        outlets.append(inputFlowOutlet)
-        
-        let outputFlowOutlet = FlowOutlet(direction: .output, index: 0, frame: containerFrame)
-        outlets.append(outputFlowOutlet)
-        
-        // draw our flow oulets
-        
-        self.view.addSubview(inputFlowOutlet.view)
-        let inputDragGesture = UIPanGestureRecognizer(target: self, action: #selector(doValueOutletDrag))
-        dragGestures.append(inputDragGesture)
-        inputFlowOutlet.view.addGestureRecognizer(inputDragGesture)
-        
-        self.view.addSubview(outputFlowOutlet.view)
-        let outputDragGesture = UIPanGestureRecognizer(target: self, action: #selector(doValueOutletDrag))
-        dragGestures.append(outputDragGesture)
-        outputFlowOutlet.view.addGestureRecognizer(outputDragGesture)
-        
-    }
+    
     
     private func initializeValueOutlets() {
         // draw our value oulets
         // TODO: rename these to DattaOutlets
-        let inputOutlets = outlets.filter( { $0.direction == .input })
+        let inputOutlets = boolOutlets.filter( { $0.direction == .input })
         for inputOutlet in inputOutlets {
             self.view.addSubview(inputOutlet.view)
             let dragGesture = UIPanGestureRecognizer(target: self, action: #selector(doValueOutletDrag))
@@ -127,7 +277,7 @@ class Container: UIViewController, Containing {
             inputOutlet.view.addGestureRecognizer(dragGesture)
         }
         
-        let outputOutlets = outlets.filter( { $0.direction == .output })
+        let outputOutlets = boolOutlets.filter( { $0.direction == .output })
         for outputOutlet in outputOutlets {
             self.view.addSubview(outputOutlet.view)
             let dragGesture = UIPanGestureRecognizer(target: self, action: #selector(doValueOutletDrag))
@@ -154,11 +304,11 @@ class Container: UIViewController, Containing {
             return
         }
         
-        let outlet: Outlet
-        if let valueOutlet = outlets.compactMap({ $0 as? ValueOutlet }).first(where: { $0.view === draggedView }) {
+        let outlet: Outlet<Bool>
+        if let valueOutlet = boolOutlets.compactMap({ $0 as? ValueOutlet }).first(where: { $0.view === draggedView }) {
             // we're dragging a value outlet
             outlet = valueOutlet
-        } else if let flowOutlet = outlets.compactMap({ $0 as? FlowOutlet }).first(where: { $0.view === draggedView }) {
+        } else if let flowOutlet = boolOutlets.compactMap({ $0 as? FlowOutlet }).first(where: { $0.view === draggedView }) {
             // we're dragging a flow outlet
             outlet = flowOutlet
         } else {
@@ -168,7 +318,7 @@ class Container: UIViewController, Containing {
         let offsetFromOriginalPosition = recognizer.translation(in: self.view)
         let positionOfDraggedoutlet = draggedView.frame
         print("positionOfDraggedoutlet", positionOfDraggedoutlet)
-
+        
         let positionInContainer = offsetFromOriginalPosition
             .movedBy(translationPoint: positionOfDraggedoutlet.origin)
             .movedBy(translationPoint: CGPoint(
@@ -223,23 +373,23 @@ class Container: UIViewController, Containing {
         
         switch recognizer.state {
         case .began:
-            for outlet in self.outlets {
-                for connection in outlet.connections {
-                    connection.wire.outletPositionMoveStarted(outlet: outlet)
+            for outlet in self.boolValueOutlets {
+                for wire in outlet.wires {
+                    wire.outletPositionMoveStarted(outlet: outlet)
                 }
             }
-            
         case .ended:
             self.originBeforeDrag = nil
         default:
             break
         }
         
-        for outlet in self.outlets {
-            for connection in outlet.connections {
-                connection.wire.outletPositionMoved(outlet: outlet, position: translationInView)
+        for outlet in self.boolValueOutlets {
+            for wire in outlet.wires {
+                wire.outletPositionMoved(outlet: outlet, position: translationInView)
             }
         }
+        
     }
 }
 
