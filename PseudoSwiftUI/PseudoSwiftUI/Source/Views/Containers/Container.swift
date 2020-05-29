@@ -33,8 +33,8 @@ public class FlowContainer<ValueType>: Container {
             return outlet as? FlowOutlet
         }
     }
-    var nextContainer: Container? {
-        return outputFlowOutlet?.wire?.destinationOutlet?.container
+    var nextContainer: FlowContainer<ValueType>? {
+        return outputFlowOutlet?.wire?.destinationOutlet?.container as? FlowContainer<ValueType>
     }
     
     public override func viewDidLoad() {
@@ -96,8 +96,15 @@ public class FlowContainer<ValueType>: Container {
         switch recognizer.state {
         case .began:
             for outlet in self.boolValueOutlets {
-                for wire in outlet.wires {
-                    wire.outletPositionMoveStarted(outlet: outlet)
+                switch outlet {
+                case let input as InputValueOutlet<Bool>:
+                    input.wire?.outletPositionMoveStarted(outlet: input)
+                case let output as OutputValueOutlet<Bool>:
+                    for wire in output.wires {
+                        wire.outletPositionMoveStarted(outlet: outlet)
+                    }
+                default:
+                    continue
                 }
             }
             
@@ -118,8 +125,15 @@ public class FlowContainer<ValueType>: Container {
         }
         
         for outlet in self.boolValueOutlets {
-            for wire in outlet.wires {
-                wire.outletPositionMoved(outlet: outlet, position: translationInView)
+            switch outlet {
+            case let input as InputValueOutlet<Bool>:
+                input.wire?.outletPositionMoved(outlet: input, position: translationInView)
+            case let output as OutputValueOutlet<Bool>:
+                for wire in output.wires {
+                    wire.outletPositionMoved(outlet: output, position: translationInView)
+                }
+            default:
+                continue
             }
         }
         
@@ -197,7 +211,9 @@ public class Container: UIViewController, Containing {
         }
     }
     
-    
+    var boolValueInputOutlets: [InputValueOutlet<Bool>] {
+        return boolValueOutlets.compactMap { $0 as? InputValueOutlet<Bool> }
+    }
     
     static let inputOutputWidth: CGFloat = 20
     static var connectionCornerRadius: CGFloat { return inputOutputWidth / 2 }
@@ -374,8 +390,15 @@ public class Container: UIViewController, Containing {
         switch recognizer.state {
         case .began:
             for outlet in self.boolValueOutlets {
-                for wire in outlet.wires {
-                    wire.outletPositionMoveStarted(outlet: outlet)
+                switch outlet {
+                case let input as InputValueOutlet<Bool>:
+                    input.wire?.outletPositionMoveStarted(outlet: input)
+                case let output as OutputValueOutlet<Bool>:
+                    for wire in output.wires {
+                        wire.outletPositionMoveStarted(outlet: output)
+                    }
+                default:
+                    continue
                 }
             }
         case .ended:
@@ -385,11 +408,17 @@ public class Container: UIViewController, Containing {
         }
         
         for outlet in self.boolValueOutlets {
-            for wire in outlet.wires {
-                wire.outletPositionMoved(outlet: outlet, position: translationInView)
+            switch outlet {
+            case let input as InputValueOutlet<Bool>:
+                input.wire?.outletPositionMoved(outlet: input, position: translationInView)
+            case let output as OutputValueOutlet<Bool>:
+                for wire in output.wires {
+                    wire.outletPositionMoved(outlet: output, position: translationInView)
+                }
+            default:
+                continue
             }
         }
-        
     }
 }
 

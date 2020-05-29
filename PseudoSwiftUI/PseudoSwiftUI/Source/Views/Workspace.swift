@@ -132,11 +132,13 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     }
     
     func didStartConnectionDragHandlerFromView(from fromContainer: Container, outlet: ValueOutlet<Bool>) {
-        switch outlet.direction {
-        case .input:
-            self.activeWire = getWire(sourceOutlet: nil, destinationOutlet: outlet)
-        case .output:
-            self.activeWire = getWire(sourceOutlet: outlet, destinationOutlet: nil)
+        switch outlet {
+        case let input as InputValueOutlet<Bool>:
+            self.activeWire = getWire(sourceOutlet: nil, destinationOutlet: input)
+        case let output as OutputValueOutlet<Bool>:
+            self.activeWire = getWire(sourceOutlet: output, destinationOutlet: nil)
+        default:
+            return
         }
     }
     
@@ -162,14 +164,14 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         
     }
     
-    func getWire<WireType>(sourceOutlet: ValueOutlet<WireType>?, destinationOutlet: ValueOutlet<WireType>?) -> Wire<WireType>? {
-        destinationOutlet?.clearWires()
+    func getWire<WireType>(sourceOutlet: OutputValueOutlet<WireType>?, destinationOutlet: InputValueOutlet<WireType>?) -> Wire<WireType>? {
+        destinationOutlet?.clearWire()
         let bundle = Bundle(identifier: "com.claygarrett.PseudoSwiftUI")
         let wire = Wire(type: .value, sourceOutlet: sourceOutlet, destinationOutlet: destinationOutlet, nibName: "Wire", bundle: bundle)
         self.view.addSubview(wire.view)
         self.addChild(wire)
         sourceOutlet?.addWire(wire: wire)
-        destinationOutlet?.addWire(wire: wire)
+        destinationOutlet?.wire = wire
         return wire
     }
     
@@ -248,6 +250,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         activeWire = nil
     }
     
+    
     /// Makes a connection between two nodes of compatible input/output types. This essentailly represents
     /// a variable present in both the source and destination function steps.
     /// - Parameters:
@@ -265,7 +268,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
             fatalError("Cannot connect outlets of the same direction")
         }
         
-        destinationOutlet.clearIncomingWires()
+
         
         switch destinationOutlet.direction {
         case .input:
@@ -274,7 +277,22 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
             activeWire.sourceOutlet = destinationOutlet
         }
         
-        destinationOutlet.addWire(wire: activeWire)
+        switch sourceOutlet {
+        case let input as InputValueOutlet<Bool>:
+//            input.clearWire()
+            let output = destinationOutlet as! OutputValueOutlet<Bool>
+            input.wire = activeWire
+            
+            output.addWire(wire: activeWire)
+        case let output as OutputValueOutlet<Bool>:
+            let input = destinationOutlet as! InputValueOutlet<Bool>
+            input.clearWire()
+            input.wire = activeWire
+            output.addWire(wire: activeWire)
+        
+        default: break
+        }
+        
         boolWires.append(activeWire)
         self.activeWire = nil
     }

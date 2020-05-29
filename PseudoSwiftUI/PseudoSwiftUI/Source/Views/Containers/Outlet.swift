@@ -39,10 +39,41 @@ public class Outlet<ValueType> {
     
 }
 
+class InputValueOutlet<ValueType>: ValueOutlet<ValueType> {
+    public var wire: Wire<ValueType>?
+    public func clearWire() {
+        wire?.view.removeFromSuperview()
+        wire = nil
+    }
+    init(value: ValueSettable<ValueType>, index: Int, frame: CGRect, container: Container) {
+        super.init(value: value, direction: .input, index: index, frame: frame, container: container)
+    }
+    
+}
+
+class OutputValueOutlet<ValueType>: ValueOutlet<ValueType> {
+    public var wires: [Wire<ValueType>] = []
+    func clearWires() {
+         wires.forEach { wire in
+             wire.view.removeFromSuperview()
+         }
+         
+         self.wires = []
+     }
+    func addWire(wire: Wire<ValueType>) {
+          wires.append(wire)
+      }
+    
+    init(value: ValueSettable<ValueType>, index: Int, frame: CGRect, container: Container) {
+        super.init(value: value, direction: .output, index: index, frame: frame, container: container)
+    }
+    
+}
+
+
 class ValueOutlet<ValueType>: Outlet<ValueType> {
     
     var value: ValueSettable<ValueType>
-    public var wires: [Wire<ValueType>] = []
 
     init(value: ValueSettable<ValueType>, direction: OutletDirection, index: Int, frame: CGRect, container: Container) {
         self.value = value
@@ -54,29 +85,11 @@ class ValueOutlet<ValueType>: Outlet<ValueType> {
         self.view.label.text = name
     }
     
-    func clearWires() {
-        wires.forEach { wire in
-            wire.view.removeFromSuperview()
-        }
-        
-        self.wires = []
-    }
+ 
     
-    func addWire(wire: Wire<ValueType>) {
-        wires.append(wire)
-    }
+  
     
-    func clearIncomingWires() {
-        let incomingWires = wires.filter { $0.destinationOutlet === self }
-        for wire in incomingWires {
-            wire.view.removeFromSuperview()
-        }
-        wires.removeAll { (wire) -> Bool in
-            incomingWires.contains(where: { wire === $0 })
-        }
-        
-        self.wires = []
-    }
+  
 }
 
 class FlowOutlet<ValueType>: Outlet<ValueType> {
