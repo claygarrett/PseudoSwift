@@ -23,7 +23,7 @@ protocol Containing: AnyObject {
     func draw()
 }
 
-public class FlowContainer<ValueType>: Container {
+public class FlowContainer: Container {
     // TODO: Genericize
     var inputFlowOutlet: FlowOutlet<Bool>? = nil
     var outputFlowOutlet: FlowOutlet<Bool>? = nil
@@ -33,8 +33,8 @@ public class FlowContainer<ValueType>: Container {
             return outlet as? FlowOutlet
         }
     }
-    var nextContainer: FlowContainer<ValueType>? {
-        return outputFlowOutlet?.wire?.destinationOutlet?.container as? FlowContainer<ValueType>
+    var nextContainer: FlowContainer? {
+        return outputFlowOutlet?.wire?.destinationOutlet?.container as? FlowContainer
     }
     
     public override func viewDidLoad() {

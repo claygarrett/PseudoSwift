@@ -24,7 +24,7 @@ import Foundation
 /// It's up to you to ensure you pass the correct types of elements to the function. If we find items
 /// of types that we don't expect passed into the function builder, we will throw.
 public class Function<Output>: ValueGettable<Output> {
-    override func getValue() throws -> Output {
+    public override func getValue() throws -> Output {
         do { return try self() } catch { fatalError() }
     }
     
@@ -99,6 +99,12 @@ public class Function<Output>: ValueGettable<Output> {
         
         super.init(name: name)
         self._valueProvider = { try self() }
+    }
+    
+    public func addLines(_ lines: [AnyObject]) {
+        for line in lines {
+            addLine(line)
+        }
     }
     
     public func addLine(_ line: AnyObject) {

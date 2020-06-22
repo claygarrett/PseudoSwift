@@ -82,51 +82,8 @@ public class SetBool: FunctionStep {
     }
 }
 
-
-/// Abstract superclass for any FunctionSteps that present as an operation between two variables
-public class SetBoolWithVar: FunctionStep {
-    public var outputVariables: [VariableDefinition] {
-        return []
-    }
-    
-    public var inputVariables: [VariableDefinition] {
-        return [
-            VariableDefinition(name: varToSetName, type: .boolean, direction: .output),
-            VariableDefinition(name: varToSetFromName, type: .boolean, direction: .output)
-        ]
-    }
-    
-    var boolProvider: VariableProvider<Bool>?
-    var varToSetName: String
-    let varToSetFromName: String
-
-    public func addVariableProvider<T>(provider: VariableProvider<T>) {
-        if provider.type().self == Bool.self {
-           self.boolProvider = provider as? VariableProvider<Bool>
-       }
-    }
-    
-    public func requiredVariableProviders() -> [SupportedType] {
-          return [.boolean]
-    }
-    
-    public init(varToSet: String, varToSetFromName: String) {
-        self.varToSetName = varToSet
-        self.varToSetFromName = varToSetFromName
-    }
-    
-    public func perform() throws {
-        guard let boolProvider = self.boolProvider else {
-            throw VariableError.VariableProviderNotFound(source: "SetVar")
-        }
-        let variableToSet = boolProvider.getWritable(name: varToSetName)
-        let variableToSetFrom = boolProvider.getWritable(name: varToSetFromName)
-        try variableToSet.setValue(variableToSetFrom.getValue())
-    }
-}
-
 /// Compares two booleans. Returns true if they are both true, but otherwise returns false.
-public class BoolAnd: InfixOperator {
+    public class BoolAnd: InfixOperator {
     public override func requiredVariableProviders() -> [SupportedType] {
         return [.boolean]
     }

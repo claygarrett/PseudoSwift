@@ -16,18 +16,19 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     var boolWires: [Wire<Bool>] = []
     var activeWire: Wire<Bool>?
     var containers: [Container] = []
-    
+    var startContainer: StartFlowContainer!
     let functionList = FunctionListTableViewController(functions: ["DefineBool", "SetBool", "BoolFlip", "BoolAnd", "FunctionOutput"])
     let runButton = UIButton()
     var functionSteps: [FunctionStep] = []
     var booleanVariables: [ValueGettable<Bool>] = []
+    var flowManager: FlowManager!
     
     public override func viewDidLoad() {
         super.viewDidLoad()
         
         view.isUserInteractionEnabled = true
         
-        addFunctionContainer(name: "FunctionStart", inputVariables: [], outputVariable: nil)
+        addStartContainer()
         addFunctionList()
         addButton()
     }
@@ -57,8 +58,12 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     }
     
     @objc func runTapped(_ sender:UIButton!) {
-        let funcVal = try?currentFunction.callAsFunction()
-        print(funcVal ?? "Nil")
+        for variable in variables.values {
+            variable.reset()
+        }
+        let function = flowManager.buildFunction()
+        let functionValue = try?function.callAsFunction()
+        print(functionValue ?? "Nil")
     }
     
     func layoutSubviews() {
@@ -80,8 +85,17 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         functionList.view.frame = CGRect(x: self.view.frame.size.width - functionListWidth, y: 0, width: functionListWidth, height: self.view.frame.size.height)
     }
     
-    func addDefVariableContainer(value: ValueSettable<Bool>, outputVariable: VariableDefinition) {
-        let container = DefVariableContainer(value: value, positionPercentage: CGPoint(x: 0.1, y: 0.1), output: outputVariable)
+    func addStartContainer() {
+        startContainer = StartFlowContainer(positionPercentage: CGPoint(x: 0.1, y: 0.01))
+        flowManager = FlowManager(rootNode: startContainer)
+        startContainer.dragDelegate = self
+        self.containers.append(startContainer)
+        self.addChild(startContainer)
+        self.view.addSubview(startContainer.view)
+    }
+    
+    func addDefVariableContainer(output: ValueSettable<Bool>) {
+        let container = DefVariableContainer(positionPercentage: CGPoint(x: 0.1, y: 0.1), output: output)
         container.dragDelegate = self
         self.addChild(container)
         self.view.addSubview(container.view)
@@ -96,8 +110,8 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         self.containers.append(container)
     }
     
-    func addFunctionContainer(name: String, inputVariables: [ValueSettable<Bool>], outputVariable: ValueSettable<Bool>?) {
-        let container = FunctionContainer(positionPercentage: CGPoint(x: 0.1, y: 0.1), inputs: inputVariables, output: outputVariable, name: name)
+    func addFunctionStepContainer(functionStep: FunctionStep, name: String, inputVariables: [ValueSettable<Bool>], output: ValueSettable<Bool>) {
+        let container = FunctionStepContainer(functionStep: functionStep, positionPercentage: CGPoint(x: 0.1, y: 0.1), inputs: inputVariables, output: output, name: name)
         container.dragDelegate = self
         self.addChild(container)
         self.view.addSubview(container.view)
@@ -200,7 +214,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         // we want our hit test to be measured from the top-left corner
         let adjustedEndPosition = endPosition
         
-        for container in containers.compactMap({ $0 as? FlowContainer<Bool> }) {
+        for container in containers.compactMap({ $0 as? FlowContainer }) {
             // NOTE: We only do this for FlowContainers and do it on their input/output outlets
             let flowOutlet: FlowOutlet<Bool>?
             switch fromOutlet.direction {
@@ -245,8 +259,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
             }
         }
         
-        activeWire?.view.removeFromSuperview()
-        activeWire?.removeFromParent()
+        activeWire?.detach()
         activeWire = nil
     }
     
@@ -261,14 +274,13 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         destinationOutlet: ValueOutlet<Bool>
     ) {
         
-        sourceOutlet.value.follow(follower: destinationOutlet.value)
         
         guard let activeWire = self.activeWire else { return }
         if sourceOutlet.direction == destinationOutlet.direction {
             fatalError("Cannot connect outlets of the same direction")
         }
         
-
+        
         
         switch destinationOutlet.direction {
         case .input:
@@ -277,19 +289,24 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
             activeWire.sourceOutlet = destinationOutlet
         }
         
+        // TODO: Clean this shit up. It's messy
+        // setValue vs Follow
         switch sourceOutlet {
-        case let input as InputValueOutlet<Bool>:
-//            input.clearWire()
+        case is InputValueOutlet<Bool>:
+            //            input.clearWire()
             let output = destinationOutlet as! OutputValueOutlet<Bool>
-            input.wire = activeWire
+            output.addWire(wire: activeWire)
+            destinationOutlet.value.follow(follower: sourceOutlet.value)
             
-            output.addWire(wire: activeWire)
-        case let output as OutputValueOutlet<Bool>:
-            let input = destinationOutlet as! InputValueOutlet<Bool>
-            input.clearWire()
-            input.wire = activeWire
-            output.addWire(wire: activeWire)
-        
+        case is OutputValueOutlet<Bool>:
+            if let input = destinationOutlet as? InputValueOutlet<Bool> {
+                input.clearWire()
+                input.wire = activeWire
+                sourceOutlet.value.follow(follower: destinationOutlet.value)
+            } else if let setValue = destinationOutlet as? SetValueOutlet<Bool> {
+                setValue.clearWire()
+                setValue.wire = activeWire
+            }
         default: break
         }
         
@@ -336,39 +353,42 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
             currentFunction.addLine(rightVar)
             currentFunction.addLine(varToSet)
             let boolAndStep = BoolAnd(varToSet: "varToSet", leftVar: "leftVar", rightVar: "rightVar")
-            addFunctionContainer(name: "BoolAnd", inputVariables: [leftVar, rightVar], outputVariable: varToSet)
-            currentFunction.addLine(boolAndStep)
+            addFunctionStepContainer(functionStep: boolAndStep, name: "BoolAnd", inputVariables: [leftVar, rightVar], output: varToSet)
         case "BoolFlip":
-            let input = ValueSettable<Bool>("target", true)
-            addFunctionContainer(name: "target", inputVariables: [input], outputVariable: input)
-            currentFunction.addLine(input)
-            currentFunction.addLine(BoolFlip("target"))
+            let id = UUID().uuidString
+            let input = getOrAddVariable(name: id, defaultValue: true)
+            addFunctionStepContainer(functionStep: BoolFlip(id), name: id, inputVariables: [input], output: input)
         case "FunctionOutput":
             let id = UUID().uuidString
-            let variable = ValueSettable<Bool>(id, false)
+            let variable = getOrAddVariable(name: id, defaultValue: false)
             let output = FunctionOutput(name: id)
             currentFunction.addLine(variable)
             currentFunction.addLine(output)
             addOutputContainer(value: variable)
         case "DefineBool":
-            let guid = UUID().uuidString
-            let boolAndStep = Var(guid, false)
-            addDefVariableContainer(value: boolAndStep, outputVariable: VariableDefinition(name: guid, type: .boolean, direction: .output))
-            currentFunction.addLine(boolAndStep)
+            let varToSet = getOrAddVariable(name: "Clay", defaultValue: false)
+            addDefVariableContainer(output: varToSet)
         case "SetBool":
-            let varToSetName = UUID().uuidString
-            let varToSetFromName = UUID().uuidString
-            let varToSet = ValueSettable<Bool>(varToSetName, true)
-            let varToSetFrom = ValueSettable<Bool>(varToSetFromName, true)
+            let varToSetName = "Clay"
             
-            let setVarToVar = SetBoolEqualTo(varToSetName: varToSetName, varWithValueName: varToSetFromName)
+            let varToSet = getOrAddVariable(name: varToSetName, defaultValue: false)
+            
             addSetVariableContainer(value: varToSet)
-            currentFunction.addLine(varToSet)
-            currentFunction.addLine(varToSetFrom)
-            currentFunction.addLine(setVarToVar)
+            
         default:
             break
         }
+    }
+    
+    var variables: [String: ValueSettable<Bool>] = [:]
+    
+    func getOrAddVariable(name: String, defaultValue: Bool) -> ValueSettable<Bool> {
+        guard let variable = variables[name] else {
+            let variable = ValueSettable<Bool>(name, defaultValue)
+            variables[name] = variable
+            return variable
+        }
+        return variable
     }
 }
 

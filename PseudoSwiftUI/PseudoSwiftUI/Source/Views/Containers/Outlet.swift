@@ -39,6 +39,28 @@ public class Outlet<ValueType> {
     
 }
 
+// TODO: Can this be combined with InputValue or share a super class for common bits?
+class SetValueOutlet<ValueType>: ValueOutlet<ValueType> {
+    
+    public var wire: Wire<ValueType>?
+    public func clearWire() {
+        wire?.view.removeFromSuperview()
+        wire = nil
+    }
+    init(value: ValueSettable<ValueType>, index: Int, frame: CGRect, container: Container) {
+        super.init(value: value, direction: .input, index: index, frame: frame, container: container)
+    }
+    
+    public var sourceOutlet: OutputValueOutlet<ValueType>? {
+        return wire?.sourceOutlet as? OutputValueOutlet<ValueType>
+    }
+    
+    public var valueProviderContainer: ValueProviderContainer? {
+        return sourceOutlet?.container as? ValueProviderContainer
+    }
+    
+}
+
 class InputValueOutlet<ValueType>: ValueOutlet<ValueType> {
     public var wire: Wire<ValueType>?
     public func clearWire() {
@@ -49,10 +71,22 @@ class InputValueOutlet<ValueType>: ValueOutlet<ValueType> {
         super.init(value: value, direction: .input, index: index, frame: frame, container: container)
     }
     
+    public var sourceOutlet: OutputValueOutlet<ValueType>? {
+        return wire?.sourceOutlet as? OutputValueOutlet<ValueType>
+    }
+    
+    public var valueProviderContainer: ValueProviderContainer? {
+        return sourceOutlet?.container as? ValueProviderContainer
+    }
+    
 }
 
 class OutputValueOutlet<ValueType>: ValueOutlet<ValueType> {
     public var wires: [Wire<ValueType>] = []
+    public var destinationOutlets: [InputValueOutlet<ValueType>] {
+        return wires.compactMap { $0.destinationOutlet as? InputValueOutlet<ValueType> }
+    }
+    
     func clearWires() {
          wires.forEach { wire in
              wire.view.removeFromSuperview()
@@ -60,6 +94,15 @@ class OutputValueOutlet<ValueType>: ValueOutlet<ValueType> {
          
          self.wires = []
      }
+    
+    func clearWire(_ wire: Wire<ValueType>) {
+        wire.view.removeFromSuperview()
+         
+        self.wires.removeAll { otherWire -> Bool in
+            wire === otherWire
+        }
+     }
+    
     func addWire(wire: Wire<ValueType>) {
           wires.append(wire)
       }
@@ -84,10 +127,6 @@ class ValueOutlet<ValueType>: Outlet<ValueType> {
         self.value.name = name
         self.view.label.text = name
     }
-    
- 
-    
-  
     
   
 }

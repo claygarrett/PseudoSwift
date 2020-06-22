@@ -215,4 +215,21 @@ public class Wire<ValueType>: UIViewController {
     func outletPositionMoveEnded(outlet: ValueOutlet<ValueType>, position: CGPoint) {
         
     }
+    
+    func detach() {
+        view.removeFromSuperview()
+        removeFromParent()
+        for outlet in [self.sourceOutlet, self.destinationOutlet].compactMap( { $0 }) {
+            switch outlet {
+            case let setValueOutlet as SetValueOutlet<ValueType>:
+                setValueOutlet.clearWire()
+            case let getValueOutlet as OutputValueOutlet<ValueType>:
+                getValueOutlet.clearWire(self)
+            case let flowOutlet as FlowOutlet<ValueType>:
+                flowOutlet.clearWire()
+            default:
+                break
+            }
+        }
+    }
 }

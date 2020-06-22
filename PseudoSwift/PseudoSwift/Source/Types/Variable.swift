@@ -1,13 +1,15 @@
 
-public typealias Var = ValueSettable
-public typealias Let = ValueGettable
+//public typealias Var = ValueSettable
+//public typealias Let = ValueGettable
 
 public typealias ValueFollowCancellation<VarType> = (ValueSettable<VarType>) -> ()
 
 public class ValueSettable<VarType>: ValueGettable<VarType> {
 
+    
     var followerValues: [ValueSettable<VarType>] = []
     var followCancellation: ValueFollowCancellation<VarType>? = nil
+    var isFollowing: Bool = false
     
     func leaderValueChanged(value: VarType) {
         _valueProvider = { value }
@@ -22,8 +24,9 @@ public class ValueSettable<VarType>: ValueGettable<VarType> {
         pipeToFollowers()
     }
     
-    func stopFollowing() {
+    public func stopFollowing() {
         followCancellation?(self)
+        followCancellation = nil
     }
     
     private func pipeToFollowers() {
@@ -44,16 +47,33 @@ public class ValueSettable<VarType>: ValueGettable<VarType> {
             self.followerValues.removeAll(where: { $0 === cancel })
         }
     }
+
+     public func reset() {
+        if followCancellation != nil {
+            // don't reset values that are followers of other variables
+            return
+        }
+        setValueProvider(initializer)
+     }
+    
+    public func setDefaultValue(_ value: VarType) {
+        initializer = { value }
+        reset()
+    }
 }
 
 /// A holder of a value of a specific type that can be read from and written to
-public class ValueGettable<VarType> {
+public class ValueGettable<VarType>: Hashable {
+    public static func == (lhs: ValueGettable<VarType>, rhs: ValueGettable<VarType>) -> Bool {
+        return lhs.name == rhs.name
+    }
+    
     typealias T = VarType
     
     /// The name of this variable. Used for looking variables up when connecting
     /// FunctionSteps and Variables
     public var name: String
-    private var initializer: () -> VarType
+    var initializer: () -> VarType
     
     var _valueProvider: () throws ->VarType
     
@@ -61,6 +81,10 @@ public class ValueGettable<VarType> {
         self.initializer = { val }
         self._valueProvider = { val }
         self.name = name
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
     }
     
     public init(name: String) {
@@ -75,10 +99,11 @@ public class ValueGettable<VarType> {
         initializer = { fatalError() }
     }
     
-    func getValue() throws -> VarType {
+    public func getValue() throws -> VarType {
         return try _valueProvider()
     }
-    
+ 
+
 }
 
 extension ValueGettable where VarType == Any {
@@ -142,6 +167,9 @@ public class SetBoolEqualTo: FunctionStep {
             throw VariableError.VariableProviderNotFound(source: "SetBoolEqualTo")
         }
         let varToSet = boolProvider.getWritable(name: varToSetName)
+        guard let varWithValueName = varWithValueName else {
+            throw VariableError.VariableNameNotProvided(variable: "SetBoolEqualTo:varWithValueName")
+        }
         let varWithValue = boolProvider.getReadable(name: varWithValueName)
         guard let value = try? varWithValue.getValue() else {
             fatalError("No value found for variable")
@@ -149,13 +177,13 @@ public class SetBoolEqualTo: FunctionStep {
         varToSet.setValue(value)
     }
     
-    public init(varToSetName: String, varWithValueName: String) {
+    public init(varToSetName: String, varWithValueName: String? = nil) {
         self.varToSetName = varToSetName
         self.varWithValueName = varWithValueName
     }
-    
+
     public var varToSetName: String
-    public var varWithValueName: String
+    public var varWithValueName: String?
     public var boolProvider: VariableProvider<Bool>? = nil
     
     public func addVariableProvider<T>(provider: VariableProvider<T>) {

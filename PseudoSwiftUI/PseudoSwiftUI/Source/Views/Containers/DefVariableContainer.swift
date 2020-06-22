@@ -3,22 +3,19 @@ import UIKit
 import PseudoSwift
 
 
-final class DefVariableContainer: Container, UITextFieldDelegate {
+final class DefVariableContainer: ValueProviderContainer, UITextFieldDelegate {
 
     var textBox: UITextField!
-    let output: VariableDefinition
     let toggle: UISwitch
-    let value: ValueSettable<Bool>
     
-    init(value: ValueSettable<Bool>, positionPercentage: CGPoint, output: VariableDefinition) {
-        self.output = output
+    init(positionPercentage: CGPoint, output: ValueSettable<Bool>) {
         self.toggle = UISwitch()
-        self.value = value
-        super.init(positionPercentage: positionPercentage, name: value.name, isFlowConductor: false)
+        toggle.isOn = (try? output.getValue()) ?? false
+        super.init(positionPercentage: positionPercentage, output: output, name: output.name, isFlowConductor: false)
     }
     
     override func viewDidLoad() {
-        let outputOutlet = OutputValueOutlet(value: value, index: 0, frame: self.view.frame, container: self)
+        let outputOutlet = OutputValueOutlet(value: self.output, index: 0, frame: self.view.frame, container: self)
         boolOutlets.append(outputOutlet)
         super.viewDidLoad()
     }
@@ -45,7 +42,8 @@ final class DefVariableContainer: Container, UITextFieldDelegate {
     }
     
      @objc func stateChanged(switchState: UISwitch) {
-        value.setValue(switchState.isOn)
+        output.setDefaultValue(switchState.isOn)
+        
     }
     
     @objc func textChanged(textbox: UITextView) {

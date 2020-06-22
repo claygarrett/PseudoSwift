@@ -3,10 +3,10 @@ import UIKit
 import PseudoSwift
 
 
-public final class SetVariableContainer<ValueType>: FlowContainer<ValueType>, UITextFieldDelegate {
+public final class SetVariableContainer<ValueType>: FlowContainer, UITextFieldDelegate {
 
     let value: ValueSettable<Bool>
-    var valueOutlet: ValueOutlet<Bool>!
+    var valueOutlet: SetValueOutlet<Bool>!
     
     init(value: ValueSettable<Bool>, positionPercentage: CGPoint) {
         self.value = value
@@ -14,7 +14,7 @@ public final class SetVariableContainer<ValueType>: FlowContainer<ValueType>, UI
     }
     
     public override func viewDidLoad() {
-        valueOutlet = InputValueOutlet(value: value, index: 1, frame: self.view.frame, container: self)
+        valueOutlet = SetValueOutlet(value: value, index: 1, frame: self.view.frame, container: self)
         boolOutlets.append(valueOutlet)
         super.viewDidLoad()
     }
