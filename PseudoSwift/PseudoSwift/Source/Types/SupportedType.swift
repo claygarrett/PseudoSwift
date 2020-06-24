@@ -1,5 +1,5 @@
 
-// A list of all of the types our system knows about and can act on
+/// A list of all of the types our system knows about and can act on
 /// If a type is not in this list, it cannot be used as part of a FunctionStep
 public indirect enum SupportedType: Equatable {
     case boolean

@@ -1,12 +1,52 @@
 
 //public typealias Var = ValueSettable
-//public typealias Let = ValueGettable
+//public typealias Let = ValueSettable
 
 public typealias ValueFollowCancellation<VarType> = (ValueSettable<VarType>) -> ()
 
-public class ValueSettable<VarType>: ValueGettable<VarType> {
-
+public class ValueSettable<VarType> {
     
+
+       public static func == (lhs: ValueSettable<VarType>, rhs: ValueSettable<VarType>) -> Bool {
+           return lhs.name == rhs.name
+       }
+       
+       typealias T = VarType
+       
+       /// The name of this variable. Used for looking variables up when connecting
+       /// FunctionSteps and Variables
+       public var name: String
+       var initializer: () -> VarType
+       
+       var _valueProvider: () throws ->VarType
+       
+       public init(_ name: String, _ val: VarType) {
+           self.initializer = { val }
+           self._valueProvider = { val }
+           self.name = name
+       }
+       
+       public func hash(into hasher: inout Hasher) {
+           hasher.combine(name)
+       }
+       
+       public init(name: String) {
+           self.name = name
+           // variables initialized with this input are meant to
+           // be temporary values that hold on to a type until they
+           // are converted to a proper version that has a value provider.
+           // so, calling them prior to that will result in a crash
+           _valueProvider = {
+               fatalError()
+           }
+           initializer = { fatalError() }
+       }
+       
+       public func getValue() throws -> VarType {
+           return try _valueProvider()
+       }
+    
+
     var followerValues: [ValueSettable<VarType>] = []
     var followCancellation: ValueFollowCancellation<VarType>? = nil
     var isFollowing: Bool = false
@@ -62,68 +102,25 @@ public class ValueSettable<VarType>: ValueGettable<VarType> {
     }
 }
 
-/// A holder of a value of a specific type that can be read from and written to
-public class ValueGettable<VarType>: Hashable {
-    public static func == (lhs: ValueGettable<VarType>, rhs: ValueGettable<VarType>) -> Bool {
-        return lhs.name == rhs.name
-    }
-    
-    typealias T = VarType
-    
-    /// The name of this variable. Used for looking variables up when connecting
-    /// FunctionSteps and Variables
-    public var name: String
-    var initializer: () -> VarType
-    
-    var _valueProvider: () throws ->VarType
-    
-    public init(_ name: String, _ val: VarType) {
-        self.initializer = { val }
-        self._valueProvider = { val }
-        self.name = name
-    }
-    
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(name)
-    }
-    
-    public init(name: String) {
-        self.name = name
-        // variables initialized with this input are meant to
-        // be temporary values that hold on to a type until they
-        // are converted to a proper version that has a value provider.
-        // so, calling them prior to that will result in a crash
-        _valueProvider = { 
-            fatalError()
-        }
-        initializer = { fatalError() }
-    }
-    
-    public func getValue() throws -> VarType {
-        return try _valueProvider()
-    }
- 
 
-}
-
-extension ValueGettable where VarType == Any {
-    func equal<T>(val: T) -> ValueGettable<T> {
-        return ValueGettable<T>(name, val)
+extension ValueSettable where VarType == Any {
+    func equal<T>(val: T) -> ValueSettable<T> {
+        return ValueSettable<T>(name, val)
     }
 }
 
 /// Global helper function to easily define a variable
 /// The Variable returned by  this method will not have a value
 /// but can be given one by following up the call with .equals(value)
-func def(name: String) -> ValueGettable<Any> {
-    let tempVariable: ValueGettable<Any> = ValueGettable(name: name)
+func def(name: String) -> ValueSettable<Any> {
+    let tempVariable: ValueSettable<Any> = ValueSettable(name: name)
     return tempVariable
 }
 
 public class VariableProvider<T> {
-    var values: [String: ValueGettable<T>]
+    var values: [String: ValueSettable<T>]
     
-    func getReadable(name: String) -> ValueGettable<T> {
+    func getReadable(name: String) -> ValueSettable<T> {
         return values[name]!
     }
     
@@ -131,7 +128,7 @@ public class VariableProvider<T> {
         return values[name]! as! ValueSettable<T>
     }
     
-    init(values: [String: ValueGettable<T>]) {
+    init(values: [String: ValueSettable<T>]) {
         self.values = values
     }
     

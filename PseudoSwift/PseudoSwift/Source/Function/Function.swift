@@ -23,7 +23,7 @@ import Foundation
 ///
 /// It's up to you to ensure you pass the correct types of elements to the function. If we find items
 /// of types that we don't expect passed into the function builder, we will throw.
-public class Function<Output>: ValueGettable<Output> {
+public class Function<Output>: ValueSettable<Output> {
     public override func getValue() throws -> Output {
         do { return try self() } catch { fatalError() }
     }
@@ -38,7 +38,7 @@ public class Function<Output>: ValueGettable<Output> {
     var outputVariableName: String!
     
     /// All boolean variables. We split all provided variables into maps by type.
-    var booleanVariables: [String: ValueGettable<Bool>] = [:]
+    var booleanVariables: [String: ValueSettable<Bool>] = [:]
     
     /// All providers of boolean variables. Just a simplified wrapper for our map of variables
     var booleanVariableProvider: VariableProvider<Bool>
@@ -55,7 +55,7 @@ public class Function<Output>: ValueGettable<Output> {
         
         // Break out each variable from our lines
         let variables = allLines.compactMap { (line) -> Any? in
-            return line is ValueGettable<Bool> ? line : nil
+            return line is ValueSettable<Bool> ? line : nil
         }
         
         // Break out each step from our lines
@@ -69,7 +69,7 @@ public class Function<Output>: ValueGettable<Output> {
         // Split our variables by type
         for variable in variables {
             switch variable {
-            case let booleanVar as ValueGettable<Bool>:
+            case let booleanVar as ValueSettable<Bool>:
                 self.booleanVariables[booleanVar.name] = booleanVar
             default:
                 fatalError("Sent in an unexpected variable type")
@@ -109,9 +109,9 @@ public class Function<Output>: ValueGettable<Output> {
     
     public func addLine(_ line: AnyObject) {
         // Break out each variable from our lines
-        if line is ValueGettable<Bool> {
+        if line is ValueSettable<Bool> {
             switch line {
-            case let booleanVar as ValueGettable<Bool>:
+            case let booleanVar as ValueSettable<Bool>:
                 self.booleanVariables[booleanVar.name] = booleanVar
             default:
                 fatalError("Sent in an unexpected variable type")
