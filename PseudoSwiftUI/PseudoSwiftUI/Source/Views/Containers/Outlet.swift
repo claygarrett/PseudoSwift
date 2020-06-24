@@ -35,8 +35,6 @@ public class Outlet<ValueType> {
         view = OutletView(frame: frame, direction: direction, type: type, index: index, name: name)
         print(self.view.frame)
     }
-
-    
 }
 
 // TODO: Can this be combined with InputValue or share a super class for common bits?
@@ -110,9 +108,7 @@ class OutputValueOutlet<ValueType>: ValueOutlet<ValueType> {
     init(value: ValueSettable<ValueType>, index: Int, frame: CGRect, container: Container) {
         super.init(value: value, direction: .output, index: index, frame: frame, container: container)
     }
-    
 }
-
 
 class ValueOutlet<ValueType>: Outlet<ValueType> {
     
@@ -127,8 +123,6 @@ class ValueOutlet<ValueType>: Outlet<ValueType> {
         self.value.name = name
         self.view.label.text = name
     }
-    
-  
 }
 
 class FlowOutlet<ValueType>: Outlet<ValueType> {
@@ -142,6 +136,4 @@ class FlowOutlet<ValueType>: Outlet<ValueType> {
         wire?.view.removeFromSuperview()
         wire = nil
     }
-    
-
 }

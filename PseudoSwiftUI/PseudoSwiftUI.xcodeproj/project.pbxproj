@@ -17,6 +17,7 @@
 		4249305224624ED800D783B9 /* FunctionContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249305124624ED800D783B9 /* FunctionContainer.swift */; };
 		4249305424624EE100D783B9 /* DefVariableContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249305324624EE100D783B9 /* DefVariableContainer.swift */; };
 		4249305624626E6600D783B9 /* OutletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249305524626E6600D783B9 /* OutletView.swift */; };
+		4250D5B024A164CF00CA8E1E /* VariableNameGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4250D5AF24A164CF00CA8E1E /* VariableNameGenerator.swift */; };
 		427E1B0E244EA99500536054 /* PseudoSwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427E1B04244EA99500536054 /* PseudoSwiftUI.framework */; };
 		427E1B13244EA99500536054 /* PseudoSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427E1B12244EA99500536054 /* PseudoSwiftUITests.swift */; };
 		427E1B15244EA99500536054 /* PseudoSwiftUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 427E1B07244EA99500536054 /* PseudoSwiftUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -69,6 +70,7 @@
 		4249305124624ED800D783B9 /* FunctionContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionContainer.swift; sourceTree = "<group>"; };
 		4249305324624EE100D783B9 /* DefVariableContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefVariableContainer.swift; sourceTree = "<group>"; };
 		4249305524626E6600D783B9 /* OutletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutletView.swift; sourceTree = "<group>"; };
+		4250D5AF24A164CF00CA8E1E /* VariableNameGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableNameGenerator.swift; sourceTree = "<group>"; };
 		427E1B04244EA99500536054 /* PseudoSwiftUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PseudoSwiftUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		427E1B07244EA99500536054 /* PseudoSwiftUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PseudoSwiftUI.h; sourceTree = "<group>"; };
 		427E1B08244EA99500536054 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -129,6 +131,7 @@
 				4249305524626E6600D783B9 /* OutletView.swift */,
 				42C4FDB92468BC0F0003D8CE /* OutputContainer.swift */,
 				422898F32482894B00917CB1 /* StartFlowContainer.swift */,
+				4250D5AF24A164CF00CA8E1E /* VariableNameGenerator.swift */,
 			);
 			path = Containers;
 			sourceTree = "<group>";
@@ -342,6 +345,7 @@
 				423C82FF24708C2C00F05397 /* FlowManager.swift in Sources */,
 				42493045245FC5FB00D783B9 /* FunctionListTableViewController.swift in Sources */,
 				42C4FDBA2468BC0F0003D8CE /* OutputContainer.swift in Sources */,
+				4250D5B024A164CF00CA8E1E /* VariableNameGenerator.swift in Sources */,
 				4249305424624EE100D783B9 /* DefVariableContainer.swift in Sources */,
 				4249305624626E6600D783B9 /* OutletView.swift in Sources */,
 			);

@@ -10,25 +10,41 @@ import UIKit
 import PseudoSwift
 import Foundation
 
-public class WorkspaceViewController: UIViewController, ConnectionDragHandler, FunctionStepSelectionDelegate {
+public class WorkspaceViewController: UIViewController, ConnectionDragHandler, FunctionStepSelectionDelegate, CustomVariableNameProvider {
+    func getValue(name: String) -> ValueSettable<Bool>? {
+        return variables.first(where: { $0.name == name })
+    }
+    
     
     var currentFunction: Function<Bool> = Function<Bool>(name: "Main Function")
     var boolWires: [Wire<Bool>] = []
     var activeWire: Wire<Bool>?
     var containers: [Container] = []
     var startContainer: StartFlowContainer!
+    var outputContainer: OutputContainer
     let functionList = FunctionListTableViewController(functions: ["DefineBool", "SetBool", "BoolFlip", "BoolAnd", "FunctionOutput"])
     let runButton = UIButton()
     var functionSteps: [FunctionStep] = []
-    var booleanVariables: [ValueGettable<Bool>] = []
+    var variables: [ValueSettable<Bool>] = []
     var flowManager: FlowManager!
+    let variableNameGenerator: VariableNameGenerator = VariableNameGenerator()
+    
+    required init?(coder: NSCoder) {
+        let outputValue = ValueSettable<Bool>(name: UUID().uuidString)
+        outputContainer = OutputContainer(value: outputValue, positionPercentage: CGPoint(x: 0.5, y: 0.5), name: "Function Output")
+        let bundle = Bundle(identifier: "com.claygarrett.PseudoSwiftUI")
+        super.init(nibName: "WorkspaceViewController", bundle: bundle)
+    }
     
     public override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = .white
+        
         
         view.isUserInteractionEnabled = true
         
         addStartContainer()
+        addOutputContainer()
         addFunctionList()
         addButton()
     }
@@ -58,7 +74,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     }
     
     @objc func runTapped(_ sender:UIButton!) {
-        for variable in variables.values {
+        for variable in variables {
             variable.reset()
         }
         let function = flowManager.buildFunction()
@@ -71,7 +87,6 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         let workspaceHeight = self.view.frame.size.height
         
         for container in containers {
-            
             let newContainerFrame = CGRect(
                 x: container.positionPercentage.x * workspaceWidth,
                 y: container.positionPercentage.y * workspaceHeight,
@@ -87,11 +102,17 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     
     func addStartContainer() {
         startContainer = StartFlowContainer(positionPercentage: CGPoint(x: 0.1, y: 0.01))
-        flowManager = FlowManager(rootNode: startContainer)
+        flowManager = FlowManager(rootNode: startContainer, output: outputContainer)
         startContainer.dragDelegate = self
         self.containers.append(startContainer)
         self.addChild(startContainer)
         self.view.addSubview(startContainer.view)
+    }
+    
+    func addOutputContainer() {
+        self.containers.append(outputContainer)
+        self.addChild(outputContainer)
+        self.view.addSubview(outputContainer.view)
     }
     
     func addDefVariableContainer(output: ValueSettable<Bool>) {
@@ -104,6 +125,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     
     func addSetVariableContainer(value: ValueSettable<Bool>) {
         let container = SetVariableContainer<Bool>(value: value, positionPercentage: CGPoint(x: 0.1, y: 0.1))
+        container.customVariableNameProvider = self
         container.dragDelegate = self
         self.addChild(container)
         self.view.addSubview(container.view)
@@ -366,30 +388,38 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
             currentFunction.addLine(output)
             addOutputContainer(value: variable)
         case "DefineBool":
-            let varToSet = getOrAddVariable(name: "Clay", defaultValue: false)
+            let variableName = variableNameGenerator.getUniqueVariableName()
+            
+            let varToSet = getOrAddVariable(name: variableName, defaultValue: false)
+            
+            
             addDefVariableContainer(output: varToSet)
         case "SetBool":
             let varToSetName = "Clay"
-            
             let varToSet = getOrAddVariable(name: varToSetName, defaultValue: false)
-            
             addSetVariableContainer(value: varToSet)
-            
         default:
             break
         }
     }
     
-    var variables: [String: ValueSettable<Bool>] = [:]
-    
     func getOrAddVariable(name: String, defaultValue: Bool) -> ValueSettable<Bool> {
-        guard let variable = variables[name] else {
+        guard let variable = variables.first(where: { $0.name == name }) else {
             let variable = ValueSettable<Bool>(name, defaultValue)
-            variables[name] = variable
+            variables.append(variable)
             return variable
         }
         return variable
     }
+    
+    // CustomVariableNameProvider
+     var numCustomVariables: Int {
+        return variables.count
+     }
+     
+     var customVariableNames: [String] {
+        return Array(variables.map { $0.name })
+     }
 }
 
 extension CGPoint {
@@ -444,5 +474,4 @@ extension CGRect {
         
         return CGRect(origin: newOrigin, size: newSize)
     }
-    
 }

@@ -8,8 +8,11 @@ struct FlowNode {
 
 struct FlowManager {
     var rootNode: FlowContainer
-    init(rootNode: FlowContainer) {
+    var outputContainer: OutputContainer
+    
+    init(rootNode: FlowContainer, output: OutputContainer) {
         self.rootNode = rootNode
+        self.outputContainer = output
     }
     
     private var function = Function<Bool>(name: "Clay's Magical Function")
@@ -20,7 +23,12 @@ struct FlowManager {
         while currentContainer != nil {
             currentContainer = traverseFlowNodes(container: currentContainer!)
         }
-        function.addLine(FunctionOutput(name: "Clay"))
+        
+        traverseValueProviderChain(container: outputContainer)
+        function.addLine(outputContainer.value)
+        function.addLine(FunctionOutput(name: outputContainer.value.name))
+
+        
         return function
     }
     
@@ -58,9 +66,7 @@ struct FlowManager {
                   function.addLine(setVariableContainer.value)
                 let setVarFunction = SetBoolEqualTo(varToSetName: setVariableContainer.valueOutlet.value.name, varWithValueName: setVariableContainer.valueOutlet.valueProviderContainer?.output.name)
                 function.addLine(setVarFunction as AnyObject)
-        } else if let setVariableContainer = container as? SetVariableContainer<Bool> {
-            
-        }
+        } 
                 
         return container.nextContainer
     }
@@ -77,8 +83,6 @@ struct FlowManager {
             }
             traverseValueProviderChain(container: valueContainer)
         }
-        
-        
         
         if let functionStepContainer = container as? FunctionStepContainer {
             // TODO: Locally keep track of lines as to not double add inputs?

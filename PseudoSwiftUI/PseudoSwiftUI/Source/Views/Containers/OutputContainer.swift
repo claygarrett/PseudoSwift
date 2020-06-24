@@ -2,19 +2,19 @@
 import UIKit
 import PseudoSwift
 
-final class OutputContainer: Container {
+final class OutputContainer: ValueProviderContainer {
     
     let nameLabel: UILabel = UILabel()
     let value: ValueSettable<Bool>
     
     init(value: ValueSettable<Bool>, positionPercentage: CGPoint, name: String) {
         self.value = value
-        super.init(positionPercentage: positionPercentage, name: name, isFlowConductor: false)
+        super.init(positionPercentage: positionPercentage, output: value, name: name, isFlowConductor: false)
     }
     
     override func viewDidLoad() {
         let inputOutlet = InputValueOutlet(value: value , index: 0, frame: self.view.frame, container: self)
-            boolOutlets.append(inputOutlet)
+        boolOutlets.append(inputOutlet)
         
         super.viewDidLoad()
     }

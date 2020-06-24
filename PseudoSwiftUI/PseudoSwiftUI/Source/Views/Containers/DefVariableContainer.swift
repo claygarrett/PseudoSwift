@@ -43,7 +43,6 @@ final class DefVariableContainer: ValueProviderContainer, UITextFieldDelegate {
     
      @objc func stateChanged(switchState: UISwitch) {
         output.setDefaultValue(switchState.isOn)
-        
     }
     
     @objc func textChanged(textbox: UITextView) {
