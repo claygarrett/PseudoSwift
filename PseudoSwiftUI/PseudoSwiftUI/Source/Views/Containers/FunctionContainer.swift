@@ -4,9 +4,9 @@ import UIKit
 import PseudoSwift
 
 class ValueProviderContainer: Container {
-    var output: ValueSettable<Bool>
+    var output: Variable<Bool>
     
-    init(positionPercentage: CGPoint, output: ValueSettable<Bool>, name: String, isFlowConductor: Bool) {
+    init(positionPercentage: CGPoint, output: Variable<Bool>, name: String, isFlowConductor: Bool) {
         self.output = output
         super.init(positionPercentage: positionPercentage, name: name, isFlowConductor: isFlowConductor)
     }
@@ -19,10 +19,10 @@ class ValueProviderContainer: Container {
 final class FunctionStepContainer: ValueProviderContainer {
     
     let nameLabel: UILabel = UILabel()
-    let inputs: [ValueSettable<Bool>]
+    let inputs: [Variable<Bool>]
     let functionStep: FunctionStep
     
-    init(functionStep: FunctionStep, positionPercentage: CGPoint, inputs: [ValueSettable<Bool>] = [], output: ValueSettable<Bool>, variables: [ValueSettable<Bool>] = [], name: String) {
+    init(functionStep: FunctionStep, positionPercentage: CGPoint, inputs: [Variable<Bool>] = [], output: Variable<Bool>, variables: [Variable<Bool>] = [], name: String) {
         self.inputs = inputs
         self.functionStep = functionStep
         super.init(positionPercentage: positionPercentage, output: output, name: name, isFlowConductor: false)

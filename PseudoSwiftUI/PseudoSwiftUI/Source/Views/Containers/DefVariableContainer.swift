@@ -8,7 +8,7 @@ final class DefVariableContainer: ValueProviderContainer, UITextFieldDelegate {
     var textBox: UITextField!
     let toggle: UISwitch
     
-    init(positionPercentage: CGPoint, output: ValueSettable<Bool>) {
+    init(positionPercentage: CGPoint, output: Variable<Bool>) {
         self.toggle = UISwitch()
         toggle.isOn = (try? output.getValue()) ?? false
         super.init(positionPercentage: positionPercentage, output: output, name: output.name, isFlowConductor: false)

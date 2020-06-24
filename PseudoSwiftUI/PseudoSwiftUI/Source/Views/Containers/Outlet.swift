@@ -45,7 +45,7 @@ class SetValueOutlet<ValueType>: ValueOutlet<ValueType> {
         wire?.view.removeFromSuperview()
         wire = nil
     }
-    init(value: ValueSettable<ValueType>, index: Int, frame: CGRect, container: Container) {
+    init(value: Variable<ValueType>, index: Int, frame: CGRect, container: Container) {
         super.init(value: value, direction: .input, index: index, frame: frame, container: container)
     }
     
@@ -65,7 +65,7 @@ class InputValueOutlet<ValueType>: ValueOutlet<ValueType> {
         wire?.view.removeFromSuperview()
         wire = nil
     }
-    init(value: ValueSettable<ValueType>, index: Int, frame: CGRect, container: Container) {
+    init(value: Variable<ValueType>, index: Int, frame: CGRect, container: Container) {
         super.init(value: value, direction: .input, index: index, frame: frame, container: container)
     }
     
@@ -105,16 +105,16 @@ class OutputValueOutlet<ValueType>: ValueOutlet<ValueType> {
           wires.append(wire)
       }
     
-    init(value: ValueSettable<ValueType>, index: Int, frame: CGRect, container: Container) {
+    init(value: Variable<ValueType>, index: Int, frame: CGRect, container: Container) {
         super.init(value: value, direction: .output, index: index, frame: frame, container: container)
     }
 }
 
 class ValueOutlet<ValueType>: Outlet<ValueType> {
     
-    var value: ValueSettable<ValueType>
+    var value: Variable<ValueType>
 
-    init(value: ValueSettable<ValueType>, direction: OutletDirection, index: Int, frame: CGRect, container: Container) {
+    init(value: Variable<ValueType>, direction: OutletDirection, index: Int, frame: CGRect, container: Container) {
         self.value = value
         super.init(direction: direction, index: index, frame: frame, name: value.name, container: container)
     }

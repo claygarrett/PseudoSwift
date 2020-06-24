@@ -5,9 +5,9 @@ import PseudoSwift
 final class OutputContainer: ValueProviderContainer {
     
     let nameLabel: UILabel = UILabel()
-    let value: ValueSettable<Bool>
+    let value: Variable<Bool>
     
-    init(value: ValueSettable<Bool>, positionPercentage: CGPoint, name: String) {
+    init(value: Variable<Bool>, positionPercentage: CGPoint, name: String) {
         self.value = value
         super.init(positionPercentage: positionPercentage, output: value, name: name, isFlowConductor: false)
     }

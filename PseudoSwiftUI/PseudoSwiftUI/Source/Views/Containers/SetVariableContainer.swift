@@ -5,7 +5,7 @@ import PseudoSwift
 protocol CustomVariableNameProvider: AnyObject {
     var numCustomVariables: Int { get }
     var customVariableNames: [String] { get }
-    func getValue(name: String) -> ValueSettable<Bool>?
+    func getValue(name: String) -> Variable<Bool>?
 }
 
 
@@ -23,13 +23,13 @@ public final class SetVariableContainer<ValueType>: FlowContainer, UIPickerViewD
         return customVariableNameProvider?.numCustomVariables ?? 0
     }
 
-    var value: ValueSettable<Bool>
+    var value: Variable<Bool>
     var valueOutlet: SetValueOutlet<Bool>!
     let picker: UIPickerView = UIPickerView()
     let variableToSetTextField: UITextField = UITextField()
     weak var customVariableNameProvider: CustomVariableNameProvider?
     
-    init(value: ValueSettable<Bool>, positionPercentage: CGPoint) {
+    init(value: Variable<Bool>, positionPercentage: CGPoint) {
         self.value = value
         super.init(positionPercentage: positionPercentage, name: value.name, isFlowConductor: true)
     }

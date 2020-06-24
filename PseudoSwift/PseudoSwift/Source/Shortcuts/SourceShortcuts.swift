@@ -13,8 +13,8 @@
 ////    return BoolOrPartial(leftVar: lhs, rightVar: rhs)
 ////}
 //
-//public func <~(lhs: String, rhs: Bool) -> ValueSettable<Bool> {
-//    return ValueSettable(lhs, rhs)
+//public func <~(lhs: String, rhs: Bool) -> Variable<Bool> {
+//    return Variable(lhs, rhs)
 //}
 //
 //public func <~(lhs: String, rhs: BoolAndPartial) -> BoolAnd {

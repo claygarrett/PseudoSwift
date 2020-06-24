@@ -11,7 +11,7 @@ import PseudoSwift
 import Foundation
 
 public class WorkspaceViewController: UIViewController, ConnectionDragHandler, FunctionStepSelectionDelegate, CustomVariableNameProvider {
-    func getValue(name: String) -> ValueSettable<Bool>? {
+    func getValue(name: String) -> Variable<Bool>? {
         return variables.first(where: { $0.name == name })
     }
     
@@ -25,12 +25,12 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     let functionList = FunctionListTableViewController(functions: ["DefineBool", "SetBool", "BoolFlip", "BoolAnd", "FunctionOutput"])
     let runButton = UIButton()
     var functionSteps: [FunctionStep] = []
-    var variables: [ValueSettable<Bool>] = []
+    var variables: [Variable<Bool>] = []
     var flowManager: FlowManager!
     let variableNameGenerator: VariableNameGenerator = VariableNameGenerator()
     
     required init?(coder: NSCoder) {
-        let outputValue = ValueSettable<Bool>(name: UUID().uuidString)
+        let outputValue = Variable<Bool>(name: UUID().uuidString)
         outputContainer = OutputContainer(value: outputValue, positionPercentage: CGPoint(x: 0.5, y: 0.5), name: "Function Output")
         let bundle = Bundle(identifier: "com.claygarrett.PseudoSwiftUI")
         super.init(nibName: "WorkspaceViewController", bundle: bundle)
@@ -115,7 +115,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         self.view.addSubview(outputContainer.view)
     }
     
-    func addDefVariableContainer(output: ValueSettable<Bool>) {
+    func addDefVariableContainer(output: Variable<Bool>) {
         let container = DefVariableContainer(positionPercentage: CGPoint(x: 0.1, y: 0.1), output: output)
         container.dragDelegate = self
         self.addChild(container)
@@ -123,7 +123,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         self.containers.append(container)
     }
     
-    func addSetVariableContainer(value: ValueSettable<Bool>) {
+    func addSetVariableContainer(value: Variable<Bool>) {
         let container = SetVariableContainer<Bool>(value: value, positionPercentage: CGPoint(x: 0.1, y: 0.1))
         container.customVariableNameProvider = self
         container.dragDelegate = self
@@ -132,7 +132,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         self.containers.append(container)
     }
     
-    func addFunctionStepContainer(functionStep: FunctionStep, name: String, inputVariables: [ValueSettable<Bool>], output: ValueSettable<Bool>) {
+    func addFunctionStepContainer(functionStep: FunctionStep, name: String, inputVariables: [Variable<Bool>], output: Variable<Bool>) {
         let container = FunctionStepContainer(functionStep: functionStep, positionPercentage: CGPoint(x: 0.1, y: 0.1), inputs: inputVariables, output: output, name: name)
         container.dragDelegate = self
         self.addChild(container)
@@ -140,7 +140,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         self.containers.append(container)
     }
     
-    func addOutputContainer(value: ValueSettable<Bool>) {
+    func addOutputContainer(value: Variable<Bool>) {
         let container = OutputContainer(value: value, positionPercentage: CGPoint(x: 0.1, y: 0.1), name: value.name)
         container.dragDelegate = self
         self.addChild(container)
@@ -368,9 +368,9 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         switch functionStep {
             
         case "BoolAnd":
-            let leftVar = ValueSettable("leftVar", false)
-            let rightVar = ValueSettable("rightVar", false)
-            let varToSet = ValueSettable("varToSet", false)
+            let leftVar = Variable("leftVar", false)
+            let rightVar = Variable("rightVar", false)
+            let varToSet = Variable("varToSet", false)
             currentFunction.addLine(leftVar)
             currentFunction.addLine(rightVar)
             currentFunction.addLine(varToSet)
@@ -403,9 +403,9 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         }
     }
     
-    func getOrAddVariable(name: String, defaultValue: Bool) -> ValueSettable<Bool> {
+    func getOrAddVariable(name: String, defaultValue: Bool) -> Variable<Bool> {
         guard let variable = variables.first(where: { $0.name == name }) else {
-            let variable = ValueSettable<Bool>(name, defaultValue)
+            let variable = Variable<Bool>(name, defaultValue)
             variables.append(variable)
             return variable
         }

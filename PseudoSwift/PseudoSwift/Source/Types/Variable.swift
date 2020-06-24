@@ -1,13 +1,13 @@
 
-//public typealias Var = ValueSettable
-//public typealias Let = ValueSettable
+//public typealias Var = Variable
+//public typealias Let = Variable
 
-public typealias ValueFollowCancellation<VarType> = (ValueSettable<VarType>) -> ()
+public typealias ValueFollowCancellation<VarType> = (Variable<VarType>) -> ()
 
-public class ValueSettable<VarType> {
+public class Variable<VarType> {
     
 
-       public static func == (lhs: ValueSettable<VarType>, rhs: ValueSettable<VarType>) -> Bool {
+       public static func == (lhs: Variable<VarType>, rhs: Variable<VarType>) -> Bool {
            return lhs.name == rhs.name
        }
        
@@ -47,7 +47,7 @@ public class ValueSettable<VarType> {
        }
     
 
-    var followerValues: [ValueSettable<VarType>] = []
+    var followerValues: [Variable<VarType>] = []
     var followCancellation: ValueFollowCancellation<VarType>? = nil
     var isFollowing: Bool = false
     
@@ -79,7 +79,7 @@ public class ValueSettable<VarType> {
         self.followCancellation = cancellation
     }
     
-    public func follow(follower: ValueSettable<VarType>) {
+    public func follow(follower: Variable<VarType>) {
         if !followerValues.contains(where: { $0 === follower}) {
             followerValues.append(follower)
         }
@@ -103,32 +103,32 @@ public class ValueSettable<VarType> {
 }
 
 
-extension ValueSettable where VarType == Any {
-    func equal<T>(val: T) -> ValueSettable<T> {
-        return ValueSettable<T>(name, val)
+extension Variable where VarType == Any {
+    func equal<T>(val: T) -> Variable<T> {
+        return Variable<T>(name, val)
     }
 }
 
 /// Global helper function to easily define a variable
 /// The Variable returned by  this method will not have a value
 /// but can be given one by following up the call with .equals(value)
-func def(name: String) -> ValueSettable<Any> {
-    let tempVariable: ValueSettable<Any> = ValueSettable(name: name)
+func def(name: String) -> Variable<Any> {
+    let tempVariable: Variable<Any> = Variable(name: name)
     return tempVariable
 }
 
 public class VariableProvider<T> {
-    var values: [String: ValueSettable<T>]
+    var values: [String: Variable<T>]
     
-    func getReadable(name: String) -> ValueSettable<T> {
+    func getReadable(name: String) -> Variable<T> {
         return values[name]!
     }
     
-    func getWritable(name: String) -> ValueSettable<T> {
-        return values[name]! as! ValueSettable<T>
+    func getWritable(name: String) -> Variable<T> {
+        return values[name]! as! Variable<T>
     }
     
-    init(values: [String: ValueSettable<T>]) {
+    init(values: [String: Variable<T>]) {
         self.values = values
     }
     
