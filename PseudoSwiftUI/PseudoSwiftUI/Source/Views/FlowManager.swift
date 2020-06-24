@@ -8,14 +8,14 @@ struct FlowNode {
 
 struct FlowManager {
     var rootNode: FlowContainer
-    var outputContainer: OutputContainer
+    var functionOutputContainer: FunctionOutputContainer
+    private var function = Function<Bool>(name: "Clay's Magical Function")
     
-    init(rootNode: FlowContainer, output: OutputContainer) {
+    init(rootNode: FlowContainer, functionOutputContainer: FunctionOutputContainer) {
         self.rootNode = rootNode
-        self.outputContainer = output
+        self.functionOutputContainer = functionOutputContainer
     }
     
-    private var function = Function<Bool>(name: "Clay's Magical Function")
     
     mutating func buildFunction() -> Function<Bool> {
         function = Function<Bool>(name: "Clay's Magical Function")
@@ -24,9 +24,9 @@ struct FlowManager {
             currentContainer = traverseFlowNodes(container: currentContainer!)
         }
         
-        traverseValueProviderChain(container: outputContainer)
-        function.addLine(outputContainer.value)
-        function.addLine(FunctionOutput(name: outputContainer.value.name))
+        traverseValueProviderChain(container: functionOutputContainer)
+        function.addLine(functionOutputContainer.value)
+        function.addLine(FunctionOutput(name: functionOutputContainer.value.name))
 
         
         return function

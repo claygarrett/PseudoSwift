@@ -44,7 +44,7 @@ public final class SetVariableContainer<ValueType>: FlowContainer, UIPickerViewD
     }
     
     public override func viewDidLayoutSubviews() {
-        variableToSetTextField.frame = CGRect(x: 0, y: 0, width: 100, height: 50)
+        variableToSetTextField.frame = CGRect(x: 0, y: 0, width: 200, height: 50)
         variableToSetTextField.inputView = picker
     }
     

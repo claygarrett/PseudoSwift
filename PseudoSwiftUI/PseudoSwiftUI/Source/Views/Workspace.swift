@@ -21,8 +21,8 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     var activeWire: Wire<Bool>?
     var containers: [Container] = []
     var startContainer: StartFlowContainer!
-    var outputContainer: OutputContainer
-    let functionList = FunctionListTableViewController(functions: ["DefineBool", "SetBool", "BoolFlip", "BoolAnd", "FunctionOutput"])
+    var functionOutputContainer: FunctionOutputContainer
+    let functionList = FunctionListTableViewController(functions: ["DefineBool", "SetBool", "BoolFlip", "BoolAnd"])
     let runButton = UIButton()
     var functionSteps: [FunctionStep] = []
     var variables: [Variable<Bool>] = []
@@ -31,7 +31,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     
     required init?(coder: NSCoder) {
         let outputValue = Variable<Bool>(name: UUID().uuidString)
-        outputContainer = OutputContainer(value: outputValue, positionPercentage: CGPoint(x: 0.5, y: 0.5), name: "Function Output")
+        functionOutputContainer = FunctionOutputContainer(value: outputValue, positionPercentage: CGPoint(x: 0.5, y: 0.5), name: "Function Output")
         let bundle = Bundle(identifier: "com.claygarrett.PseudoSwiftUI")
         super.init(nibName: "WorkspaceViewController", bundle: bundle)
     }
@@ -44,7 +44,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         view.isUserInteractionEnabled = true
         
         addStartContainer()
-        addOutputContainer()
+        addFunctionOutputContainer()
         addFunctionList()
         addButton()
     }
@@ -64,7 +64,7 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     }
     
     func addButton() {
-        runButton.frame = .init(x: 20, y: 20, width: 100, height: 40)
+        runButton.frame = .init(x: 20, y: 20, width: 200, height: 40)
         runButton.backgroundColor = .purple
         runButton.setTitle("Run!", for: .normal)
         runButton.setTitleColor(.white, for: .normal    )
@@ -102,17 +102,20 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     
     func addStartContainer() {
         startContainer = StartFlowContainer(positionPercentage: CGPoint(x: 0.1, y: 0.01))
-        flowManager = FlowManager(rootNode: startContainer, output: outputContainer)
+        flowManager = FlowManager(
+            rootNode: startContainer,
+            functionOutputContainer: functionOutputContainer
+        )
         startContainer.dragDelegate = self
         self.containers.append(startContainer)
         self.addChild(startContainer)
         self.view.addSubview(startContainer.view)
     }
     
-    func addOutputContainer() {
-        self.containers.append(outputContainer)
-        self.addChild(outputContainer)
-        self.view.addSubview(outputContainer.view)
+    func addFunctionOutputContainer() {
+        self.containers.append(functionOutputContainer)
+        self.addChild((functionOutputContainer))
+        self.view.addSubview((functionOutputContainer).view)
     }
     
     func addDefVariableContainer(output: Variable<Bool>) {
@@ -134,14 +137,6 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     
     func addFunctionStepContainer(functionStep: FunctionStep, name: String, inputVariables: [Variable<Bool>], output: Variable<Bool>) {
         let container = FunctionStepContainer(functionStep: functionStep, positionPercentage: CGPoint(x: 0.1, y: 0.1), inputs: inputVariables, output: output, name: name)
-        container.dragDelegate = self
-        self.addChild(container)
-        self.view.addSubview(container.view)
-        self.containers.append(container)
-    }
-    
-    func addOutputContainer(value: Variable<Bool>) {
-        let container = OutputContainer(value: value, positionPercentage: CGPoint(x: 0.1, y: 0.1), name: value.name)
         container.dragDelegate = self
         self.addChild(container)
         self.view.addSubview(container.view)
@@ -380,13 +375,6 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
             let id = UUID().uuidString
             let input = getOrAddVariable(name: id, defaultValue: true)
             addFunctionStepContainer(functionStep: BoolFlip(id), name: id, inputVariables: [input], output: input)
-        case "FunctionOutput":
-            let id = UUID().uuidString
-            let variable = getOrAddVariable(name: id, defaultValue: false)
-            let output = FunctionOutput(name: id)
-            currentFunction.addLine(variable)
-            currentFunction.addLine(output)
-            addOutputContainer(value: variable)
         case "DefineBool":
             let variableName = variableNameGenerator.getUniqueVariableName()
             

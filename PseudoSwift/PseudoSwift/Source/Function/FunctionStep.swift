@@ -16,11 +16,11 @@ public protocol FunctionStep {
     /// A collection of the types of Variables we are dependent on.
     func requiredVariableProviders() -> [SupportedType]
     
-    var inputVariables: [VariableDefinition] {
+    var inputVariables: [VariablePlaceholder] {
         get
     }
     
-    var outputVariables: [VariableDefinition] {
+    var outputVariables: [VariablePlaceholder] {
         get
     }
 }

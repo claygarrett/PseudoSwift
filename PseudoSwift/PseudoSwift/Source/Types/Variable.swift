@@ -2,11 +2,9 @@
 //public typealias Var = Variable
 //public typealias Let = Variable
 
-public typealias ValueFollowCancellation<VarType> = (Variable<VarType>) -> ()
+public typealias VariableFollowCancellation<VarType> = (Variable<VarType>) -> ()
 
 public class Variable<VarType> {
-    
-
        public static func == (lhs: Variable<VarType>, rhs: Variable<VarType>) -> Bool {
            return lhs.name == rhs.name
        }
@@ -48,7 +46,7 @@ public class Variable<VarType> {
     
 
     var followerValues: [Variable<VarType>] = []
-    var followCancellation: ValueFollowCancellation<VarType>? = nil
+    var followCancellation: VariableFollowCancellation<VarType>? = nil
     var isFollowing: Bool = false
     
     func leaderValueChanged(value: VarType) {
@@ -75,7 +73,7 @@ public class Variable<VarType> {
         }
     }
     
-    internal func setCancelation(cancellation: @escaping ValueFollowCancellation<VarType>) {
+    internal func setCancelation(cancellation: @escaping VariableFollowCancellation<VarType>) {
         self.followCancellation = cancellation
     }
     
@@ -193,12 +191,12 @@ public class SetBoolEqualTo: FunctionStep {
         return [.boolean]
     }
     
-    public var inputVariables: [VariableDefinition] {
-        return [VariableDefinition(name: "leftVar", type: .boolean, direction: .input)]
+    public var inputVariables: [VariablePlaceholder] {
+        return [VariablePlaceholder(name: "leftVar", type: .boolean, direction: .input)]
     }
     
-    public var outputVariables: [VariableDefinition] {
-        return [VariableDefinition(name: "rightVar", type: .boolean, direction: .input)]
+    public var outputVariables: [VariablePlaceholder] {
+        return [VariablePlaceholder(name: "rightVar", type: .boolean, direction: .input)]
     }
     
     

@@ -52,6 +52,4 @@ final class FunctionStepContainer: ValueProviderContainer {
         nameLabel.textColor = .white
         self.view.addSubview(nameLabel)
     }
-    
-
 }

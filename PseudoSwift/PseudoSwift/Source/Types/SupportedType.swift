@@ -7,7 +7,7 @@ public indirect enum SupportedType: Equatable {
     case array(type: SupportedType)
 }
 
-public class VariableDefinition {
+public class VariablePlaceholder {
     public var name: String
     public let type: SupportedType
     public let direction: VariableDirection

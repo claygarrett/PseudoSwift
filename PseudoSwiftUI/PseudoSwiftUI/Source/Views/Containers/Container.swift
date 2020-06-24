@@ -16,7 +16,7 @@ import PseudoSwift
 struct ContainerType {
     let input: SupportedType?
     let ouptut: SupportedType?
-    let variables: [VariableDefinition]
+    let variables: [VariablePlaceholder]
 }
 
 protocol Containing: AnyObject {

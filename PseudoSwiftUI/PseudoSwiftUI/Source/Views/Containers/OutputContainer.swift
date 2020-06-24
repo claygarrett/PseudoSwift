@@ -2,7 +2,8 @@
 import UIKit
 import PseudoSwift
 
-final class OutputContainer: ValueProviderContainer {
+/// Description
+final class FunctionOutputContainer: ValueProviderContainer {
     
     let nameLabel: UILabel = UILabel()
     let value: Variable<Bool>

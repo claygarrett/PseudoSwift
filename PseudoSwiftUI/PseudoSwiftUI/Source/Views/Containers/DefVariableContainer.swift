@@ -31,7 +31,7 @@ final class DefVariableContainer: ValueProviderContainer, UITextFieldDelegate {
         textBox.font = .boldSystemFont(ofSize: 24)
         textBox.textColor = .systemPink
         textBox.delegate = self
-        toggle.frame = CGRect(x: 20, y: 50, width: 100, height: 40)
+        toggle.frame = CGRect(x: 20, y: 50, width: 200, height: 40)
         
         toggle.addTarget(self, action: #selector(stateChanged), for: .valueChanged)
         

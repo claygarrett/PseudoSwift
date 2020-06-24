@@ -1,14 +1,14 @@
 /// Abstract superclass for any FunctionSteps that present as an operation between two variables
 public class InfixOperator: FunctionStep {
-    public var outputVariables: [VariableDefinition] {
-        return [VariableDefinition(name: varToSetName, type: .boolean, direction: .output)]
+    public var outputVariables: [VariablePlaceholder] {
+        return [VariablePlaceholder(name: varToSetName, type: .boolean, direction: .output)]
 
     }
     
-    public var inputVariables: [VariableDefinition] {
+    public var inputVariables: [VariablePlaceholder] {
         return [
-            VariableDefinition(name: leftVarName, type: .boolean, direction: .input),
-            VariableDefinition(name: rightVarName, type: .boolean, direction: .input)
+            VariablePlaceholder(name: leftVarName, type: .boolean, direction: .input),
+            VariablePlaceholder(name: rightVarName, type: .boolean, direction: .input)
         ]
     }
     
@@ -40,13 +40,13 @@ public class InfixOperator: FunctionStep {
 
 /// Abstract superclass for any FunctionSteps that present as an operation between two variables
 public class SetBool: FunctionStep {
-    public var outputVariables: [VariableDefinition] {
+    public var outputVariables: [VariablePlaceholder] {
         return [
-            VariableDefinition(name: varToSetName, type: .boolean, direction: .output)
+            VariablePlaceholder(name: varToSetName, type: .boolean, direction: .output)
         ]
     }
     
-    public var inputVariables: [VariableDefinition] {
+    public var inputVariables: [VariablePlaceholder] {
         return [
         ]
     }
@@ -122,15 +122,15 @@ public class BoolOr: InfixOperator {
 /// Changes a boolean's value to the other possible option.
 /// Changes true to false or false to true.
 public class BoolFlip: FunctionStep {
-    public var outputVariables: [VariableDefinition] {
+    public var outputVariables: [VariablePlaceholder] {
         return [
-            VariableDefinition(name: targetName, type: .boolean, direction: .output)
+            VariablePlaceholder(name: targetName, type: .boolean, direction: .output)
         ]
     }
     
-    public var inputVariables: [VariableDefinition] {
+    public var inputVariables: [VariablePlaceholder] {
         return [
-            VariableDefinition(name: targetName, type: .boolean, direction: .input)
+            VariablePlaceholder(name: targetName, type: .boolean, direction: .input)
         ]
     }
     
@@ -164,15 +164,15 @@ public class BoolFlip: FunctionStep {
 /// Performs branching. Takes a condition and performs one set of FunctionSteps if the
 /// condition is true and a different set if it is false.
 public class If: FunctionStep {
-    public var outputVariables: [VariableDefinition] {
+    public var outputVariables: [VariablePlaceholder] {
         return []
     }
     
-    public var inputVariables: [VariableDefinition] {
+    public var inputVariables: [VariablePlaceholder] {
         return [
-            VariableDefinition(name: "conditionalBool", type: .boolean, direction: .input),
-            VariableDefinition(name: "trueSteps", type: .array(type: .functionStep), direction: .input),
-            VariableDefinition(name: "falseSteps", type: .array(type: .functionStep), direction: .input)
+            VariablePlaceholder(name: "conditionalBool", type: .boolean, direction: .input),
+            VariablePlaceholder(name: "trueSteps", type: .array(type: .functionStep), direction: .input),
+            VariablePlaceholder(name: "falseSteps", type: .array(type: .functionStep), direction: .input)
         ]
     }
     

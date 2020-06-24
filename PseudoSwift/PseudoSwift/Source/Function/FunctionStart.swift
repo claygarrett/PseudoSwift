@@ -9,11 +9,11 @@
 import Foundation
 
 class FunctionStart: FunctionStep {
-    var outputVariables: [VariableDefinition] {
+    var outputVariables: [VariablePlaceholder] {
         return []
     }
     
-    var inputVariables: [VariableDefinition] {
+    var inputVariables: [VariablePlaceholder] {
         return []
     }
     
