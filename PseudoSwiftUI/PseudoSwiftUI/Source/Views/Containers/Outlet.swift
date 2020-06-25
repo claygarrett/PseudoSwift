@@ -17,6 +17,7 @@ public class Outlet<ValueType> {
     public var direction: OutletDirection
     public var view: OutletView!
     public weak var container: Container? = nil
+    private var title: String
     
     var type: OutletType {
         if self is ValueOutlet<ValueType> {
@@ -28,12 +29,24 @@ public class Outlet<ValueType> {
         }
     }
     
-    init(direction: OutletDirection, index: Int, frame: CGRect, name: String?, container: Container) {
+    init(
+        direction: OutletDirection,
+        index: Int,
+        frame: CGRect,
+        title: String,
+        container: Container
+    ) {
         self.direction = direction
         self.container = container
+        self.title = title
         
-        view = OutletView(frame: frame, direction: direction, type: type, index: index, name: name)
-        print(self.view.frame)
+        view = OutletView(
+            frame: frame,
+            direction: direction,
+            type: type,
+            index: index,
+            title: title
+        )
     }
 }
 
@@ -45,8 +58,21 @@ class SetValueOutlet<ValueType>: ValueOutlet<ValueType> {
         wire?.view.removeFromSuperview()
         wire = nil
     }
-    init(value: Variable<ValueType>, index: Int, frame: CGRect, container: Container) {
-        super.init(value: value, direction: .input, index: index, frame: frame, container: container)
+    init(
+        value: Variable<ValueType>,
+        index: Int,
+        frame: CGRect,
+        container: Container,
+        title: String
+    ) {
+        super.init(
+            value: value,
+            direction: .input,
+            index: index,
+            frame: frame,
+            container: container,
+            title: title
+        )
     }
     
     public var sourceOutlet: OutputValueOutlet<ValueType>? {
@@ -65,8 +91,20 @@ class InputValueOutlet<ValueType>: ValueOutlet<ValueType> {
         wire?.view.removeFromSuperview()
         wire = nil
     }
-    init(value: Variable<ValueType>, index: Int, frame: CGRect, container: Container) {
-        super.init(value: value, direction: .input, index: index, frame: frame, container: container)
+    init(
+        value: Variable<ValueType>,
+        index: Int,
+        frame: CGRect,
+        container: Container,
+        title: String
+    ) {
+        super.init(
+            value: value,
+            direction: .input,
+            index: index,
+            frame: frame,
+            container: container,
+            title: title)
     }
     
     public var sourceOutlet: OutputValueOutlet<ValueType>? {
@@ -105,18 +143,48 @@ class OutputValueOutlet<ValueType>: ValueOutlet<ValueType> {
           wires.append(wire)
       }
     
-    init(value: Variable<ValueType>, index: Int, frame: CGRect, container: Container) {
-        super.init(value: value, direction: .output, index: index, frame: frame, container: container)
+    init(
+        value: Variable<ValueType>,
+        index: Int,
+        frame: CGRect,
+        container: Container,
+        title: String) {
+        super.init(
+            value: value,
+            direction: .output,
+            index: index,
+            frame: frame,
+            container: container,
+            title: title
+        )
     }
 }
 
+/// An outlet that passes or receives a value
 class ValueOutlet<ValueType>: Outlet<ValueType> {
     
-    var value: Variable<ValueType>
+    var value: Variable<ValueType> {
+        didSet {
+            self.view.label.text = value.title
+        }
+    }
 
-    init(value: Variable<ValueType>, direction: OutletDirection, index: Int, frame: CGRect, container: Container) {
+    init(
+        value: Variable<ValueType>,
+        direction: OutletDirection,
+        index: Int,
+        frame: CGRect,
+        container: Container,
+        title: String
+    ) {
         self.value = value
-        super.init(direction: direction, index: index, frame: frame, name: value.name, container: container)
+        super.init(
+            direction: direction,
+            index: index,
+            frame: frame,
+            title: title,
+            container: container
+        )
     }
     
     func updateVariableName(name: String) {
@@ -125,15 +193,38 @@ class ValueOutlet<ValueType>: Outlet<ValueType> {
     }
 }
 
+/// An outlet that passes or receives program flow
 class FlowOutlet<ValueType>: Outlet<ValueType> {
     public var wire: Wire<ValueType>? = nil
     
-    init(direction: OutletDirection, index: Int, frame: CGRect, container: Container) {
-        super.init(direction: direction, index: index, frame: frame, name: nil, container: container)
+    init(
+        direction: OutletDirection,
+        index: Int,
+        frame: CGRect,
+        container: Container
+    ) {
+        super.init(
+            direction: direction,
+            index: index,
+            frame: frame,
+            title: direction.titleForFlowOutlet(),
+            container: container
+        )
     }
     
     func clearWire() {
         wire?.view.removeFromSuperview()
         wire = nil
+    }
+}
+
+extension OutletDirection {
+    func titleForFlowOutlet() -> String {
+        switch self {
+        case .input:
+            return "Flow Input"
+        case .output:
+            return "Flow Output"
+        }
     }
 }

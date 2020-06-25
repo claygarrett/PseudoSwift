@@ -20,7 +20,13 @@ public class OutletView: UIView {
     let flowInletColor: UIColor = .green
     
     // TODO: Remove frame from instantation
-    init(frame: CGRect, direction: OutletDirection, type: OutletType, index: Int, name: String?) {
+    init(
+        frame: CGRect,
+        direction: OutletDirection,
+        type: OutletType,
+        index: Int,
+        title: String
+    ) {
         let startY = connectionTopMargin + connectionMargin + CGFloat(index) * Container.inputOutputWidth + connectionMargin * CGFloat(index)
         
         // TODO: Make output outlets draggable by name. They're currently outside the frame
@@ -58,7 +64,7 @@ public class OutletView: UIView {
         self.inlet.layer.cornerRadius = Container.connectionCornerRadius
         
         super.init(frame: frame)
-        label.text = name
+        label.text = title
         self.addSubview(label)
         self.addSubview(inlet)
         self.isUserInteractionEnabled = true

@@ -4,50 +4,75 @@
 
 public typealias VariableFollowCancellation<VarType> = (Variable<VarType>) -> ()
 
-public class Variable<VarType> {
-       public static func == (lhs: Variable<VarType>, rhs: Variable<VarType>) -> Bool {
-           return lhs.name == rhs.name
-       }
-       
-       typealias T = VarType
-       
-       /// The name of this variable. Used for looking variables up when connecting
-       /// FunctionSteps and Variables
-       public var name: String
-       var initializer: () -> VarType
-       
-       var _valueProvider: () throws ->VarType
-       
-       public init(_ name: String, _ val: VarType) {
-           self.initializer = { val }
-           self._valueProvider = { val }
-           self.name = name
-       }
-       
-       public func hash(into hasher: inout Hasher) {
-           hasher.combine(name)
-       }
-       
-       public init(name: String) {
-           self.name = name
-           // variables initialized with this input are meant to
-           // be temporary values that hold on to a type until they
-           // are converted to a proper version that has a value provider.
-           // so, calling them prior to that will result in a crash
-           _valueProvider = {
-               fatalError()
-           }
-           initializer = { fatalError() }
-       }
-       
-       public func getValue() throws -> VarType {
-           return try _valueProvider()
-       }
+public class Variable<VarType>: CustomDebugStringConvertible {
     
-
+    typealias T = VarType
+      
+    /// The name of this variable. Used for looking variables up when connecting
+    /// FunctionSteps and Variables
+    public var name: String
+    private var _title: String? = nil
+    var initializer: () -> VarType
+    var _valueProvider: () throws ->VarType
     var followerValues: [Variable<VarType>] = []
     var followCancellation: VariableFollowCancellation<VarType>? = nil
-    var isFollowing: Bool = false
+    
+    
+    public var debugDescription: String {
+        var description = "Variable<\(T.self)>\n"
+        description += "Name: \(name)\n"
+        description += "Title: \(_title ?? "")\n"
+        // you can have a blank initalizer but calling it will fatal error
+//        description += "Initializer: \(self.initializer())\n"
+        if let value = try?_valueProvider() {
+            description += "Value Provider: \(value)\n"
+        } else {
+            description += "Value Provider: Threw Error!"
+        }
+        description += "Follower Values: \(followerValues)\n"
+        description += "Follower Cancellation?: \(followCancellation != nil)\n"
+
+        return description
+    }
+    
+    public init(_ name: String, _ val: VarType, title: String? = nil) {
+        _title = title
+        initializer = { val }
+        _valueProvider = { val }
+        self.name = name
+    }
+    
+    public static func == (lhs: Variable<VarType>, rhs: Variable<VarType>) -> Bool {
+        return lhs.name == rhs.name
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+    }
+    
+    public init(name: String, title: String? = nil) {
+        self.name = name
+        // variables initialized with this input are meant to
+        // be temporary values that hold on to a type until they
+        // are converted to a proper version that has a value provider.
+        // so, calling them prior to that will result in a crash
+        _valueProvider = {
+            fatalError()
+        }
+        
+        initializer = { 
+            print("Name: \(name) Title: \(String(describing: title))")
+            fatalError()
+        }
+    }
+    
+    public func getValue() throws -> VarType {
+        return try _valueProvider()
+    }
+    
+    public var title: String {
+        return _title ?? name
+    }
     
     func leaderValueChanged(value: VarType) {
         _valueProvider = { value }
@@ -85,14 +110,14 @@ public class Variable<VarType> {
             self.followerValues.removeAll(where: { $0 === cancel })
         }
     }
-
-     public func reset() {
+    
+    public func reset() {
         if followCancellation != nil {
             // don't reset values that are followers of other variables
             return
         }
         setValueProvider(initializer)
-     }
+    }
     
     public func setDefaultValue(_ value: VarType) {
         initializer = { value }
@@ -118,12 +143,8 @@ func def(name: String) -> Variable<Any> {
 public class VariableProvider<T> {
     var values: [String: Variable<T>]
     
-    func getReadable(name: String) -> Variable<T> {
+    func get(name: String) -> Variable<T> {
         return values[name]!
-    }
-    
-    func getWritable(name: String) -> Variable<T> {
-        return values[name]! as! Variable<T>
     }
     
     init(values: [String: Variable<T>]) {
@@ -145,27 +166,34 @@ class NilVariable<VarType> {
 }
 
 public extension String {
-    func toggle() -> BoolFlip {
-        return BoolFlip(self)
-    }
-}
-
-public extension String {
     func set(_ partial: BoolAndPartial) -> BoolAnd {
         return BoolAnd(varToSet: self, leftVar: partial.leftVar, rightVar: partial.rightVar)
     }
 }
 
 public class SetBoolEqualTo: FunctionStep {
+    
+    public var varToSetName: String
+    public var varWithValueName: String?
+    public var boolProvider: VariableProvider<Bool>? = nil
+    
+    public var debugDescription: String {
+        var description = "Function Step: Set Bool Equal To\n"
+        description += "Var to Set Name: \(varToSetName)\n"
+        description += "Var with Value Name: \(varWithValueName ?? "")\n"
+        description += "Bool Provider: \(String(describing: boolProvider))\n"
+        return description
+    }
+    
     public func perform() throws {
         guard let boolProvider = self.boolProvider else {
             throw VariableError.VariableProviderNotFound(source: "SetBoolEqualTo")
         }
-        let varToSet = boolProvider.getWritable(name: varToSetName)
+        let varToSet = boolProvider.get(name: varToSetName)
         guard let varWithValueName = varWithValueName else {
             throw VariableError.VariableNameNotProvided(variable: "SetBoolEqualTo:varWithValueName")
         }
-        let varWithValue = boolProvider.getReadable(name: varWithValueName)
+        let varWithValue = boolProvider.get(name: varWithValueName)
         guard let value = try? varWithValue.getValue() else {
             fatalError("No value found for variable")
         }
@@ -176,10 +204,6 @@ public class SetBoolEqualTo: FunctionStep {
         self.varToSetName = varToSetName
         self.varWithValueName = varWithValueName
     }
-
-    public var varToSetName: String
-    public var varWithValueName: String?
-    public var boolProvider: VariableProvider<Bool>? = nil
     
     public func addVariableProvider<T>(provider: VariableProvider<T>) {
         if provider.type().self == Bool.self {

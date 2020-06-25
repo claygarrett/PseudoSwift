@@ -2,7 +2,6 @@
 import UIKit
 import PseudoSwift
 
-/// Description
 final class FunctionOutputContainer: ValueProviderContainer {
     
     let nameLabel: UILabel = UILabel()
@@ -10,11 +9,22 @@ final class FunctionOutputContainer: ValueProviderContainer {
     
     init(value: Variable<Bool>, positionPercentage: CGPoint, name: String) {
         self.value = value
-        super.init(positionPercentage: positionPercentage, output: value, name: name, isFlowConductor: false)
+        super.init(
+            positionPercentage: positionPercentage,
+            output: value,
+            name: name,
+            isFlowConductor: false
+        )
     }
     
     override func viewDidLoad() {
-        let inputOutlet = InputValueOutlet(value: value , index: 0, frame: self.view.frame, container: self)
+        let inputOutlet = InputValueOutlet(
+            value: value,
+            index: 0,
+            frame: self.view.frame,
+            container: self,
+            title: "Function Output"
+        )
         boolOutlets.append(inputOutlet)
         
         super.viewDidLoad()
@@ -26,7 +36,7 @@ final class FunctionOutputContainer: ValueProviderContainer {
     
     override func draw() {
         nameLabel.text = name
-        nameLabel.frame = CGRect(x: 10, y: 10, width: 120, height: 20)
+        nameLabel.frame = CGRect(x: 10, y: 10, width: 200, height: 20)
         nameLabel.textColor = .white
         self.view.addSubview(nameLabel)
     }

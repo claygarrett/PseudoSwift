@@ -1,5 +1,17 @@
 /// Abstract superclass for any FunctionSteps that present as an operation between two variables
 public class InfixOperator: FunctionStep {
+    public var debugDescription: String {
+        var description = "Infix Operator"
+        description += "Input Variables: \(self.inputVariables)\n"
+        description += "Output Variavbles: \(self.outputVariables)\n"
+        description += "Left Var Naem: \(leftVarName)\n"
+        description += "Right Var Naem: \(rightVarName)\n"
+        description += "Right Var Naem: \(varToSetName)\n"
+        description += "Bool Provider: \(String(describing: boolProvider))\n"
+        
+        return description
+    }
+    
     public var outputVariables: [VariablePlaceholder] {
         return [VariablePlaceholder(name: varToSetName, type: .boolean, direction: .output)]
 
@@ -38,50 +50,6 @@ public class InfixOperator: FunctionStep {
     }
 }
 
-/// Abstract superclass for any FunctionSteps that present as an operation between two variables
-public class SetBool: FunctionStep {
-    public var outputVariables: [VariablePlaceholder] {
-        return [
-            VariablePlaceholder(name: varToSetName, type: .boolean, direction: .output)
-        ]
-    }
-    
-    public var inputVariables: [VariablePlaceholder] {
-        return [
-        ]
-    }
-    
-    
-    var boolProvider: VariableProvider<Bool>?
-    
-    var varToSetName: String
-    let valToSet: Bool
-
-    public func addVariableProvider<T>(provider: VariableProvider<T>) {
-        if provider.type().self == Bool.self {
-           self.boolProvider = provider as? VariableProvider<Bool>
-       }
-    }
-    
-    public func requiredVariableProviders() -> [SupportedType] {
-          return [.boolean]
-    }
-  
-    
-    public init(varToSet: String, value: Bool) {
-        self.varToSetName = varToSet
-        self.valToSet = value
-    }
-    
-    public func perform() throws {
-        guard let boolProvider = self.boolProvider else {
-            throw VariableError.VariableProviderNotFound(source: "SetVar")
-        }
-        let boolVariable = boolProvider.getWritable(name: varToSetName)
-        boolVariable.setValue(valToSet)
-    }
-}
-
 /// Compares two booleans. Returns true if they are both true, but otherwise returns false.
     public class BoolAnd: InfixOperator {
     public override func requiredVariableProviders() -> [SupportedType] {
@@ -92,10 +60,10 @@ public class SetBool: FunctionStep {
         guard let boolProvider = self.boolProvider else {
             throw VariableError.VariableProviderNotFound(source: "BooleanFunctionAnd")
         }
-        let leftVar = boolProvider.getReadable(name: leftVarName)
-        let rightVar = boolProvider.getReadable(name: rightVarName)
+        let leftVar = boolProvider.get(name: leftVarName)
+        let rightVar = boolProvider.get(name: rightVarName)
         
-        let boolVariable = boolProvider.getWritable(name: varToSetName)
+        let boolVariable = boolProvider.get(name: varToSetName)
         let rightVarValue = try rightVar.getValue()
         let leftVarValue = try leftVar.getValue()
         boolVariable.setValue(leftVarValue && rightVarValue)
@@ -112,9 +80,9 @@ public class BoolOr: InfixOperator {
         guard let boolProvider = self.boolProvider else {
             throw VariableError.VariableProviderNotFound(source: "BooleanFunctionAnd")
         }
-        let leftVar = boolProvider.getReadable(name: leftVarName)
-        let rightVar = boolProvider.getReadable(name: rightVarName)
-        let boolVariable = boolProvider.getWritable(name: varToSetName)
+        let leftVar = boolProvider.get(name: leftVarName)
+        let rightVar = boolProvider.get(name: rightVarName)
+        let boolVariable = boolProvider.get(name: varToSetName)
         try boolVariable.setValue(rightVar.getValue() || leftVar.getValue())
     }
 }
@@ -122,21 +90,23 @@ public class BoolOr: InfixOperator {
 /// Changes a boolean's value to the other possible option.
 /// Changes true to false or false to true.
 public class BoolFlip: FunctionStep {
+    public var debugDescription: String = "CLAY"
+    
     public var outputVariables: [VariablePlaceholder] {
         return [
-            VariablePlaceholder(name: targetName, type: .boolean, direction: .output)
+            VariablePlaceholder(name: destinationVariableName, type: .boolean, direction: .output)
         ]
     }
     
     public var inputVariables: [VariablePlaceholder] {
         return [
-            VariablePlaceholder(name: targetName, type: .boolean, direction: .input)
+            VariablePlaceholder(name: sourceVariableName, type: .boolean, direction: .input)
         ]
     }
     
-    var targetName: String
+    var sourceVariableName: String
+    var destinationVariableName: String
     var boolProvider: VariableProvider<Bool>?
-    
     
     public func addVariableProvider<T>(provider: VariableProvider<T>) {
         if provider.type().self == Bool.self {
@@ -148,22 +118,26 @@ public class BoolFlip: FunctionStep {
         return [.boolean]
     }
     
-    public init(_ targetName: String) {
-        self.targetName = targetName
+    public init(sourceVariableName: String, destinationVariableName: String) {
+        self.sourceVariableName = sourceVariableName
+        self.destinationVariableName = destinationVariableName
     }
     
     public func perform() throws {
         guard let boolProvider = self.boolProvider else {
             throw VariableError.VariableProviderNotFound(source: "BooleanFunctionFlip")
         }
-        let targetVar = boolProvider.getWritable(name: targetName)
-        try targetVar.setValue(!targetVar.getValue())
+        let sourceVar = boolProvider.get(name: sourceVariableName)
+        let destinationVar = boolProvider.get(name: destinationVariableName)
+        try destinationVar.setValue(!sourceVar.getValue())
     }
 }
 
 /// Performs branching. Takes a condition and performs one set of FunctionSteps if the
 /// condition is true and a different set if it is false.
 public class If: FunctionStep {
+    public var debugDescription: String = "CLAY"
+    
     public var outputVariables: [VariablePlaceholder] {
         return []
     }

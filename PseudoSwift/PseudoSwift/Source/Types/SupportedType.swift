@@ -7,7 +7,15 @@ public indirect enum SupportedType: Equatable {
     case array(type: SupportedType)
 }
 
-public class VariablePlaceholder {
+public class VariablePlaceholder: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        var description = "Variable Placeholder"
+        description += "Name: \(name)\n"
+        description += "Type: \(type)\n"
+        description += "Direction: \(direction)\n"
+        return description
+    }
+    
     public var name: String
     public let type: SupportedType
     public let direction: VariableDirection

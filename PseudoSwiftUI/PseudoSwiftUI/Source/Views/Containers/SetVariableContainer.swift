@@ -38,7 +38,13 @@ public final class SetVariableContainer<ValueType>: FlowContainer, UIPickerViewD
         picker.dataSource = self as UIPickerViewDataSource
         picker.delegate = self as UIPickerViewDelegate
         view.addSubview(variableToSetTextField)
-        valueOutlet = SetValueOutlet(value: value, index: 1, frame: self.view.frame, container: self)
+        valueOutlet = SetValueOutlet(
+            value: value,
+            index: 1,
+            frame: self.view.frame,
+            container: self,
+            title: value.name
+        )
         boolOutlets.append(valueOutlet)
         super.viewDidLoad()
     }
@@ -71,10 +77,7 @@ public final class SetVariableContainer<ValueType>: FlowContainer, UIPickerViewD
             let value = customVariableNameProvider.getValue(name: name)
         {
             self.value = value
-            let wire = self.valueOutlet.wire
-            self.valueOutlet.wire = nil
-            valueOutlet = SetValueOutlet(value: value, index: 1, frame: self.view.frame, container: self)
-            valueOutlet.wire = wire
+            self.valueOutlet.value = value
         }
     }
     

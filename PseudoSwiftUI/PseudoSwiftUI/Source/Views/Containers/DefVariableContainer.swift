@@ -15,7 +15,12 @@ final class DefVariableContainer: ValueProviderContainer, UITextFieldDelegate {
     }
     
     override func viewDidLoad() {
-        let outputOutlet = OutputValueOutlet(value: self.output, index: 0, frame: self.view.frame, container: self)
+        let outputOutlet = OutputValueOutlet(
+            value: self.output,
+            index: 0,
+            frame: self.view.frame,
+            container: self,
+            title: self.output.name)
         boolOutlets.append(outputOutlet)
         super.viewDidLoad()
     }
@@ -50,8 +55,6 @@ final class DefVariableContainer: ValueProviderContainer, UITextFieldDelegate {
         if let outlet = self.boolOutlets.first as? ValueOutlet {
             outlet.updateVariableName(name: name)
         }
-        
-//        value.name = name
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

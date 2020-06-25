@@ -4,7 +4,7 @@ import Foundation
 /// An object that sets/transforms values based on predefined logic
 /// Function steps can contain relatively simple functionality such as operators (+, -, *, &&, ||, etc)
 /// Or can contain much more complex logic .
-public protocol FunctionStep {
+public protocol FunctionStep: CustomDebugStringConvertible {
     /// Do the logic contained in this step by reading from, transforming, and setting dependent variables.
     func perform() throws
     
@@ -43,7 +43,7 @@ public class BoolEvaluator: ValueProducingFunctionStep {
             throw VariableError.VariableProviderNotFound(source: "Bool Evaluator")
         }
         
-        return try boolProvider.getReadable(name: varName).getValue()
+        return try boolProvider.get(name: varName).getValue()
     }
     
     typealias ReturnValue = Bool

@@ -39,8 +39,6 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
     public override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .white
-        
-        
         view.isUserInteractionEnabled = true
         
         addStartContainer()
@@ -69,7 +67,11 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
         runButton.setTitle("Run!", for: .normal)
         runButton.setTitleColor(.white, for: .normal    )
         runButton.layer.cornerRadius = 10
-        runButton.addTarget(self, action: #selector(WorkspaceViewController.runTapped(_:)), for: .touchUpInside)
+        runButton.addTarget(
+            self,
+            action: #selector(WorkspaceViewController.runTapped(_:)),
+            for: .touchUpInside
+        )
         view.addSubview(runButton)
     }
     
@@ -372,9 +374,11 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
             let boolAndStep = BoolAnd(varToSet: "varToSet", leftVar: "leftVar", rightVar: "rightVar")
             addFunctionStepContainer(functionStep: boolAndStep, name: "BoolAnd", inputVariables: [leftVar, rightVar], output: varToSet)
         case "BoolFlip":
-            let id = UUID().uuidString
-            let input = getOrAddVariable(name: id, defaultValue: true)
-            addFunctionStepContainer(functionStep: BoolFlip(id), name: id, inputVariables: [input], output: input)
+            let inputId = UUID().uuidString
+            let outputId = UUID().uuidString
+            let input = getOrAddVariable(name: inputId, defaultValue: true, title: "Variable to Flip")
+            let output = getOrAddVariable(name: outputId, defaultValue: true, title: "Value after Flip")
+            addFunctionStepContainer(functionStep: BoolFlip(sourceVariableName: inputId, destinationVariableName: outputId), name: "Flip Boolean", inputVariables: [input], output: output)
         case "DefineBool":
             let variableName = variableNameGenerator.getUniqueVariableName()
             
@@ -383,17 +387,21 @@ public class WorkspaceViewController: UIViewController, ConnectionDragHandler, F
             
             addDefVariableContainer(output: varToSet)
         case "SetBool":
-            let varToSetName = "Clay"
-            let varToSet = getOrAddVariable(name: varToSetName, defaultValue: false)
+            let varToSet = getOrAddVariable(name: "", defaultValue: false)
             addSetVariableContainer(value: varToSet)
         default:
             break
         }
     }
     
-    func getOrAddVariable(name: String, defaultValue: Bool) -> Variable<Bool> {
+    func getOrAddVariable(
+        name: String,
+        defaultValue: Bool,
+        title: String? = nil
+    ) -> Variable<Bool> {
+        
         guard let variable = variables.first(where: { $0.name == name }) else {
-            let variable = Variable<Bool>(name, defaultValue)
+            let variable = Variable<Bool>(name, defaultValue, title: title)
             variables.append(variable)
             return variable
         }

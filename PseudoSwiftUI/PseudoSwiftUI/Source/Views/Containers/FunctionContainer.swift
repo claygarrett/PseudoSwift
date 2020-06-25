@@ -22,7 +22,14 @@ final class FunctionStepContainer: ValueProviderContainer {
     let inputs: [Variable<Bool>]
     let functionStep: FunctionStep
     
-    init(functionStep: FunctionStep, positionPercentage: CGPoint, inputs: [Variable<Bool>] = [], output: Variable<Bool>, variables: [Variable<Bool>] = [], name: String) {
+    init(
+        functionStep: FunctionStep,
+        positionPercentage: CGPoint,
+        inputs: [Variable<Bool>] = [],
+        output: Variable<Bool>,
+        variables: [Variable<Bool>] = [],
+        name: String
+    ) {
         self.inputs = inputs
         self.functionStep = functionStep
         super.init(positionPercentage: positionPercentage, output: output, name: name, isFlowConductor: false)
@@ -32,20 +39,32 @@ final class FunctionStepContainer: ValueProviderContainer {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
     override func viewDidLoad() {
         for (index, input) in inputs.enumerated() {
-            let inputOutlet = InputValueOutlet(value: input, index: index, frame: self.view.frame, container: self)
+            let inputOutlet = InputValueOutlet(
+                value: input,
+                index: index,
+                frame: self.view.frame,
+                container: self,
+                title: input.title
+            )
             boolOutlets.append(inputOutlet)
         }
         
-            let outputOutlet = OutputValueOutlet(value: output, index: 0, frame: self.view.frame, container: self)
-            boolOutlets.append(outputOutlet)
+        let outputOutlet = OutputValueOutlet(
+            value: output,
+            index: 0,
+            frame: self.view.frame,
+            container: self,
+            title: output.title
+        )
+        
+        boolOutlets.append(outputOutlet)
         
         super.viewDidLoad()
     }
     
-
+    
     override func draw() {
         nameLabel.text = name
         nameLabel.frame = CGRect(x: 10, y: 10, width: 120, height: 20)

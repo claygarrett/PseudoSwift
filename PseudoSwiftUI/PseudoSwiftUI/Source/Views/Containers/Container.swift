@@ -169,7 +169,6 @@ public class FlowContainer: Container {
            
            let offsetFromOriginalPosition = recognizer.translation(in: self.view)
            let positionOfDraggedoutlet = draggedView.frame
-           print("positionOfDraggedoutlet", positionOfDraggedoutlet)
            
            let positionInContainer = offsetFromOriginalPosition
                .movedBy(translationPoint: positionOfDraggedoutlet.origin)
@@ -333,7 +332,6 @@ public class Container: UIViewController, Containing {
         
         let offsetFromOriginalPosition = recognizer.translation(in: self.view)
         let positionOfDraggedoutlet = draggedView.frame
-        print("positionOfDraggedoutlet", positionOfDraggedoutlet)
         
         let positionInContainer = offsetFromOriginalPosition
             .movedBy(translationPoint: positionOfDraggedoutlet.origin)

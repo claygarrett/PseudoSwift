@@ -65,7 +65,6 @@ class FunctionListTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("Selected a function att index \(indexPath)")
         selectionDelegate?.didSelectFunction(functionStep: functions[indexPath.row])
     }
     

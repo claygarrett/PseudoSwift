@@ -43,7 +43,7 @@ public class Function<Output>: Variable<Output> {
     /// All providers of boolean variables. Just a simplified wrapper for our map of variables
     var booleanVariableProvider: VariableProvider<Bool>
     
-    public override init(name: String = "") {
+    public override init(name: String = "", title: String? = nil) {
         self.steps = []
         self.booleanVariableProvider = VariableProvider<Bool>(values: [:])
         super.init(name: name)
@@ -108,26 +108,28 @@ public class Function<Output>: Variable<Output> {
     }
     
     public func addLine(_ line: AnyObject) {
-        // Break out each variable from our lines
-        if line is Variable<Bool> {
-            switch line {
-            case let booleanVar as Variable<Bool>:
-                self.booleanVariables[booleanVar.name] = booleanVar
-            default:
-                fatalError("Sent in an unexpected variable type")
-            }
+        
+        switch line {
+        case let booleanVar as Variable<Bool>:
+            print("Function.addLine:\n---------------\n\(booleanVar)")
+            self.booleanVariables[booleanVar.name] = booleanVar
+            // Wrap our variables in providers
+            booleanVariableProvider = VariableProvider(values: self.booleanVariables)
+            
+        default:
+            break
         }
         
         if let step = line as? FunctionStep {
             self.steps.append(step)
+            print("Function.addLine:\n---------------\n\(step)")
         }
        
         if let outputStep = line as? FunctionOutput {
             outputVariableName = outputStep.name
         }
         
-        // Wrap our variables in providers
-        booleanVariableProvider = VariableProvider(values: self.booleanVariables)
+        
     }
 
     /// Enables our Function type to be callable. For instance:
@@ -162,7 +164,7 @@ public class Function<Output>: Variable<Output> {
         
         // Get the value for our final output and return it
         
-       return try booleanVariableProvider.getReadable(name: outputVariableName).getValue() as! Output
+       return try booleanVariableProvider.get(name: outputVariableName).getValue() as! Output
        
         
     }

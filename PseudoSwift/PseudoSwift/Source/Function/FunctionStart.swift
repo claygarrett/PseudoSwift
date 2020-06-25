@@ -9,6 +9,8 @@
 import Foundation
 
 class FunctionStart: FunctionStep {
+    public var debugDescription: String = "Function Step: Function Start"
+    
     var outputVariables: [VariablePlaceholder] {
         return []
     }
@@ -30,6 +32,4 @@ class FunctionStart: FunctionStep {
     func requiredVariableProviders() -> [SupportedType] {
         return []
     }
-    
-    
 }
